@@ -1,0 +1,11 @@
+# Keep the pinned GitHub Actions up to date, like mkdocs-ng/mkdocs.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
