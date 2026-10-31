@@ -1,0 +1,16 @@
+- version: 0.1.0
+  date: 2026-11-01
+  summary: The first public release.
+  notes: |
+    - Theme with header tabs, sidebar, table of contents, breadcrumbs and pager.
+    - Twelve native-Markdown components: callouts, tabs, steps, cards, fields, captions, file trees, Mermaid, KaTeX, keys and icons.
+    - Command palette with local, CJK-aware search.
+    - Landing, blog, releases and print page types.
+    - Markdown copy of every page, `llms.txt` discovery links, Copy as Markdown.
+    - English, Simplified Chinese and Traditional Chinese interface.
+  assets:
+    - name: mkdocs_sumi-0.1.0-py3-none-any.whl
+      url: https://pypi.org/project/mkdocs-sumi/0.1.0/#files
+      size: 2.5 MB
+    - name: mkdocs_sumi-0.1.0.tar.gz
+      url: https://pypi.org/project/mkdocs-sumi/0.1.0/#files

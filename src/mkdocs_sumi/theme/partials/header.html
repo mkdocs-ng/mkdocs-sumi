@@ -1,0 +1,49 @@
+{%- import "partials/macros.html" as m with context -%}
+<header class="sumi-header">
+  <div class="sumi-header-inner">
+    {%- if side_items %}
+    <button class="sumi-icon-btn sumi-menu-btn" type="button" aria-label="{{ t('menu') }}" aria-controls="sumi-sidebar" aria-expanded="false">{{ icon('menu') }}</button>
+    {%- endif %}
+    <a class="sumi-brand" href="{{ nav.homepage.url | url if nav.homepage else base_url ~ '/' }}" aria-label="{{ config.site_name }}">
+      {%- if config.theme.logo %}
+      <img class="sumi-logo" src="{{ config.theme.logo | url }}" alt="">
+      {%- else %}
+      {% include "partials/logo.html" %}
+      {%- endif %}
+      <span class="sumi-brand-name">{{ config.theme.brand or config.site_name }}</span>
+    </a>
+    {%- if tabs_on %}
+    <nav class="sumi-tabs-nav" aria-label="{{ t('navigation') }}">
+      {%- for item in nav.items if not (item.is_page and item.is_homepage) %}
+      {%- set href = m.first_url(item) | trim %}
+      <a class="sumi-tab-link{% if item.active %} is-active{% endif %}" href="{{ href }}"{% if item.active %} aria-current="page"{% endif %}{% if item.is_link and item.url.startswith('http') %} target="_blank" rel="noopener"{% endif %}>{{ item.title }}</a>
+      {%- endfor %}
+    </nav>
+    {%- endif %}
+    <div class="sumi-header-tools">
+      <button class="sumi-search-btn" type="button" data-sumi-palette aria-label="{{ t('search') }}">
+        {{ icon('search') }}<span class="sumi-search-label">{{ t('search') }}</span><kbd class="sumi-search-kbd" data-mod>Ctrl K</kbd>
+      </button>
+      {%- if config.theme.version_provider %}
+      <div class="sumi-menu sumi-version-menu" hidden>
+        <button class="sumi-chip-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="{{ t('version') }}">{{ icon('git-branch') }}<span class="sumi-version-current"></span>{{ icon('chevron-down', 'sumi-chevron') }}</button>
+        <ul class="sumi-menu-list" role="menu"></ul>
+      </div>
+      {%- endif %}
+      {%- if config.extra.alternate %}
+      <div class="sumi-menu sumi-lang-menu">
+        <button class="sumi-icon-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="{{ t('language') }}" title="{{ t('language') }}">{{ icon('languages') }}</button>
+        <ul class="sumi-menu-list" role="menu">
+          {%- for alt in config.extra.alternate %}
+          <li role="none"><a role="menuitem" href="{{ alt.link | url }}" hreflang="{{ alt.lang }}" data-lang-link{% if alt.lang == sumi_language or alt.lang == sumi_language[:2] %} aria-current="true"{% endif %}>{{ alt.name }}</a></li>
+          {%- endfor %}
+        </ul>
+      </div>
+      {%- endif %}
+      <button class="sumi-icon-btn sumi-theme-btn" type="button" data-sumi-theme aria-label="{{ t('toggle_theme') }}" title="{{ t('toggle_theme') }}">{{ icon('sun', 'sumi-when-light') }}{{ icon('moon', 'sumi-when-dark') }}</button>
+      {%- if config.repo_url %}
+      <a class="sumi-icon-btn sumi-repo" href="{{ config.repo_url }}" aria-label="{{ t('repository') }}" title="{{ config.repo_name or t('repository') }}" rel="noopener">{{ m.repo_icon(config.repo_url) }}</a>
+      {%- endif %}
+    </div>
+  </div>
+</header>

@@ -1,0 +1,23 @@
+<div class="sumi-actions">
+  {%- if sumi.markdown_url %}
+  <button class="sumi-chip-btn sumi-copy-page" type="button" data-sumi-copy-page>{{ icon('copy') }}<span>{{ t('copy_markdown') }}</span></button>
+  {%- endif %}
+  <div class="sumi-menu sumi-actions-menu">
+    <button class="sumi-icon-btn sumi-chip-icon" type="button" aria-haspopup="true" aria-expanded="false" aria-label="{{ t('page_actions') }}" title="{{ t('page_actions') }}">{{ icon('chevron-down') }}</button>
+    <ul class="sumi-menu-list sumi-menu-right" role="menu">
+      {%- if sumi.markdown_url %}
+      <li role="none"><a role="menuitem" href="{{ sumi.markdown_url | url }}" target="_blank">{{ icon('file-text') }}{{ t('view_markdown') }}</a></li>
+      {%- endif %}
+      {%- if page.edit_url %}
+      <li role="none"><a role="menuitem" href="{{ page.edit_url }}" rel="noopener">{{ icon('square-pen') }}{{ t('edit_page') }}</a></li>
+      {%- endif %}
+      {%- for a in (sumi.assistant_links or []) %}
+      <li role="none"><a role="menuitem" data-assistant="{{ a }}" href="#" rel="noopener">{{ icon('sparkles') }}{{ t('open_in', name={'chatgpt': 'ChatGPT', 'claude': 'Claude'}[a]) }}</a></li>
+      {%- endfor %}
+      <li role="none"><button role="menuitem" type="button" data-sumi-print>{{ icon('printer') }}{{ t('print') }}</button></li>
+      {%- if sumi.print_url %}
+      <li role="none"><a role="menuitem" href="{{ sumi.print_url | url }}">{{ icon('book-open') }}{{ t('print_title') }} · {{ t('whole_site') }}</a></li>
+      {%- endif %}
+    </ul>
+  </div>
+</div>

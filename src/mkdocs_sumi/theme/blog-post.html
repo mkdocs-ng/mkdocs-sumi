@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="sumi-article sumi-post">
+  <div class="sumi-article-top">
+    {%- if sumi.blog_index_url %}<a class="sumi-back" href="{{ sumi.blog_index_url | url }}">{{ icon('arrow-left') }}{{ t('all_posts') }}</a>{% else %}<div></div>{% endif %}
+    {% include "partials/page-actions.html" %}
+  </div>
+  {%- if sumi.post %}
+  <div class="sumi-post-header">
+    <div class="sumi-post-meta">
+      <time datetime="{{ sumi.post.date.isoformat() }}">{{ sumi.post.date | sumi_date(sumi_language) }}</time>
+      <span aria-hidden="true">·</span><span>{{ t('reading_time', n=sumi.post.reading_time) }}</span>
+      {%- for tag in sumi.post.tags %}<a class="sumi-tag sumi-tag--static" href="{{ sumi.blog_index_url | url }}#tag={{ tag | urlencode }}">{{ tag }}</a>{% endfor %}
+    </div>
+  </div>
+  {%- endif %}
+  <div class="sumi-content sumi-prose">{{ page.content }}</div>
+  {%- if sumi.post and sumi.post.authors %}
+  <div class="sumi-post-authors">
+    {%- for a in sumi.post.authors %}
+    <div class="sumi-author">
+      {%- if a.avatar %}<img src="{{ a.avatar | url }}" alt="" loading="lazy">{% else %}<span class="sumi-author-initial">{{ (a.name or '?')[:1] }}</span>{% endif %}
+      <div><div class="sumi-author-name">{% if a.url %}<a href="{{ a.url }}" rel="noopener">{{ a.name }}</a>{% else %}{{ a.name }}{% endif %}</div>
+      {%- if a.description %}<div class="sumi-author-desc">{{ a.description }}</div>{% endif %}</div>
+    </div>
+    {%- endfor %}
+  </div>
+  {%- endif %}
+  {%- if sumi.newer or sumi.older %}
+  <nav class="sumi-pager">
+    {%- if sumi.older %}<a class="sumi-pager-prev" href="{{ sumi.older.url | url }}"><span class="sumi-pager-label">{{ icon('arrow-left') }}{{ t('older_post') }}</span><span class="sumi-pager-title">{{ sumi.older.title }}</span></a>{% else %}<span></span>{% endif %}
+    {%- if sumi.newer %}<a class="sumi-pager-next" href="{{ sumi.newer.url | url }}"><span class="sumi-pager-label">{{ t('newer_post') }}{{ icon('arrow-right') }}</span><span class="sumi-pager-title">{{ sumi.newer.title }}</span></a>{% endif %}
+  </nav>
+  {%- endif %}
+</article>
+{% endblock %}

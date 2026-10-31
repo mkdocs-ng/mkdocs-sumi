@@ -1,0 +1,30 @@
+# Sumi theme defaults. Every key can be set under `theme:` in mkdocs.yml.
+locale: en
+include_search_page: false
+search_index_only: true
+static_templates:
+  - 404.html
+
+# Light, dark, or follow the operating system.
+palette: auto
+# Accent colour: vermilion (default), indigo, moss, plum, ochre, ink, or any CSS colour.
+accent: vermilion
+# Show top-level sections as tabs in the header.
+navigation_tabs: true
+# Deepest heading level listed in the page table of contents.
+toc_depth: 3
+# Path to a logo image in docs_dir; the Sumi mark is used when unset.
+logo: null
+favicon: null
+# Mark-up for the header brand, e.g. "MkDocs<b>ng</b>"; defaults to site_name.
+brand: null
+# Text or HTML for a dismissible bar above the header.
+announcement: null
+# Show the "Built with MkDocs and Sumi" credit in the footer.
+credit: true
+# Keyboard shortcuts (search, prev/next, theme...).
+keyboard: true
+# Versions: "mike" reads the versions.json written by mike.
+version_provider: null
+# Hide parts of the page shell: any of toc, sidebar, breadcrumbs, pager, actions, footer.
+hide: []

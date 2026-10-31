@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block htmltitle %}<title>404 · {{ config.site_name }}</title>{% endblock %}
+{% block layout %}
+<main class="sumi-shell sumi-shell--no-side sumi-shell--no-toc" id="content">
+  <div class="sumi-404">
+    <div>
+      <div class="sumi-404-code">404</div>
+      <h1>{{ t('not_found_title') }}</h1>
+      <p>{{ t('not_found_text') }}</p>
+      <p><a class="sumi-btn sumi-btn--primary" href="{{ nav.homepage.url | url if nav.homepage else base_url ~ '/' }}">{{ icon('house') }}{{ t('go_home') }}</a>
+         <button class="sumi-btn" type="button" data-sumi-palette>{{ icon('search') }}{{ t('search') }}</button></p>
+    </div>
+  </div>
+</main>
+{% endblock %}

@@ -1,0 +1,18 @@
+<footer class="sumi-article-footer">
+  {%- if sumi.last_updated or page.edit_url %}
+  <div class="sumi-meta-row">
+    {%- if sumi.last_updated %}<span class="sumi-meta">{{ icon('clock') }}{{ t('last_updated') }} <time datetime="{{ sumi.last_updated.isoformat() }}">{{ sumi.last_updated | sumi_date(sumi_language) }}</time></span>{% endif %}
+    {%- if page.edit_url %}<a class="sumi-meta sumi-edit" href="{{ page.edit_url }}" rel="noopener">{{ icon('square-pen') }}{{ t('edit_page') }}</a>{% endif %}
+  </div>
+  {%- endif %}
+  {%- if 'pager' not in hide and (page.previous_page or page.next_page) %}
+  <nav class="sumi-pager" aria-label="{{ t('previous') }} / {{ t('next') }}">
+    {%- if page.previous_page %}
+    <a class="sumi-pager-prev" href="{{ page.previous_page.url | url }}" rel="prev"><span class="sumi-pager-label">{{ icon('arrow-left') }}{{ t('previous') }}</span><span class="sumi-pager-title">{{ page.previous_page.title }}</span></a>
+    {%- else %}<span></span>{% endif %}
+    {%- if page.next_page %}
+    <a class="sumi-pager-next" href="{{ page.next_page.url | url }}" rel="next"><span class="sumi-pager-label">{{ t('next') }}{{ icon('arrow-right') }}</span><span class="sumi-pager-title">{{ page.next_page.title }}</span></a>
+    {%- endif %}
+  </nav>
+  {%- endif %}
+</footer>

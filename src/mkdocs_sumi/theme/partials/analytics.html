@@ -1,0 +1,8 @@
+{%- set a = config.extra.analytics or {} -%}
+{%- if a.provider == 'google' and a.property %}
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ a.property }}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config',{{ a.property | tojson }});</script>
+{%- elif config.google_analytics %}
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ config.google_analytics[0] }}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config',{{ config.google_analytics[0] | tojson }});</script>
+{%- endif %}
