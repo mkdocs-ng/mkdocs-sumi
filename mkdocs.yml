@@ -1,0 +1,71 @@
+site_name: Sumi
+site_description: A modern, local-first documentation theme for MkDocs. Markdown in, beautiful docs out.
+site_url: https://mkdocs-ng.github.io/mkdocs-sumi/
+repo_url: https://github.com/mkdocs-ng/mkdocs-sumi
+repo_name: mkdocs-ng/mkdocs-sumi
+edit_uri: edit/main/docs/
+copyright: Copyright &copy; 2026 The MkDocs-ng contributors · Apache-2.0
+
+theme:
+  name: sumi
+  announcement: 'Sumi 0.1 is out: <a href="blog/2026/11/01/introducing-sumi/">read the announcement</a>.'
+
+plugins:
+  - search
+  - llms_txt:
+      full_output: true
+  - sumi:
+      git_dates: true
+      assistant_links: [claude, chatgpt]
+
+markdown_extensions:
+  - toc:
+      permalink: "#"
+
+extra:
+  social:
+    - icon: brand-github
+      link: https://github.com/mkdocs-ng/mkdocs-sumi
+      name: GitHub
+    - icon: brand-pypi
+      link: https://pypi.org/project/mkdocs-sumi/
+      name: PyPI
+
+nav:
+  - Home: index.md
+  - Docs:
+    - docs/index.md
+    - Getting started:
+      - Install: docs/start/install.md
+      - Your first site: docs/start/first-site.md
+      - Migrate from Material: docs/start/migrate.md
+    - Writing:
+      - docs/write/index.md
+      - Callouts: docs/write/callouts.md
+      - Code blocks: docs/write/code.md
+      - Tabs: docs/write/tabs.md
+      - Steps: docs/write/steps.md
+      - Cards: docs/write/cards.md
+      - Fields: docs/write/fields.md
+      - Tables: docs/write/tables.md
+      - Images and figures: docs/write/images.md
+      - File trees: docs/write/filetree.md
+      - Diagrams: docs/write/diagrams.md
+      - Math: docs/write/math.md
+      - Keys and icons: docs/write/keys-icons.md
+    - Pages:
+      - Landing pages: docs/pages/landing.md
+      - Blog: docs/pages/blog.md
+      - Releases and downloads: docs/pages/releases.md
+      - Print edition: docs/pages/print.md
+    - Customize:
+      - Theme options: docs/customize/theme.md
+      - Plugin options: docs/customize/plugin.md
+      - Navigation: docs/customize/navigation.md
+      - Search and commands: docs/customize/search.md
+      - Languages and versions: docs/customize/i18n.md
+      - Overriding templates: docs/customize/overrides.md
+    - AI and agents: docs/ai.md
+    - Design principles: docs/design.md
+  - Releases: releases.md
+  - Blog: blog/index.md

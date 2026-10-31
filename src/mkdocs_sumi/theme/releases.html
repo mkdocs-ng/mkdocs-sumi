@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block page_content %}
+{{ page.content }}
+<div class="sumi-releases">
+  {%- for rel in sumi.releases %}
+  <section class="sumi-release sumi-release--{{ rel.status }}" id="v{{ rel.version | replace('.', '-') }}">
+    <header class="sumi-release-head">
+      <h2 class="sumi-release-version">{{ rel.title or rel.version }}</h2>
+      {%- if rel.status == 'latest' %}<span class="sumi-badge sumi-badge--latest">{{ t('latest') }}</span>
+      {%- elif rel.status == 'prerelease' %}<span class="sumi-badge sumi-badge--pre">{{ t('prerelease') }}</span>
+      {%- elif rel.status == 'archived' %}<span class="sumi-badge">{{ t('archived') }}</span>{% endif %}
+      {%- if rel.date %}<time class="sumi-release-date" datetime="{{ rel.date.isoformat() }}">{{ rel.date | sumi_date(sumi_language) }}</time>{% endif %}
+    </header>
+    {%- if rel.summary %}<p class="sumi-release-summary">{{ rel.summary }}</p>{% endif %}
+    {%- if rel.notes_html %}<div class="sumi-release-notes">{{ rel.notes_html }}</div>{% endif %}
+    {%- if rel.assets %}
+    <div class="sumi-table">
+      <table class="sumi-assets">
+        <thead><tr><th>{{ t('asset') }}</th><th>{{ t('size') }}</th><th>{{ t('checksum') }}</th></tr></thead>
+        <tbody>
+        {%- for a in rel.assets %}
+          <tr>
+            <td><a href="{{ a.url }}">{{ icon('download') }}{{ a.name }}</a></td>
+            <td>{{ a.size or '' }}</td>
+            <td>{% if a.sha256 %}<button class="sumi-hash" type="button" data-copy="{{ a.sha256 }}" title="{{ t('copy') }}"><code>{{ a.sha256[:12] }}…</code>{{ icon('copy') }}</button>{% endif %}</td>
+          </tr>
+        {%- endfor %}
+        </tbody>
+      </table>
+    </div>
+    {%- endif %}
+  </section>
+  {%- endfor %}
+</div>
+<script>
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.sumi-hash');
+    if (!b) return;
+    navigator.clipboard.writeText(b.dataset.copy).then(function () {
+      var t = document.querySelector('.sumi-toast');
+      if (t) { t.textContent = {{ t('copied') | tojson }}; t.classList.add('is-on'); setTimeout(function () { t.classList.remove('is-on'); }, 1400); }
+    });
+  });
+</script>
+{% endblock %}

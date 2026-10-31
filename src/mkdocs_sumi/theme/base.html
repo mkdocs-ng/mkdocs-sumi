@@ -1,0 +1,150 @@
+{%- import "partials/macros.html" as m with context -%}
+{%- set sumi = sumi if sumi is defined else {} -%}
+{%- set theme = config.theme -%}
+{%- set hide = (page.meta.hide if page and page.meta and page.meta.hide else []) + (theme.hide or []) -%}
+{%- set layout = page.meta.layout if page and page.meta and page.meta.layout else 'docs' -%}
+{%- set has_sections = nav.items | selectattr('is_section') | list | length > 0 -%}
+{%- set tabs_on = theme.navigation_tabs and has_sections -%}
+{%- set active_top = nav.items | selectattr('active') | first -%}
+{%- if tabs_on -%}
+  {%- set side_items = active_top.children if active_top and active_top.is_section else [] -%}
+{%- else -%}
+  {%- set side_items = nav.items -%}
+{%- endif -%}
+{%- if 'sidebar' in hide or 'navigation' in hide or layout in ('wide', 'landing', 'blog') -%}{%- set side_items = [] -%}{%- endif -%}
+{%- set toc_list = page.toc.items if page and page.toc else [] -%}
+{%- if toc_list | length == 1 and toc_list[0].level == 1 -%}{%- set toc_list = toc_list[0].children -%}{%- endif -%}
+{%- set show_toc = toc_list | length > 0 and 'toc' not in hide and layout not in ('wide', 'landing', 'blog') -%}
+<!doctype html>
+<html lang="{{ sumi_language | replace('_', '-') }}" data-palette="{{ theme.palette }}" data-layout="{{ layout }}" class="no-js">
+<head>
+  {%- block site_meta %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {%- if page and page.meta and page.meta.description %}<meta name="description" content="{{ page.meta.description }}">
+  {%- elif config.site_description %}<meta name="description" content="{{ config.site_description }}">{% endif %}
+  {%- if config.site_author %}<meta name="author" content="{{ config.site_author }}">{% endif %}
+  {%- if page and page.canonical_url %}<link rel="canonical" href="{{ page.canonical_url }}">{% endif %}
+  {%- if page and page.previous_page %}<link rel="prev" href="{{ page.previous_page.url | url }}">{% endif %}
+  {%- if page and page.next_page %}<link rel="next" href="{{ page.next_page.url | url }}">{% endif %}
+  {%- if sumi.markdown_url %}<link rel="alternate" type="text/markdown" href="{{ sumi.markdown_url | url }}" title="Markdown">{% endif %}
+  {%- if sumi.llms_txt %}<link rel="alternate" type="text/plain" href="{{ 'llms.txt' | url }}" title="llms.txt">{% endif %}
+  {%- if sumi.feed_url %}<link rel="alternate" type="application/atom+xml" href="{{ sumi.feed_url | url }}" title="{{ config.site_name }}">{% endif %}
+  <link rel="icon" href="{{ (theme.favicon or 'assets/images/favicon.svg') | url }}">
+  <meta name="generator" content="mkdocs-{{ mkdocs_version }}, sumi">
+  <meta name="theme-color" content="#f8f7f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+  {%- if page and page.title %}
+  <meta property="og:type" content="{{ 'article' if sumi.is_post else 'website' }}">
+  <meta property="og:title" content="{{ page.title | striptags }}">
+  <meta property="og:site_name" content="{{ config.site_name }}">
+  {%- if page.canonical_url %}<meta property="og:url" content="{{ page.canonical_url }}">{% endif %}
+  {%- endif %}
+  {%- endblock %}
+  {%- block htmltitle %}
+  <title>{% if page and page.title and not page.is_homepage %}{{ page.title | striptags }} · {% endif %}{{ config.site_name }}</title>
+  {%- endblock %}
+  <script>
+    (function () {
+      var d = document.documentElement, p = d.dataset.palette, s = null;
+      try { s = localStorage.getItem('sumi.palette'); } catch (e) {}
+      var mode = s || p;
+      if (mode === 'auto' || !mode) mode = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      d.dataset.theme = mode;
+      d.classList.replace('no-js', 'js');
+    })();
+  </script>
+  {%- block styles %}
+  <link rel="preload" href="{{ 'assets/fonts/inter-latin-wght-normal.woff2' | url }}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{ 'assets/css/sumi.css' | url }}">
+  {%- if theme.accent %}{{ m.accent_style(theme.accent) }}{% endif %}
+  {%- if 'math' in (sumi.features or []) %}<link rel="stylesheet" href="{{ 'assets/sumi/vendor/katex/katex.min.css' | url }}">{% endif %}
+  {%- for path in config.extra_css %}<link rel="stylesheet" href="{{ path | url }}">{% endfor %}
+  {%- endblock %}
+  {%- block analytics %}{% include "partials/analytics.html" %}{% endblock %}
+  {%- block extrahead %}{% endblock %}
+</head>
+<body>
+  <a class="sumi-skip" href="#content">{{ t('skip_to_content') }}</a>
+  {%- if theme.announcement %}
+  <div class="sumi-announce" data-key="{{ theme.announcement | striptags | truncate(40, True, '') }}">
+    <div class="sumi-announce-inner">{{ theme.announcement | sumi_links }}</div>
+    <button class="sumi-icon-btn sumi-announce-close" type="button" aria-label="{{ t('close') }}">{{ icon('x') }}</button>
+  </div>
+  {%- endif %}
+  {%- block header %}{% include "partials/header.html" %}{% endblock %}
+  <div class="sumi-version-banner" hidden></div>
+  {%- block layout %}
+  <div class="sumi-shell{% if not side_items %} sumi-shell--no-side{% endif %}{% if not show_toc %} sumi-shell--no-toc{% endif %}">
+    {%- if side_items %}
+    <aside class="sumi-sidebar" id="sumi-sidebar" aria-label="{{ t('navigation') }}">
+      <div class="sumi-sidebar-inner">
+        {%- if tabs_on and active_top and active_top.is_section %}
+        {%- set top_index = side_items[0] if side_items and side_items[0].is_page and side_items[0].file.name == 'index' else None %}
+        {%- if top_index %}
+        <a class="sumi-sidebar-title{% if top_index.active %} is-current{% endif %}" href="{{ top_index.url | url }}"{% if top_index.active %} aria-current="page"{% endif %}>{{ active_top.title }}</a>
+        {%- set side_items = side_items[1:] %}
+        {%- else %}
+        <div class="sumi-sidebar-title">{{ active_top.title }}</div>
+        {%- endif %}
+        {%- endif %}
+        <nav class="sumi-nav">{{ m.nav_tree(side_items, 1) }}</nav>
+      </div>
+    </aside>
+    {%- endif %}
+    <main class="sumi-main" id="content">
+      {%- block content %}
+      <article class="sumi-article">
+        <div class="sumi-article-top">
+          {%- if 'breadcrumbs' not in hide %}{% include "partials/breadcrumbs.html" %}{% endif %}
+          {%- if 'actions' not in hide %}{% include "partials/page-actions.html" %}{% endif %}
+        </div>
+        {%- if show_toc %}
+        <details class="sumi-toc-inline">
+          <summary>{{ icon('list') }}<span>{{ t('on_this_page') }}</span>{{ icon('chevron-down', 'sumi-chevron') }}</summary>
+          {% include "partials/toc.html" %}
+        </details>
+        {%- endif %}
+        <div class="sumi-content sumi-prose" data-pagefind-body>
+          {%- block page_content %}{{ page.content }}{% endblock %}
+        </div>
+        {%- block article_footer %}{% include "partials/article-footer.html" %}{% endblock %}
+      </article>
+      {%- endblock %}
+    </main>
+    {%- if show_toc %}
+    <aside class="sumi-rail" aria-label="{{ t('on_this_page') }}">
+      <div class="sumi-rail-inner">
+        <div class="sumi-rail-title">{{ t('on_this_page') }}</div>
+        {% include "partials/toc.html" %}
+        <a class="sumi-rail-top" href="#">{{ icon('arrow-up') }}{{ t('back_to_top') }}</a>
+      </div>
+    </aside>
+    {%- endif %}
+  </div>
+  {%- endblock %}
+  {%- block footer %}{% if 'footer' not in hide %}{% include "partials/footer.html" %}{% endif %}{% endblock %}
+  {% include "partials/palette.html" %}
+  {%- block scripts %}
+  <script>
+    window.sumi = {
+      base: {{ base_url | tojson }},
+      page: {{ (page.url if page else '') | tojson }},
+      features: {{ (sumi.features or []) | tojson }},
+      markdown: {{ ((sumi.markdown_url | url) if sumi.markdown_url else None) | tojson }},
+      search: {{ ('search/search_index.json' | url if 'search' in config.plugins else None) | tojson }},
+      keyboard: {{ (theme.keyboard is not sameas false) | tojson }},
+      versions: {{ theme.version_provider | tojson }},
+      prev: {{ ((page.previous_page.url | url) if page and page.previous_page else None) | tojson }},
+      next: {{ ((page.next_page.url | url) if page and page.next_page else None) | tojson }},
+      edit: {{ (page.edit_url if page and page.edit_url else None) | tojson }},
+      nav: {{ sumi.nav_json or '[]' }},
+      alternate: {{ (config.extra.alternate or []) | tojson }},
+      t: {{ sumi.strings_json or '{}' }}
+    };
+  </script>
+  <script src="{{ 'assets/js/sumi.js' | url }}" defer></script>
+  {%- for script in config.extra_javascript %}{{ script | script_tag }}{% endfor %}
+  {%- endblock %}
+</body>
+</html>

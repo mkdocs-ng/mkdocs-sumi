@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="sumi-blog">
+  <header class="sumi-blog-head sumi-prose">
+    {{ page.content }}
+    {%- if sumi.feed_url %}<p class="sumi-blog-feed"><a href="{{ sumi.feed_url | url }}">{{ icon('rss') }}{{ t('subscribe_rss') }}</a></p>{% endif %}
+  </header>
+  {%- if sumi.tags %}
+  <div class="sumi-tag-filter" role="toolbar" aria-label="{{ t('tags') }}">
+    <button type="button" class="sumi-tag is-active" data-tag="">{{ t('all_posts') }}</button>
+    {%- for tag, count in sumi.tags %}
+    <button type="button" class="sumi-tag" data-tag="{{ tag }}">{{ tag }}<span>{{ count }}</span></button>
+    {%- endfor %}
+  </div>
+  {%- endif %}
+  <ol class="sumi-post-list">
+    {%- for post in sumi.posts %}
+    <li class="sumi-post-card" data-tags="{{ post.tags | join('|') }}">
+      <a class="sumi-post-link" href="{{ post.url | url }}">
+        <div class="sumi-post-meta">
+          <time datetime="{{ post.date.isoformat() }}">{{ post.date | sumi_date(sumi_language) }}</time>
+          <span aria-hidden="true">·</span><span>{{ t('reading_time', n=post.reading_time) }}</span>
+        </div>
+        <h2 class="sumi-post-title">{{ post.title }}</h2>
+        {%- if post.page.meta.description %}
+        <p class="sumi-post-excerpt">{{ post.page.meta.description }}</p>
+        {%- elif post.excerpt %}
+        <p class="sumi-post-excerpt">{{ post.excerpt | sumi_strip_tags | truncate(240) }}</p>
+        {%- endif %}
+        <div class="sumi-post-foot">
+          {%- if post.authors %}
+          <span class="sumi-authors">
+            {%- for a in post.authors %}{% if a.avatar %}<img src="{{ a.avatar | url }}" alt="" loading="lazy">{% endif %}{% endfor %}
+            <span>{{ post.authors | map(attribute='name') | join(', ') }}</span>
+          </span>
+          {%- endif %}
+          {%- for tag in post.tags %}<span class="sumi-tag sumi-tag--static">{{ tag }}</span>{% endfor %}
+        </div>
+      </a>
+    </li>
+    {%- endfor %}
+  </ol>
+</div>
+<script>
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.sumi-tag-filter .sumi-tag');
+    if (!b) return;
+    var tag = b.dataset.tag;
+    document.querySelectorAll('.sumi-tag-filter .sumi-tag').forEach(function (x) { x.classList.toggle('is-active', x === b); });
+    document.querySelectorAll('.sumi-post-card').forEach(function (c) {
+      c.hidden = !!tag && c.dataset.tags.split('|').indexOf(tag) < 0;
+    });
+    history.replaceState(null, '', tag ? '#tag=' + encodeURIComponent(tag) : location.pathname);
+  });
+  (function () {
+    var m = location.hash.match(/^#tag=(.+)$/);
+    if (!m) return;
+    var tag = decodeURIComponent(m[1]);
+    var b = Array.prototype.find.call(document.querySelectorAll('.sumi-tag-filter .sumi-tag'), function (x) { return x.dataset.tag === tag; });
+    if (b) b.click();
+  })();
+</script>
+{% endblock %}

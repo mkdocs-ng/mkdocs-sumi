@@ -1,0 +1,23 @@
+Sumi
+Copyright 2026 The MkDocs-ng contributors
+
+This product includes software and assets developed by third parties,
+distributed under their own licenses. The license texts are included next
+to each component in the package.
+
+- Inter (src/mkdocs_sumi/theme/assets/fonts) — SIL Open Font License 1.1,
+  Copyright 2016 The Inter Project Authors.
+- JetBrains Mono (src/mkdocs_sumi/theme/assets/fonts) — SIL Open Font
+  License 1.1, Copyright 2020 The JetBrains Mono Project Authors.
+- Lucide icons (src/mkdocs_sumi/vendor/icons/lucide.json) — ISC License,
+  Copyright Lucide Contributors; portions MIT, Copyright Cole Bemis (Feather).
+- Simple Icons (src/mkdocs_sumi/vendor/icons/brands.json) — CC0 1.0.
+  Brand icons are trademarks of their respective owners.
+- Mermaid (src/mkdocs_sumi/vendor/mermaid) — MIT License,
+  Copyright Knut Sveidqvist.
+- KaTeX (src/mkdocs_sumi/vendor/katex) — MIT License,
+  Copyright Khan Academy and other contributors.
+
+Sumi's design principles were inspired by Oink (https://github.com/pgsty/oink),
+a documentation distribution for Hugo by Feng Ruohang. No code from Oink is
+included.

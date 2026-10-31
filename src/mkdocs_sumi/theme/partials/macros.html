@@ -1,0 +1,77 @@
+{#- Shared macros. Import with: {% import "partials/macros.html" as m with context %} -#}
+
+{%- macro section_index(section) -%}
+  {#- A section whose first child is its index.md links to that page. -#}
+  {%- set first = section.children[0] if section.children else None -%}
+  {%- if first and first.is_page and first.file and first.file.name == 'index' -%}{{ first }}{%- endif -%}
+{%- endmacro -%}
+
+{%- macro nav_tree(items, depth) -%}
+<ul class="sumi-nav-list" data-depth="{{ depth }}">
+  {%- for item in items %}
+  {%- if item.is_section %}
+    {%- set first = item.children[0] if item.children else None -%}
+    {%- set has_index = first and first.is_page and first.file and first.file.name == 'index' -%}
+    {%- set rest = item.children[1:] if has_index else item.children -%}
+    <li class="sumi-nav-section{% if item.active %} is-active{% endif %}">
+      <details{% if item.active or depth == 1 %} open{% endif %}>
+        <summary>
+          {%- if has_index %}
+          <a href="{{ first.url | url }}"{% if first.active %} aria-current="page" class="is-current"{% endif %}>{{ item.title }}</a>
+          {%- else %}
+          <span>{{ item.title }}</span>
+          {%- endif %}
+          {{ icon('chevron-right', 'sumi-chevron') }}
+        </summary>
+        {{ nav_tree(rest, depth + 1) }}
+      </details>
+    </li>
+  {%- elif item.is_link %}
+    <li class="sumi-nav-link"><a href="{{ item.url | url }}"{% if item.url.startswith('http') %} rel="noopener" target="_blank"{% endif %}>{{ item.title }}{% if item.url.startswith('http') %}{{ icon('arrow-up-right', 'sumi-ext') }}{% endif %}</a></li>
+  {%- else %}
+    <li class="sumi-nav-page"><a href="{{ item.url | url }}"{% if item.active %} aria-current="page" class="is-current"{% endif %}>{{ item.title }}</a></li>
+  {%- endif %}
+  {%- endfor %}
+</ul>
+{%- endmacro -%}
+
+{%- macro first_url(item) -%}
+  {%- if item.is_section -%}{{ first_url(item.children[0]) if item.children else '' }}{%- else -%}{{ item.url | url }}{%- endif -%}
+{%- endmacro -%}
+
+{%- macro accent_style(accent) -%}
+  {%- set named = {
+    'vermilion': ['#c4432b', '#ef7258'],
+    'indigo': ['#2f5d93', '#86b4ea'],
+    'moss': ['#4b6b2f', '#9ccc6e'],
+    'plum': ['#7a3b74', '#dc93d4'],
+    'ochre': ['#9a6512', '#e7b45a'],
+    'teal': ['#1f6f6a', '#6fd0c6'],
+    'ink': ['#2a2926', '#e8e4dc'],
+  } -%}
+  {%- if accent != 'vermilion' -%}
+    {%- set pair = named[accent] if accent in named else [accent, accent] -%}
+<style>:root{--sumi-accent:{{ pair[0] }}}[data-theme="dark"]{--sumi-accent:{{ pair[1] }}}</style>
+  {%- endif -%}
+{%- endmacro -%}
+
+{%- macro social_icon(name) -%}
+  {#- Accept Sumi names (brand-github, rss) and Material ones (fontawesome/brands/github). -#}
+  {%- set n = name or 'link' -%}
+  {%- if '/' in n -%}
+    {%- set slug = n.split('/')[-1] -%}
+    {%- set slug = {'x-twitter': 'x', 'twitter': 'x', 'square-github': 'github', 'github-alt': 'github', 'weixin': 'wechat'}.get(slug, slug) -%}
+    {%- set n = 'brand-' ~ slug -%}
+  {%- endif -%}
+  {%- set svg = icon(n) -%}
+  {{- svg if svg else icon('link') -}}
+{%- endmacro -%}
+
+{%- macro repo_icon(url) -%}
+  {%- if config.theme.repo_icon -%}{{ social_icon(config.theme.repo_icon) }}
+  {%- elif 'gitlab' in url -%}{{ icon('brand-gitlab') }}
+  {%- elif 'gitee' in url -%}{{ icon('brand-gitee') }}
+  {%- elif 'bitbucket' in url -%}{{ icon('brand-bitbucket') }}
+  {%- elif 'codeberg' in url -%}{{ icon('brand-codeberg') }}
+  {%- else -%}{{ icon('brand-github') }}{%- endif -%}
+{%- endmacro -%}

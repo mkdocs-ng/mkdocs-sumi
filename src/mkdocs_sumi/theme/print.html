@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block htmltitle %}<title>{{ t('print_title') }} · {{ config.site_name }}</title>{% endblock %}
+{% block layout %}
+<div class="sumi-shell sumi-shell--no-side sumi-shell--no-toc">
+  <main class="sumi-main" id="content">
+    <article class="sumi-article sumi-print">
+      <header class="sumi-print-cover">
+        <div class="sumi-print-actions"><button class="sumi-btn sumi-btn--primary" type="button" data-sumi-print>{{ icon('printer') }}{{ t('print') }}</button></div>
+        <h1>{{ config.site_name }}</h1>
+        {% if config.site_description %}<p class="sumi-print-lead">{{ config.site_description }}</p>{% endif %}
+        <p class="sumi-print-date">{{ build_date_utc | sumi_date(sumi_language) }}</p>
+      </header>
+      <nav class="sumi-print-toc">
+        <h2>{{ t('contents') }}</h2>
+        <ol>
+          {%- for s in sumi.print_sections %}
+          <li><a href="#{{ s.anchor }}">{{ s.page.title }}</a></li>
+          {%- endfor %}
+        </ol>
+      </nav>
+      {%- for s in sumi.print_sections %}
+      <section class="sumi-print-section sumi-prose" id="{{ s.anchor }}">{{ s.html }}</section>
+      {%- endfor %}
+    </article>
+  </main>
+</div>
+{% endblock %}

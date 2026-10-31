@@ -1,0 +1,11 @@
+{%- if page and page.ancestors %}
+<nav class="sumi-breadcrumbs" aria-label="Breadcrumb">
+  <ol>
+    {%- for anc in page.ancestors | reverse %}
+    {%- set first = anc.children[0] if anc.children else None %}
+    <li>{% if first and first.is_page and first.file and first.file.name == 'index' and first != page %}<a href="{{ first.url | url }}">{{ anc.title }}</a>{% else %}<span>{{ anc.title }}</span>{% endif %}{{ icon('chevron-right', 'sumi-crumb-sep') }}</li>
+    {%- endfor %}
+    <li aria-current="page"><span>{{ page.title }}</span></li>
+  </ol>
+</nav>
+{%- else %}<div></div>{%- endif %}

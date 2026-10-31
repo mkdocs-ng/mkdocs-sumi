@@ -1,0 +1,20 @@
+{%- import "partials/macros.html" as m with context -%}
+<footer class="sumi-footer">
+  <div class="sumi-footer-inner">
+    <div class="sumi-footer-left">
+      {%- if config.copyright %}<div class="sumi-copyright">{{ config.copyright }}</div>{% endif %}
+      {%- if config.theme.credit is not sameas false %}
+      <div class="sumi-credit">{{ t('built_with', mkdocs='<a href="https://github.com/mkdocs-ng/mkdocs" rel="noopener">MkDocs</a>', sumi='<a href="https://github.com/mkdocs-ng/mkdocs-sumi" rel="noopener">Sumi</a>') | safe }}</div>
+      {%- endif %}
+    </div>
+    <div class="sumi-footer-right">
+      {%- for s in (config.extra.social or []) %}
+      <a class="sumi-icon-btn" href="{{ s.link }}" rel="noopener" aria-label="{{ s.name or s.link }}" title="{{ s.name or s.link }}">{{ m.social_icon(s.icon) }}</a>
+      {%- endfor %}
+      {%- if sumi.feed_url %}<a class="sumi-icon-btn" href="{{ sumi.feed_url | url }}" aria-label="RSS" title="{{ t('subscribe_rss') }}">{{ icon('rss') }}</a>{% endif %}
+      {%- if config.theme.keyboard is not sameas false %}
+      <button class="sumi-icon-btn" type="button" data-sumi-help aria-label="{{ t('keyboard_shortcuts') }}" title="{{ t('keyboard_shortcuts') }}">{{ icon('keyboard') }}</button>
+      {%- endif %}
+    </div>
+  </div>
+</footer>

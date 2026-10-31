@@ -1,0 +1,29 @@
+<dialog class="sumi-palette" aria-label="{{ t('search') }}">
+  <div class="sumi-palette-box">
+    <div class="sumi-palette-input">
+      {{ icon('search') }}
+      <input type="search" autocomplete="off" spellcheck="false" placeholder="{{ t('search_placeholder') }}" aria-label="{{ t('search') }}" aria-controls="sumi-palette-results" aria-activedescendant="">
+      <kbd>Esc</kbd>
+    </div>
+    <div class="sumi-palette-results" id="sumi-palette-results" role="listbox"></div>
+    <div class="sumi-palette-foot">
+      <span><kbd>↵</kbd> {{ t('search_hint_open') }}</span>
+      <span><kbd>↑</kbd><kbd>↓</kbd> {{ t('search_hint_move') }}</span>
+      <span><kbd>Esc</kbd> {{ t('search_hint_close') }}</span>
+    </div>
+  </div>
+</dialog>
+<dialog class="sumi-help" aria-label="{{ t('keyboard_shortcuts') }}">
+  <div class="sumi-help-box">
+    <div class="sumi-help-head"><strong>{{ t('keyboard_shortcuts') }}</strong><button class="sumi-icon-btn" type="button" data-close aria-label="{{ t('close') }}">{{ icon('x') }}</button></div>
+    <dl>
+      <dt><kbd data-mod>Ctrl K</kbd> <kbd>/</kbd></dt><dd>{{ t('shortcut_search') }}</dd>
+      <dt><kbd>t</kbd></dt><dd>{{ t('shortcut_theme') }}</dd>
+      <dt><kbd>[</kbd> <kbd>]</kbd></dt><dd>{{ t('shortcut_prev_next') }}</dd>
+      <dt><kbd>j</kbd> <kbd>k</kbd></dt><dd>{{ t('shortcut_toc') }}</dd>
+      <dt><kbd>?</kbd></dt><dd>{{ t('shortcut_help') }}</dd>
+    </dl>
+  </div>
+</dialog>
+<dialog class="sumi-zoom" aria-label="{{ t('zoom_image') }}"><img alt=""></dialog>
+<div class="sumi-toast" role="status" aria-live="polite"></div>

@@ -1,0 +1,143 @@
+{#-
+  Data-driven landing page. Front matter:
+
+    template: landing.html
+    hero:
+      eyebrow: "v0.1 · local-first"
+      title: "Markdown in.<br>Docs out."
+      text: "One sentence that sells it."
+      actions:
+        - {text: Get started, link: start/, icon: rocket, primary: true}
+      install: pip install mkdocs-sumi
+      code: {title: mkdocs.yml, lang: yaml, content: "..."}
+      image: assets/hero.png
+    sections:
+      - {type: features, eyebrow, title, text, columns: 3, items: [{icon, title, text, link}]}
+      - {type: split, title, text, code: {lang, title, content}, image, reverse: true}
+      - {type: stats, items: [{value, label}]}
+      - {type: steps, title, items: [{title, text}]}
+      - {type: faq, title, items: [{q, a}]}
+      - {type: cta, title, text, actions}
+      - {type: content}   # the page's Markdown body
+-#}
+{% extends "base.html" %}
+{%- macro actions(list) -%}
+<div class="sumi-actions-row">
+  {%- for a in list or [] %}
+  <a class="sumi-btn{% if a.primary %} sumi-btn--primary{% endif %}" href="{{ a.link | url }}"{% if a.link.startswith('http') %} rel="noopener"{% endif %}>
+    {%- if a.icon %}{{ icon(a.icon) }}{% endif %}<span>{{ a.text }}</span>{% if a.primary %}{{ icon('arrow-right', 'sumi-btn-arrow') }}{% endif %}</a>
+  {%- endfor %}
+</div>
+{%- endmacro -%}
+{%- macro code_card(code) -%}
+<div class="sumi-land-code">
+  <div class="sumi-land-code-bar"><span></span><span></span><span></span>{% if code.title %}<em>{{ code.title }}</em>{% endif %}</div>
+  {{ ('`````' ~ (code.lang or 'text') ~ '\n' ~ code.content ~ '\n`````') | sumi_md(true) }}
+</div>
+{%- endmacro -%}
+{%- macro section_head(s) -%}
+  {%- if s.eyebrow or s.title or s.text %}
+  <header class="sumi-land-head">
+    {%- if s.eyebrow %}<div class="sumi-eyebrow"><span class="sumi-eyebrow-dot"></span>{{ s.eyebrow }}</div>{% endif %}
+    {%- if s.title %}<h2>{{ s.title | sumi_md }}</h2>{% endif %}
+    {%- if s.text %}<p class="sumi-land-lead">{{ s.text | sumi_md }}</p>{% endif %}
+  </header>
+  {%- endif %}
+{%- endmacro -%}
+
+{% block layout %}
+{%- set hero = page.meta.hero or {} -%}
+{%- set sections = page.meta.sections or [{'type': 'content'}] -%}
+<main class="sumi-landing" id="content">
+  <section class="sumi-hero{% if hero.code or hero.image %} sumi-hero--split{% endif %}">
+    <div class="sumi-hero-bg" aria-hidden="true"></div>
+    <div class="sumi-land-inner sumi-hero-inner">
+      <div class="sumi-hero-copy">
+        {%- if hero.eyebrow %}<div class="sumi-eyebrow"><span class="sumi-eyebrow-dot"></span>{{ hero.eyebrow }}</div>{% endif %}
+        <h1 class="sumi-hero-title">{{ (hero.title or page.title or config.site_name) | sumi_md }}</h1>
+        {%- if hero.text or config.site_description %}<p class="sumi-hero-text">{{ (hero.text or config.site_description) | sumi_md }}</p>{% endif %}
+        {{ actions(hero.actions) }}
+        {%- if hero.install %}
+        <button class="sumi-install" type="button" data-copy="{{ hero.install }}" title="{{ t('copy') }}"><span class="sumi-install-prompt">$</span><code>{{ hero.install }}</code>{{ icon('copy') }}</button>
+        {%- endif %}
+      </div>
+      {%- if hero.code %}
+      <div class="sumi-hero-art">{{ code_card(hero.code) }}</div>
+      {%- elif hero.image %}
+      <div class="sumi-hero-art"><img src="{{ hero.image | url }}" alt=""></div>
+      {%- endif %}
+    </div>
+  </section>
+
+  {%- for s in sections %}
+  {%- set type = s.type or 'content' %}
+  <section class="sumi-land-section sumi-land-{{ type }}{% if s.tone == 'soft' %} sumi-land--soft{% endif %}"{% if s.id %} id="{{ s.id }}"{% endif %}>
+    <div class="sumi-land-inner">
+      {%- if type == 'content' %}
+      <div class="sumi-prose sumi-land-prose">{{ page.content }}</div>
+      {%- elif type == 'features' %}
+      {{ section_head(s) }}
+      <div class="sumi-features" style="--cols: {{ s.columns or 3 }}">
+        {%- for f in s['items'] or [] %}
+        {%- set tag = 'a' if f.link else 'div' %}
+        <{{ tag }} class="sumi-feature"{% if f.link %} href="{{ f.link | url }}"{% endif %}>
+          {%- if f.icon %}<span class="sumi-feature-icon">{{ icon(f.icon) }}</span>{% endif %}
+          <h3>{{ f.title }}</h3>
+          <p>{{ f.text | sumi_md }}</p>
+          {%- if f.link %}<span class="sumi-feature-more">{{ f.more or '' }}{{ icon('arrow-right') }}</span>{% endif %}
+        </{{ tag }}>
+        {%- endfor %}
+      </div>
+      {%- elif type == 'split' %}
+      <div class="sumi-split{% if s.reverse %} sumi-split--reverse{% endif %}">
+        <div class="sumi-split-copy">
+          {{ section_head(s) }}
+          {%- if s.bullets %}
+          <ul class="sumi-check-list">{% for b in s.bullets %}<li>{{ icon('check') }}<span>{{ b | sumi_md }}</span></li>{% endfor %}</ul>
+          {%- endif %}
+          {%- if s.actions %}{{ actions(s.actions) }}{% endif %}
+        </div>
+        <div class="sumi-split-art">
+          {%- if s.code %}{{ code_card(s.code) }}{% elif s.image %}<img src="{{ s.image | url }}" alt="">{% elif s.markdown %}<div class="sumi-prose">{{ s.markdown | sumi_md(true) }}</div>{% endif %}
+        </div>
+      </div>
+      {%- elif type == 'stats' %}
+      {{ section_head(s) }}
+      <dl class="sumi-stats">
+        {%- for st in s['items'] or [] %}<div><dt>{{ st.label }}</dt><dd>{{ st.value }}</dd></div>{% endfor %}
+      </dl>
+      {%- elif type == 'steps' %}
+      {{ section_head(s) }}
+      <ol class="sumi-steplist">
+        {%- for st in s['items'] or [] %}
+        <li><h3>{{ st.title }}</h3><div>{{ st.text | sumi_md(true) }}</div></li>
+        {%- endfor %}
+      </ol>
+      {%- elif type == 'faq' %}
+      {{ section_head(s) }}
+      <div class="sumi-faq">
+        {%- for f in s['items'] or [] %}
+        <details><summary>{{ f.q }}</summary><div class="sumi-prose">{{ f.a | sumi_md(true) }}</div></details>
+        {%- endfor %}
+      </div>
+      {%- elif type == 'cta' %}
+      <div class="sumi-cta">
+        {{ section_head(s) }}
+        {{ actions(s.actions) }}
+      </div>
+      {%- endif %}
+    </div>
+  </section>
+  {%- endfor %}
+</main>
+<script>
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.sumi-install');
+    if (!b) return;
+    navigator.clipboard.writeText(b.dataset.copy).then(function () {
+      var t = document.querySelector('.sumi-toast');
+      if (t) { t.textContent = {{ t('copied') | tojson }}; t.classList.add('is-on'); setTimeout(function () { t.classList.remove('is-on'); }, 1400); }
+    });
+  });
+</script>
+{% endblock %}
