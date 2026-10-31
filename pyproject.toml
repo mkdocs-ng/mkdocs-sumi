@@ -19,7 +19,7 @@ classifiers = [
     "Topic :: Text Processing :: Markup :: Markdown",
 ]
 dependencies = [
-    "mkdocs-ng >=1.8",
+    "mkdocs-ng >=1.9",
     "Markdown >=3.6",
     "Pygments >=2.16",
 ]

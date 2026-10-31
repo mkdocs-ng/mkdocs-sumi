@@ -35,7 +35,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - run: pip install -e ".[test]" playwright "mkdocs-ng @ git+https://github.com/mkdocs-ng/mkdocs@main"
+      - run: pip install -e ".[test]" playwright
       - run: python -m playwright install --with-deps chromium
       - run: pytest tests/test_browser.py
 
@@ -48,8 +48,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      # The docs use the llms_txt plugin, new in MkDocs-ng 1.9.
-      - run: pip install -e . "mkdocs-ng @ git+https://github.com/mkdocs-ng/mkdocs@main"
+      - run: pip install -e .
       - run: mkdocs build --strict
       - uses: actions/upload-pages-artifact@v4
         if: github.event_name == 'push'
