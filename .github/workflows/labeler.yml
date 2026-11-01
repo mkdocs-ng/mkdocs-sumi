@@ -1,0 +1,16 @@
+name: PR Auto-labeler
+
+# Labels pull requests from their branch and title, so the release draft can
+# sort them and pick the next version.
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions: {}
+
+jobs:
+  label-pr:
+    permissions:
+      pull-requests: write
+      contents: read
+    uses: mkdocs-ng/.github/.github/workflows/pr-labeler.yml@main

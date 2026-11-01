@@ -15,16 +15,15 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.13"
       - run: pip install build
       - run: python -m build
-      - name: Check that the tag matches the package version
-        run: |
-          version=$(python -c "import re; print(re.search(r'__version__ = \"(.+)\"', open('src/mkdocs_sumi/__init__.py').read())[1])")
-          test "v$version" = "$GITHUB_REF_NAME"
+      - name: Check that the package version is the tag
+        run: ls "dist/mkdocs_sumi-${GITHUB_REF_NAME#v}-py3-none-any.whl"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: dist

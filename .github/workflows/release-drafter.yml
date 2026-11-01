@@ -1,0 +1,19 @@
+name: Release Drafter
+
+# Keeps a draft release up to date as pull requests are merged into main, with
+# the next version picked from their labels (major / minor / patch, default
+# patch). The rules live in mkdocs-ng/.github, shared by the organization.
+# Publishing the draft creates the tag, which runs release.yml.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  draft-release:
+    permissions:
+      contents: write
+      pull-requests: read
+    uses: mkdocs-ng/.github/.github/workflows/release-drafter.yml@main
