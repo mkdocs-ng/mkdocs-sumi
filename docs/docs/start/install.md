@@ -4,7 +4,7 @@ description: Install Sumi and enable it in an MkDocs project.
 
 # Install
 
-Sumi is a Python package. It depends on [MkDocs-ng](https://github.com/mkdocs-ng/mkdocs), so installing Sumi installs MkDocs too.
+Sumi is a Python package. It depends on [MkDocs NG](https://github.com/mkdocs-ng/mkdocs), so installing Sumi installs MkDocs too.
 
 ## Requirements
 

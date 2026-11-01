@@ -21,7 +21,7 @@ from mkdocs.commands import build  # noqa: E402
 from mkdocs.config import load_config  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-pytest.importorskip('mkdocs.contrib.llms_txt', reason='the docs site needs MkDocs-ng 1.9')
+pytest.importorskip('mkdocs.contrib.llms_txt', reason='the docs site needs MkDocs NG 1.9')
 
 
 @pytest.fixture(scope='module')

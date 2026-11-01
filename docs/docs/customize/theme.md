@@ -65,7 +65,7 @@ Front matter on a page can change its layout:
 ## Footer and social links
 
 ```yaml title="mkdocs.yml"
-copyright: © 2026 The MkDocs-ng project
+copyright: © 2026 The MkDocs NG project
 extra:
   social:
     - icon: brand-github

@@ -299,7 +299,7 @@ class SumiPlugin(BasePlugin[SumiConfig]):
                 and not page.file.inclusion.is_excluded() and page.markdown is not None):
             try:
                 from mkdocs.contrib.llms_txt import markdown_path, page_markdown
-            except ImportError:  # MkDocs-ng before 1.9
+            except ImportError:  # MkDocs NG before 1.9
                 markdown_path, page_markdown = _markdown_path, _page_markdown
 
             utils.write_file(page_markdown(page).encode('utf-8'),

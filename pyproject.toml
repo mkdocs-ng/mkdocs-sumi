@@ -15,6 +15,10 @@ classifiers = [
     "Framework :: MkDocs",
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Documentation",
     "Topic :: Text Processing :: Markup :: Markdown",
 ]
@@ -31,6 +35,7 @@ test = ["pytest >=8"]
 Documentation = "https://mkdocs-ng.github.io/mkdocs-sumi/"
 Source = "https://github.com/mkdocs-ng/mkdocs-sumi"
 Issues = "https://github.com/mkdocs-ng/mkdocs-sumi/issues"
+Changelog = "https://mkdocs-ng.github.io/mkdocs-sumi/releases/"
 
 [project.entry-points."mkdocs.themes"]
 sumi = "mkdocs_sumi.theme"

@@ -4,7 +4,7 @@ site_url: https://mkdocs-ng.github.io/mkdocs-sumi/
 repo_url: https://github.com/mkdocs-ng/mkdocs-sumi
 repo_name: mkdocs-ng/mkdocs-sumi
 edit_uri: edit/main/docs/
-copyright: Copyright &copy; 2026 The MkDocs-ng contributors · Apache-2.0
+copyright: Copyright &copy; 2026 The MkDocs NG contributors · Apache-2.0
 
 theme:
   name: sumi
