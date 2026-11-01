@@ -16,9 +16,9 @@ try:
     import mkdocs.contrib.llms_txt  # noqa: F401
 
     HAS_LLMS_TXT = True
-except ImportError:  # MkDocs-ng before 1.9
+except ImportError:  # MkDocs NG before 1.9
     HAS_LLMS_TXT = False
-needs_llms_txt = pytest.mark.skipif(not HAS_LLMS_TXT, reason='needs the llms_txt plugin of MkDocs-ng 1.9')
+needs_llms_txt = pytest.mark.skipif(not HAS_LLMS_TXT, reason='needs the llms_txt plugin of MkDocs NG 1.9')
 
 
 def _site(tmp_path: Path, files: dict[str, str], config: str) -> Path:

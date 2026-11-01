@@ -18,7 +18,7 @@ More and more readers of documentation are not people. Coding agents, assistants
 | Print edition | `print/` | Paper, PDF, offline reading |
 {caption="Every output is a static file. None requires a server."}
 
-The Markdown copy and `llms.txt` come from the `llms_txt` plugin that ships with [MkDocs-ng](https://github.com/mkdocs-ng/mkdocs). Enable it next to `sumi`:
+The Markdown copy and `llms.txt` come from the `llms_txt` plugin that ships with [MkDocs NG](https://github.com/mkdocs-ng/mkdocs). Enable it next to `sumi`:
 
 ```yaml title="mkdocs.yml"
 site_url: https://example.com/docs/   # needed for absolute links in llms.txt

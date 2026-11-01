@@ -1,10 +1,29 @@
-# Sumi
+<p align="center">
+  <a href="https://mkdocs-ng.github.io/mkdocs-sumi/">
+    <img src="https://raw.githubusercontent.com/mkdocs-ng/mkdocs-sumi/main/docs/assets/sumi-mark.svg" width="72" alt="Sumi">
+  </a>
+</p>
 
-**Markdown in. Beautiful docs out.**
+<h1 align="center">Sumi</h1>
 
-Sumi is a documentation theme for [MkDocs-ng](https://github.com/mkdocs-ng/mkdocs). It turns a folder of plain Markdown into a complete project site — docs, landing page, blog, release downloads and a print edition — without Node.js, a CDN or a hosted service.
+<p align="center">
+  <strong>Markdown in. Beautiful docs out.</strong>
+</p>
 
-[Documentation](https://mkdocs-ng.github.io/mkdocs-sumi/) · [Components](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/) · [Releases](https://mkdocs-ng.github.io/mkdocs-sumi/releases/)
+<p align="center">
+  <a href="https://pypi.org/project/mkdocs-sumi/"><img src="https://img.shields.io/pypi/v/mkdocs-sumi.svg" alt="PyPI version"></a>
+  <a href="https://pypi.org/project/mkdocs-sumi/"><img src="https://img.shields.io/pypi/pyversions/mkdocs-sumi.svg" alt="Python versions"></a>
+  <a href="https://github.com/mkdocs-ng/mkdocs-sumi/actions/workflows/ci.yml"><img src="https://github.com/mkdocs-ng/mkdocs-sumi/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/mkdocs-ng/mkdocs-sumi/blob/main/LICENSE"><img src="https://img.shields.io/pypi/l/mkdocs-sumi.svg" alt="License"></a>
+</p>
+
+<p align="center">
+  <a href="https://mkdocs-ng.github.io/mkdocs-sumi/">Documentation</a> ·
+  <a href="https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/">Components</a> ·
+  <a href="https://mkdocs-ng.github.io/mkdocs-sumi/releases/">Releases</a>
+</p>
+
+Sumi is a documentation theme for [MkDocs NG](https://github.com/mkdocs-ng/mkdocs). It turns a folder of plain Markdown into a complete project site — docs, landing page, blog, release downloads and a print edition — without Node.js, a CDN or a hosted service.
 
 ## Quick start
 
@@ -48,4 +67,6 @@ mkdocs serve                 # the docs site is the visual regression suite
 
 ## License
 
-Apache 2.0. See [NOTICE](NOTICE) for the licenses of bundled fonts, icons and libraries.
+Sumi is part of the [MkDocs NG](https://github.com/mkdocs-ng) project.
+
+Apache 2.0. See [NOTICE](https://github.com/mkdocs-ng/mkdocs-sumi/blob/main/NOTICE) for the licenses of bundled fonts, icons and libraries.

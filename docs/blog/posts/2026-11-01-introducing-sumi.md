@@ -7,7 +7,7 @@ description: Sumi 0.1 is a local-first documentation theme for MkDocs that keeps
 
 # Introducing Sumi
 
-Today we are releasing Sumi 0.1, a documentation theme for MkDocs-ng. It is the first theme built by the MkDocs-ng project, and it is meant to be a complete answer to "how should our docs look?" for engineering teams.
+Today we are releasing Sumi 0.1, a documentation theme for MkDocs NG. It is the first theme built by the MkDocs NG project, and it is meant to be a complete answer to "how should our docs look?" for engineering teams.
 
 <!-- more -->
 
