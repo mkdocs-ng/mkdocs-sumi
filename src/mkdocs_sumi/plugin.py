@@ -580,7 +580,10 @@ def _git_dates(docs_dir: str) -> dict[str, datetime.datetime]:
     current = None
     for line in out.splitlines():
         if line.startswith('@'):
-            current = datetime.datetime.fromisoformat(line[1:])
+            stamp = line[1:]
+            if stamp.endswith('Z'):  # newer Git writes UTC as "Z", which Python 3.10 can't parse
+                stamp = stamp[:-1] + '+00:00'
+            current = datetime.datetime.fromisoformat(stamp)
         elif line and current is not None and line.startswith(prefix):
             dates.setdefault(line[len(prefix):], current)
     return dates
