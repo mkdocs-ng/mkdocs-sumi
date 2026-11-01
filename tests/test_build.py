@@ -158,3 +158,16 @@ def test_git_dates_parse_utc_written_as_z(tmp_path, monkeypatch):
     dates = plugin._git_dates(str(tmp_path / 'docs'))
     assert dates['a.md'] == datetime.datetime(2026, 11, 1, 12, 2, 53, tzinfo=datetime.timezone.utc)
     assert dates['b.md'].utcoffset() == datetime.timedelta(hours=2)
+
+
+def test_logo_dark(tmp_path):
+    """`logo_dark` adds a second header logo shown only in the dark palette."""
+    config = BASIC.replace('      name: sumi\n', '      name: sumi\n      logo: img/logo.svg\n      logo_dark: img/logo-dark.svg\n')
+    out = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'img/logo.svg': '<svg xmlns="http://www.w3.org/2000/svg"/>',
+        'img/logo-dark.svg': '<svg xmlns="http://www.w3.org/2000/svg"/>',
+    }, config)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert '<img class="sumi-logo sumi-when-light" src="img/logo.svg"' in html
+    assert '<img class="sumi-logo sumi-when-dark" src="img/logo-dark.svg"' in html
