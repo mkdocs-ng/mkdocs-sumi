@@ -5,6 +5,7 @@
     - Style `mkdocstrings` API pages: signatures, symbol badges, labels and nested members.
     - Centre pages that have a table of contents but no sidebar, such as top-level pages and blog posts.
     - Drop the second rule when a page puts `---` right before a heading.
+    - `git_dates` no longer fails on Python 3.10 when Git writes a UTC commit date as `Z`.
   assets:
     - name: mkdocs_sumi-0.1.1-py3-none-any.whl
       url: https://pypi.org/project/mkdocs-sumi/0.1.1/#files

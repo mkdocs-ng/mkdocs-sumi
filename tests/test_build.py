@@ -139,3 +139,22 @@ def test_docs_site_builds_without_warnings(tmp_path, caplog):
     build.build(cfg)
     assert (tmp_path / 'site' / 'docs' / 'write' / 'callouts' / 'index.html').is_file()
     assert not [r for r in caplog.records if r.levelname == 'WARNING']
+
+
+def test_git_dates_parse_utc_written_as_z(tmp_path, monkeypatch):
+    """Newer Git writes UTC commit dates with a "Z" suffix; Python 3.10 must still parse them."""
+    import datetime
+    import subprocess
+
+    from mkdocs_sumi import plugin
+
+    outputs = iter([f'{tmp_path}\n', '@2026-11-01T12:02:53Z\n\ndocs/a.md\n@2026-10-31T23:18:41+02:00\n\ndocs/b.md\n'])
+
+    def fake_run(*args, **kwargs):
+        return subprocess.CompletedProcess(args, 0, stdout=next(outputs))
+
+    monkeypatch.setattr(plugin.subprocess, 'run', fake_run)
+    (tmp_path / 'docs').mkdir()
+    dates = plugin._git_dates(str(tmp_path / 'docs'))
+    assert dates['a.md'] == datetime.datetime(2026, 11, 1, 12, 2, 53, tzinfo=datetime.timezone.utc)
+    assert dates['b.md'].utcoffset() == datetime.timedelta(hours=2)
