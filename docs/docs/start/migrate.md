@@ -25,6 +25,7 @@ Sumi reads the content and most of the configuration written for Material for Mk
 | `pymdownx.arithmatex` | Rendered with the bundled KaTeX |
 | `pymdownx.keys` | Kept; Sumi's own `++Ctrl+K++` steps aside |
 | `extra.social`, `extra.alternate`, `extra.analytics` | Read as-is, including `fontawesome/brands/…` icon names |
+| `mkdocstrings` API pages | Styled: signatures, symbol badges (`show_symbol_type_heading`), labels and nested members |
 | `mike` versions | `theme.version_provider: mike` |
 | Blog: `blog/posts/`, `.authors.yml`, `date`, `authors`, `tags`, `<!-- more -->` | Read as-is |
 | `hide: [toc, navigation]` front matter | `hide: [toc, sidebar]` |

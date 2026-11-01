@@ -238,7 +238,8 @@ button { font: inherit; color: inherit; }
 .sumi-shell--no-side { grid-template-columns: minmax(0, 1fr) var(--sumi-rail-w); }
 .sumi-shell--no-toc { grid-template-columns: var(--sumi-side-w) minmax(0, 1fr); }
 .sumi-shell--no-side.sumi-shell--no-toc { grid-template-columns: minmax(0, 1fr); }
-.sumi-shell--no-side .sumi-main { padding-left: max(0px, calc((100% - var(--sumi-content-w) - var(--sumi-rail-w) - 48px) / 2)); }
+/* Centre the article on the page, but never push it under the table of contents. */
+.sumi-shell--no-side .sumi-main { padding-left: clamp(0px, calc((100% + var(--sumi-rail-w) + 48px - var(--sumi-content-w)) / 2), calc(100% - var(--sumi-content-w))); }
 .sumi-shell--no-side.sumi-shell--no-toc .sumi-main { padding-left: 0; }
 .sumi-shell--no-side.sumi-shell--no-toc .sumi-article { margin: 0 auto; }
 .sumi-main { min-width: 0; padding: 28px 0 64px; }
@@ -322,7 +323,7 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 }
 .sumi-prose h1 { margin: 0 0 .7em; font-size: 2.35rem; font-weight: 700; letter-spacing: -0.028em; line-height: 1.18; }
 .sumi-prose h2 { margin: 2.4em 0 .8em; padding-top: 1.2em; border-top: 1px solid var(--sumi-line); font-size: 1.55rem; }
-.sumi-prose h1 + h2, .sumi-prose h1 + p + h2 { border-top: 0; padding-top: 0; }
+.sumi-prose :is(h1, hr) + h2, .sumi-prose h1 + p + h2 { border-top: 0; padding-top: 0; }
 .sumi-prose h3 { margin: 2em 0 .6em; font-size: 1.22rem; }
 :is(:lang(zh), :lang(ja), :lang(ko)) .sumi-prose { line-height: 1.85; letter-spacing: .01em; }
 :is(:lang(zh), :lang(ja), :lang(ko)) :is(.sumi-prose :is(h1, h2, h3, h4), .sumi-hero-title, .sumi-land-head h2) { letter-spacing: 0; }
@@ -547,6 +548,44 @@ details.sumi-callout[open] > summary::after, .sumi-prose details[open]:where(:no
 .sumi-chip--required { background: color-mix(in srgb, var(--c-caution) 11%, transparent); color: var(--c-caution); font-family: var(--sumi-font); }
 .sumi-field-body { margin-top: 6px; color: var(--sumi-fg-2); font-size: 15px; }
 .sumi-field-body p:last-child { margin-bottom: 0; }
+
+/* ── API reference (mkdocstrings) ──────────────────────────────────────── */
+.sumi-prose .doc-heading { font-size: 1.1rem; line-height: 1.5; }
+.sumi-prose .doc-heading > code {
+  padding: 0; background: none; font: 600 .84em/1.6 var(--sumi-font-mono); overflow-wrap: anywhere; letter-spacing: 0;
+}
+.sumi-prose .doc-heading > code .n, .sumi-prose .doc-heading > code .nb { color: var(--sumi-fg); }
+.sumi-prose .doc-heading > code .fm, .sumi-prose .doc-heading > code .nf { color: var(--hl-fn); }
+.sumi-prose .doc-heading > code.doc-symbol { margin-right: 6px; vertical-align: .15em; }
+.sumi-prose .doc-heading .doc-labels { margin-left: 6px; vertical-align: .15em; }
+.sumi-prose .doc-object .doc-object { margin-top: 1.6em; }
+.sumi-prose .doc-object .doc-object > .doc-heading { margin: 0 0 .5em; padding-top: 1.1em; border-top: 1px dashed var(--sumi-line); font-size: 1rem; }
+.sumi-prose .doc-contents { padding-left: 16px; border-left: 2px solid var(--sumi-line); }
+.sumi-prose .doc-contents.first { padding-left: 0; border-left: 0; }
+.sumi-prose .doc-children { margin-top: 1em; }
+.sumi-prose .doc-labels { display: inline-flex; flex-wrap: wrap; gap: 4px; line-height: 1; }
+.sumi-prose .doc-label {
+  display: inline-block; padding: 1px 7px; border: 1px solid var(--sumi-line-2); border-radius: 999px; color: var(--sumi-fg-3);
+  font: 500 11.5px/1.5 var(--sumi-font); letter-spacing: .01em;
+}
+.sumi-prose .doc-label code { padding: 0; background: none; color: inherit; font: inherit; }
+.sumi-prose .doc-section-title { color: var(--sumi-fg-2); font-weight: 650; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; }
+.sumi-prose .doc-section-item { margin: .5em 0; }
+.sumi-prose .doc-md-description { display: inline; }
+.sumi-prose .doc-md-description > p:only-child { display: inline; }
+.sumi-prose .doc-signature { margin-bottom: 1em; }
+/* Doubled class: beats the prose inline-code rule. */
+code.doc-symbol.doc-symbol { display: inline-block; min-width: 1.6em; padding: 0 .3em; border-radius: 4px; font: 600 .72em/1.6 var(--sumi-font-mono); text-align: center; }
+code.doc-symbol.doc-symbol-module { background: color-mix(in srgb, var(--c-important) 14%, transparent); color: var(--c-important); }
+code.doc-symbol.doc-symbol-class { background: color-mix(in srgb, var(--c-note) 14%, transparent); color: var(--c-note); }
+code.doc-symbol.doc-symbol-function, code.doc-symbol.doc-symbol-method { background: color-mix(in srgb, var(--c-tip) 14%, transparent); color: var(--c-tip); }
+code.doc-symbol.doc-symbol-attribute { background: color-mix(in srgb, var(--c-warning) 14%, transparent); color: var(--c-warning); }
+code.doc-symbol.doc-symbol-module::after { content: "mod"; }
+code.doc-symbol.doc-symbol-class::after { content: "class"; }
+code.doc-symbol.doc-symbol-function::after { content: "func"; }
+code.doc-symbol.doc-symbol-method::after { content: "meth"; }
+code.doc-symbol.doc-symbol-attribute::after { content: "attr"; }
+.sumi-toc code.doc-symbol.doc-symbol { margin-right: 4px; font-size: .68em; }
 
 /* ── Figures, images, diagrams ─────────────────────────────────────────── */
 .sumi-figure, .sumi-diagram { margin: 1.6em 0; text-align: center; }

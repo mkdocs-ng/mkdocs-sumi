@@ -139,3 +139,35 @@ def test_docs_site_builds_without_warnings(tmp_path, caplog):
     build.build(cfg)
     assert (tmp_path / 'site' / 'docs' / 'write' / 'callouts' / 'index.html').is_file()
     assert not [r for r in caplog.records if r.levelname == 'WARNING']
+
+
+def test_git_dates_parse_utc_written_as_z(tmp_path, monkeypatch):
+    """Newer Git writes UTC commit dates with a "Z" suffix; Python 3.10 must still parse them."""
+    import datetime
+    import subprocess
+
+    from mkdocs_sumi import plugin
+
+    outputs = iter([f'{tmp_path}\n', '@2026-11-01T12:02:53Z\n\ndocs/a.md\n@2026-10-31T23:18:41+02:00\n\ndocs/b.md\n'])
+
+    def fake_run(*args, **kwargs):
+        return subprocess.CompletedProcess(args, 0, stdout=next(outputs))
+
+    monkeypatch.setattr(plugin.subprocess, 'run', fake_run)
+    (tmp_path / 'docs').mkdir()
+    dates = plugin._git_dates(str(tmp_path / 'docs'))
+    assert dates['a.md'] == datetime.datetime(2026, 11, 1, 12, 2, 53, tzinfo=datetime.timezone.utc)
+    assert dates['b.md'].utcoffset() == datetime.timedelta(hours=2)
+
+
+def test_logo_dark(tmp_path):
+    """`logo_dark` adds a second header logo shown only in the dark palette."""
+    config = BASIC.replace('      name: sumi\n', '      name: sumi\n      logo: img/logo.svg\n      logo_dark: img/logo-dark.svg\n')
+    out = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'img/logo.svg': '<svg xmlns="http://www.w3.org/2000/svg"/>',
+        'img/logo-dark.svg': '<svg xmlns="http://www.w3.org/2000/svg"/>',
+    }, config)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert '<img class="sumi-logo sumi-when-light" src="img/logo.svg"' in html
+    assert '<img class="sumi-logo sumi-when-dark" src="img/logo-dark.svg"' in html

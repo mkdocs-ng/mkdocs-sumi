@@ -1,3 +1,19 @@
+- version: 0.1.1
+  date: 2026-11-01
+  summary: API reference styling and layout fixes, found by moving the MkDocs-ng site to Sumi.
+  notes: |
+    - Style `mkdocstrings` API pages: signatures, symbol badges, labels and nested members.
+    - Centre pages that have a table of contents but no sidebar, such as top-level pages and blog posts.
+    - Drop the second rule when a page puts `---` right before a heading.
+    - New `logo_dark` theme option: a second header logo for the dark palette.
+    - `git_dates` no longer fails on Python 3.10 when Git writes a UTC commit date as `Z`.
+  assets:
+    - name: mkdocs_sumi-0.1.1-py3-none-any.whl
+      url: https://pypi.org/project/mkdocs-sumi/0.1.1/#files
+      size: 2.5 MB
+    - name: mkdocs_sumi-0.1.1.tar.gz
+      url: https://pypi.org/project/mkdocs-sumi/0.1.1/#files
+      size: 2.5 MB
 - version: 0.1.0
   date: 2026-11-01
   summary: The first public release.

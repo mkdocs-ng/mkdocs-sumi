@@ -15,6 +15,8 @@ navigation_tabs: true
 toc_depth: 3
 # Path to a logo image in docs_dir; the Sumi mark is used when unset.
 logo: null
+# Optional logo for the dark palette; `logo` is used in both when unset.
+logo_dark: null
 favicon: null
 # Mark-up for the header brand, e.g. "MkDocs<b>ng</b>"; defaults to site_name.
 brand: null

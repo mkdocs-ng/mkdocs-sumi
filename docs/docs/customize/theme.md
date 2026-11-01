@@ -23,6 +23,7 @@ theme:
 | `accent` | string | `vermilion` | The colour of links, highlights and the active tab: `vermilion`, `indigo`, `moss`, `plum`, `ochre`, `teal`, `ink`, or any CSS colour. |
 | `locale` | string | `en` | The interface language: `en`, `zh`, `zh_TW`. See [Languages](i18n.md). |
 | `logo` | string | | An image in `docs/` for the header. The Sumi mark is used if unset. |
+| `logo_dark` | string | | A second header image for the dark palette. `logo` is used in both if unset. |
 | `favicon` | string | | An image in `docs/` for the browser tab. |
 | `brand` | string | `site_name` | HTML for the header brand, e.g. `"MkDocs<b>ng</b>"`. |
 | `announcement` | string | | HTML for a dismissible bar above the header. A new message reappears for readers who dismissed an older one. |
