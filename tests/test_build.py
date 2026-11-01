@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import re
 import textwrap
 from pathlib import Path
 
@@ -96,6 +97,56 @@ def test_landing_page(site):
     assert '**Hello world**' in md
     assert '> A test site.' in md
     assert '[**Fast**](guide/): Very fast.' in md
+
+
+def test_landing_links_to_markdown_files(tmp_path, caplog):
+    """`link: page.md` in front matter leads to the built page, as in Markdown."""
+    site = _site(tmp_path, {
+        'index.md': """
+            ---
+            template: landing.html
+            hero:
+              actions:
+                - {text: Start, link: getting-started.md, primary: true}
+                - {text: Guide, link: guide/README.md}
+                - {text: GitHub, link: "https://github.com/x/y"}
+            sections:
+              - type: features
+                items:
+                  - {title: Config, text: x, link: "guide/config.md#llmstxt"}
+                  - {title: Old style, text: x, link: guide/}
+                  - {title: Missing, text: x, link: nope.md}
+              - type: cta
+                actions:
+                  - {text: Start, link: getting-started.md}
+            ---
+            """,
+        'getting-started.md': '# Start\n',
+        'guide/README.md': '# Guide\n',
+        'guide/config.md': '# Config\n',
+        'guide/landing.md': """
+            ---
+            template: landing.html
+            hero:
+              actions:
+                - {text: Relative, link: config.md}
+                - {text: From the root, link: getting-started.md}
+            ---
+            """,
+    }, BASIC)
+    html = (site / 'index.html').read_text()
+    assert 'href="getting-started/"' in html
+    assert 'href="guide/"' in html
+    assert 'href="guide/config/#llmstxt"' in html
+    assert 'href="https://github.com/x/y"' in html
+    assert re.findall(r'href="([^"]*\.md[^"]*)"', html.split('<main', 1)[1]) == ['nope.md']
+    assert "links to 'nope.md' in its front matter" in caplog.text
+    sub = (site / 'guide' / 'landing' / 'index.html').read_text()
+    assert 'href="../config/"' in sub
+    assert 'href="../../getting-started/"' in sub
+    if HAS_LLMS_TXT:
+        # The Markdown copy keeps links to the other Markdown copies.
+        assert '[Start](getting-started.md)' in (site / 'index.md').read_text()
 
 
 def test_blog(site):

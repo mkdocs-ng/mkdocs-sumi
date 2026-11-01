@@ -22,7 +22,7 @@ import subprocess
 from dataclasses import dataclass, field
 from importlib import resources
 from typing import TYPE_CHECKING, Any
-from urllib.parse import quote, urlsplit
+from urllib.parse import quote, unquote, urlsplit
 
 import yaml
 from jinja2 import pass_context
@@ -242,6 +242,7 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         return nav
 
     def on_page_markdown(self, markdown: str, *, page: Page, config: MkDocsConfig, files: Files) -> str:
+        self._files = files
         template = page.meta.get('template')
         if template in ('landing.html', 'blog.html'):
             page.meta.setdefault('layout', template[:-5])
@@ -315,7 +316,27 @@ class SumiPlugin(BasePlugin[SumiConfig]):
             return None
         return quote(posixpath.splitext(page.file.src_uri)[0] + '.md')
 
+    def _landing_links(self, page: Page) -> None:
+        """Point `link: guide.md` in landing front matter at the page built from it.
+
+        Runs after the page's Markdown copy is written, so that copy keeps the
+        `.md` links, which lead to the other Markdown copies.
+        """
+        files = getattr(self, '_files', None)
+        if files is None or page.meta.get('template') != 'landing.html':
+            return
+        hero = page.meta.get('hero')
+        groups = [hero.get('actions')] if isinstance(hero, dict) else []
+        for s in page.meta.get('sections') or []:
+            if isinstance(s, dict):
+                groups += [s.get('actions'), s.get('items')]
+        for group in groups:
+            for item in group if isinstance(group, list) else []:
+                if isinstance(item, dict) and isinstance(item.get('link'), str):
+                    item['link'] = _doc_link(item['link'], page, files)
+
     def on_page_context(self, context: dict, *, page: Page, config: MkDocsConfig, nav: Navigation) -> dict:
+        self._landing_links(page)
         ctx: dict[str, Any] = {
             'features': sorted(self.features.get(page.file.src_uri, set())),
             'markdown_url': self._markdown_url(page, config),
@@ -522,6 +543,25 @@ def _pages_in(items: list) -> list[Page]:
         elif isinstance(item, Page):
             pages.append(item)
     return pages
+
+
+def _doc_link(link: str, page: Page, files: Files) -> str:
+    """Turn a link to a Markdown source file into the URL of its page.
+
+    Like a Markdown link, the path is relative to the page; a path from the
+    docs root works too. Other links are returned unchanged.
+    """
+    parts = urlsplit(link)
+    if parts.scheme or parts.netloc or link.startswith('/') or not utils.is_markdown_file(parts.path):
+        return link
+    path = unquote(parts.path)
+    for candidate in (posixpath.join(posixpath.dirname(page.file.src_uri), path), path):
+        target = files.get_file_from_path(posixpath.normpath(candidate))
+        if target is not None and target.is_documentation_page():
+            return target.url + (f'?{parts.query}' if parts.query else '') + (f'#{parts.fragment}' if parts.fragment else '')
+    log.warning("Doc file '%s' links to '%s' in its front matter, but the target is not found "
+                'among documentation files.', page.file.src_uri, link)
+    return link
 
 
 def _rebase(html: str, page_url: str, target: str, anchor: str | None, absolute: str | None = None) -> str:

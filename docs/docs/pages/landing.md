@@ -30,7 +30,7 @@ sections:
 ---
 ```
 
-Links are relative to the site root, like `nav` entries. Text fields accept inline Markdown.
+A link to a Markdown file, such as `guide.md` or `guide/speed.md#cache`, leads to the page built from it. Like a Markdown link, it is relative to the landing page, and the build warns when the file doesn't exist. Other links are relative to the site root, like `nav` entries. Text fields accept inline Markdown.
 
 ## Hero
 

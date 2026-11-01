@@ -1,3 +1,15 @@
+- version: 0.1.2
+  date: 2026-11-02
+  summary: Landing page links to Markdown files now lead to the built pages.
+  notes: |
+    - A landing page `link: guide.md` in front matter now points at the page built from `guide.md`, not at its Markdown copy. Like a Markdown link, it is relative to the landing page and keeps its `#anchor`, and the build warns when the file doesn't exist.
+  assets:
+    - name: mkdocs_sumi-0.1.2-py3-none-any.whl
+      url: https://pypi.org/project/mkdocs-sumi/0.1.2/#files
+      size: 2.5 MB
+    - name: mkdocs_sumi-0.1.2.tar.gz
+      url: https://pypi.org/project/mkdocs-sumi/0.1.2/#files
+      size: 2.5 MB
 - version: 0.1.1
   date: 2026-11-01
   summary: API reference styling and layout fixes, found by moving the MkDocs-ng site to Sumi.
