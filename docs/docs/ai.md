@@ -30,7 +30,7 @@ plugins:
   - sumi
 ```
 
-Try it on this site: open [llms.txt](https://mkdocs-ng.github.io/mkdocs-sumi/llms.txt), or choose **View as Markdown** in the menu at the top of this page.
+Try it on this site: open [llms.txt](https://sumi.mkdocs-ng.org/llms.txt), or choose **View as Markdown** in the menu at the top of this page.
 
 ## Discovery
 

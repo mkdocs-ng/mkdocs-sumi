@@ -1,6 +1,6 @@
 site_name: Sumi
 site_description: A modern, local-first documentation theme for MkDocs. Markdown in, beautiful docs out.
-site_url: https://mkdocs-ng.github.io/mkdocs-sumi/
+site_url: https://sumi.mkdocs-ng.org/
 repo_url: https://github.com/mkdocs-ng/mkdocs-sumi
 repo_name: mkdocs-ng/mkdocs-sumi
 edit_uri: edit/main/docs/
@@ -28,10 +28,10 @@ markdown_extensions:
 extra:
   alternate:
     - name: English
-      link: https://mkdocs-ng.github.io/mkdocs-sumi/
+      link: https://sumi.mkdocs-ng.org/
       lang: en
     - name: 简体中文
-      link: https://mkdocs-ng.github.io/mkdocs-sumi/zh/
+      link: https://sumi.mkdocs-ng.org/zh/
       lang: zh
   social:
     - icon: brand-github

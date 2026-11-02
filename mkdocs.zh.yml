@@ -3,15 +3,15 @@
 INHERIT: mkdocs.yml
 
 site_description: 一个现代、本地优先的 MkDocs 文档主题。写 Markdown，出好文档。
-site_url: https://mkdocs-ng.github.io/mkdocs-sumi/zh/
+site_url: https://sumi.mkdocs-ng.org/zh/
 docs_dir: docs-zh
 site_dir: site/zh
 edit_uri: edit/main/docs-zh/
 
 theme:
   locale: zh
-  social_image: https://mkdocs-ng.github.io/mkdocs-sumi/assets/social.png
-  announcement: 'Sumi 中文文档已上线，组件参考页暂为英文。<a href="https://mkdocs-ng.github.io/mkdocs-sumi/">切换到英文版</a>'
+  social_image: https://sumi.mkdocs-ng.org/assets/social.png
+  announcement: 'Sumi 中文文档已上线，组件参考页暂为英文。<a href="https://sumi.mkdocs-ng.org/">切换到英文版</a>'
 
 nav:
   - 首页: index.md
@@ -23,17 +23,17 @@ nav:
       - 从 Material 迁移: docs/start/migrate.md
     - 写作:
       - docs/write/index.md
-      - 组件参考（英文）: https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/callouts/
+      - 组件参考（英文）: https://sumi.mkdocs-ng.org/docs/write/callouts/
     - 页面类型（英文）:
-      - 首页: https://mkdocs-ng.github.io/mkdocs-sumi/docs/pages/landing/
-      - 博客: https://mkdocs-ng.github.io/mkdocs-sumi/docs/pages/blog/
-      - 发布与下载: https://mkdocs-ng.github.io/mkdocs-sumi/docs/pages/releases/
-      - 打印版: https://mkdocs-ng.github.io/mkdocs-sumi/docs/pages/print/
+      - 首页: https://sumi.mkdocs-ng.org/docs/pages/landing/
+      - 博客: https://sumi.mkdocs-ng.org/docs/pages/blog/
+      - 发布与下载: https://sumi.mkdocs-ng.org/docs/pages/releases/
+      - 打印版: https://sumi.mkdocs-ng.org/docs/pages/print/
     - 自定义:
       - 语言与中文排版: docs/customize/i18n.md
-      - 主题选项（英文）: https://mkdocs-ng.github.io/mkdocs-sumi/docs/customize/theme/
-      - 插件选项（英文）: https://mkdocs-ng.github.io/mkdocs-sumi/docs/customize/plugin/
+      - 主题选项（英文）: https://sumi.mkdocs-ng.org/docs/customize/theme/
+      - 插件选项（英文）: https://sumi.mkdocs-ng.org/docs/customize/plugin/
     - 面向 AI 与智能体: docs/ai.md
     - 设计原则: docs/design.md
-  - 发布记录: https://mkdocs-ng.github.io/mkdocs-sumi/releases/
-  - 博客: https://mkdocs-ng.github.io/mkdocs-sumi/blog/
+  - 发布记录: https://sumi.mkdocs-ng.org/releases/
+  - 博客: https://sumi.mkdocs-ng.org/blog/

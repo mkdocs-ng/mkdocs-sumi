@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://mkdocs-ng.github.io/mkdocs-sumi/">
+  <a href="https://sumi.mkdocs-ng.org/">
     <img src="https://raw.githubusercontent.com/mkdocs-ng/mkdocs-sumi/main/docs/assets/sumi-mark.svg" width="72" alt="Sumi">
   </a>
 </p>
@@ -18,10 +18,10 @@
 </p>
 
 <p align="center">
-  <a href="https://mkdocs-ng.github.io/mkdocs-sumi/">Documentation</a> ·
-  <a href="https://mkdocs-ng.github.io/mkdocs-sumi/zh/">中文文档</a> ·
-  <a href="https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/">Components</a> ·
-  <a href="https://mkdocs-ng.github.io/mkdocs-sumi/releases/">Releases</a>
+  <a href="https://sumi.mkdocs-ng.org/">Documentation</a> ·
+  <a href="https://sumi.mkdocs-ng.org/zh/">中文文档</a> ·
+  <a href="https://sumi.mkdocs-ng.org/docs/write/">Components</a> ·
+  <a href="https://sumi.mkdocs-ng.org/releases/">Releases</a>
 </p>
 
 Sumi is a documentation theme for [MkDocs NG](https://github.com/mkdocs-ng/mkdocs). It turns a folder of plain Markdown into a complete project site — docs, landing page, blog, release downloads and a print edition — without Node.js, a CDN or a hosted service.

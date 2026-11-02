@@ -20,22 +20,22 @@ Sumi 为 Markdown 增加了十六个组件。它们都没有引入会在 GitHub 
 
 | 组件 | 写法 | 说明页 |
 | --- | --- | --- |
-| 提示框 | `> [!NOTE]`、`> [!TIP]-` | [Callouts](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/callouts/) |
-| 带标题的代码块 | ```` ```py title="app.py" ```` | [Code blocks](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/code/) |
-| 标签页 | ```` ```sh {tab="Linux"} ```` | [Tabs](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/tabs/) |
-| 步骤 | 有序列表 + `{.steps}` | [Steps](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/steps/) |
-| 卡片 | 链接组成的无序列表 + `{.cards}` | [Cards](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/cards/) |
-| 字段表 | 表格 + `{.fields}` | [Fields](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/fields/) |
-| 表格选项 | 表格 + `{.wide}`、`{caption="…"}` | [Tables](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/tables/) |
-| 图片与图注 | 图片 + `{caption="…"}` | [Images](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/images/) |
-| 图集 | 图片列表 + `{.gallery}` | [Galleries](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/gallery/) |
-| 文件树 | ```` ```filetree ```` | [File trees](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/filetree/) |
-| 图表（Mermaid） | ```` ```mermaid ```` | [Diagrams](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/diagrams/) |
-| 数据图表 | ```` ```echarts ````（YAML 或 JSON） | [Charts](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/charts/) |
-| 思维导图 | ```` ```markmap ```` | [Mind maps](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/charts/#mind-maps) |
-| 数学公式 | `$…$`、`$$…$$` | [Math](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/math/) |
-| 按键与图标 | `++Ctrl+K++`、`:lucide-rocket:` | [Keys and icons](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/keys-icons/) |
-| 徽章 | `**新**{.badge}` | [Badges](https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/badges/) |
+| 提示框 | `> [!NOTE]`、`> [!TIP]-` | [Callouts](https://sumi.mkdocs-ng.org/docs/write/callouts/) |
+| 带标题的代码块 | ```` ```py title="app.py" ```` | [Code blocks](https://sumi.mkdocs-ng.org/docs/write/code/) |
+| 标签页 | ```` ```sh {tab="Linux"} ```` | [Tabs](https://sumi.mkdocs-ng.org/docs/write/tabs/) |
+| 步骤 | 有序列表 + `{.steps}` | [Steps](https://sumi.mkdocs-ng.org/docs/write/steps/) |
+| 卡片 | 链接组成的无序列表 + `{.cards}` | [Cards](https://sumi.mkdocs-ng.org/docs/write/cards/) |
+| 字段表 | 表格 + `{.fields}` | [Fields](https://sumi.mkdocs-ng.org/docs/write/fields/) |
+| 表格选项 | 表格 + `{.wide}`、`{caption="…"}` | [Tables](https://sumi.mkdocs-ng.org/docs/write/tables/) |
+| 图片与图注 | 图片 + `{caption="…"}` | [Images](https://sumi.mkdocs-ng.org/docs/write/images/) |
+| 图集 | 图片列表 + `{.gallery}` | [Galleries](https://sumi.mkdocs-ng.org/docs/write/gallery/) |
+| 文件树 | ```` ```filetree ```` | [File trees](https://sumi.mkdocs-ng.org/docs/write/filetree/) |
+| 图表（Mermaid） | ```` ```mermaid ```` | [Diagrams](https://sumi.mkdocs-ng.org/docs/write/diagrams/) |
+| 数据图表 | ```` ```echarts ````（YAML 或 JSON） | [Charts](https://sumi.mkdocs-ng.org/docs/write/charts/) |
+| 思维导图 | ```` ```markmap ```` | [Mind maps](https://sumi.mkdocs-ng.org/docs/write/charts/#mind-maps) |
+| 数学公式 | `$…$`、`$$…$$` | [Math](https://sumi.mkdocs-ng.org/docs/write/math/) |
+| 按键与图标 | `++Ctrl+K++`、`:lucide-rocket:` | [Keys and icons](https://sumi.mkdocs-ng.org/docs/write/keys-icons/) |
+| 徽章 | `**新**{.badge}` | [Badges](https://sumi.mkdocs-ng.org/docs/write/badges/) |
 {.wide}
 
 ## 属性行
