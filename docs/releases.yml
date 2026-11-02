@@ -1,3 +1,23 @@
+- version: 0.2.0
+  date: 2026-11-03
+  summary: Multi-language sites from one mkdocs.yml, new components, faster diagrams and help for sites moving from Material.
+  notes: |
+    - With MkDocs NG 1.11 or later, one `mkdocs.yml` can hold every language. Sumi shows a note on pages that aren't translated yet, adds `hreflang` links for each translation, and finds `releases.yml`, `.authors.yml` and Git dates for pages that come from the default language.
+    - New components: status badges (`**New**{.badge}`), image galleries (`{.gallery}`), ECharts charts and Markmap mind maps. Each loads its script only on pages that use it, near the viewport.
+    - Mermaid loads per diagram type and only near the viewport, instead of a 5.5 MB script on every diagram page. Diagrams get full screen, copy source and SVG download buttons.
+    - Blog: a card view (`blog.layout: cards`) that readers can toggle, and cover images from a post's `image:` front matter.
+    - Shared links get a title, description and preview image: new `social_image` theme option and `image:` front matter for `og:image`.
+    - Lighthouse accessibility reaches 100: stronger contrast for muted text and code comments, an accessible name for the icon-only Copy as Markdown button, underlined footer links.
+    - Plugins written for Material for MkDocs fit in: Material's common `--md-*` CSS variables and `data-md-color-scheme` map to Sumi, a `sumi:theme` event fires on palette changes, and a new guide for plugin authors explains the rest. `mkdocstrings` pages get type and parameter badges, backlinks and the source panel.
+    - Code fences inside list items and callouts render as code blocks without `pymdownx.superfences`.
+    - The docs moved to <https://sumi.mkdocs-ng.org/> and have a Chinese edition at `/zh/`.
+  assets:
+    - name: mkdocs_sumi-0.2.0-py3-none-any.whl
+      url: https://pypi.org/project/mkdocs-sumi/0.2.0/#files
+      size: 3.0 MB
+    - name: mkdocs_sumi-0.2.0.tar.gz
+      url: https://pypi.org/project/mkdocs-sumi/0.2.0/#files
+      size: 3.3 MB
 - version: 0.1.2
   date: 2026-11-02
   summary: Landing page links to Markdown files now lead to the built pages.
