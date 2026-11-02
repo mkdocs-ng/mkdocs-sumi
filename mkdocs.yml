@@ -65,6 +65,7 @@ nav:
       - Search and commands: docs/customize/search.md
       - Languages and versions: docs/customize/i18n.md
       - Overriding templates: docs/customize/overrides.md
+      - For plugin authors: docs/customize/plugin-authors.md
     - AI and agents: docs/ai.md
     - Design principles: docs/design.md
   - Releases: releases.md

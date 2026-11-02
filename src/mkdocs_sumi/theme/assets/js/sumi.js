@@ -77,8 +77,11 @@
   var listeners = [];
   function setTheme(mode, persist) {
     root.dataset.theme = mode;
+    // Material's attribute, for plugin CSS written against [data-md-color-scheme="slate"].
+    root.dataset.mdColorScheme = mode === 'dark' ? 'slate' : 'default';
     if (persist) store.set('palette', mode);
     listeners.forEach(function (fn) { fn(mode); });
+    doc.dispatchEvent(new CustomEvent('sumi:theme', { detail: { theme: mode } }));
   }
   function toggleTheme() { setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark', true); }
   $$('[data-sumi-theme]').forEach(function (b) { b.addEventListener('click', toggleTheme); });

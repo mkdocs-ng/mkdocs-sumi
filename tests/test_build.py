@@ -222,3 +222,43 @@ def test_logo_dark(tmp_path):
     html = (out / 'index.html').read_text(encoding='utf-8')
     assert '<img class="sumi-logo sumi-when-light" src="img/logo.svg"' in html
     assert '<img class="sumi-logo sumi-when-dark" src="img/logo-dark.svg"' in html
+
+
+def test_material_variables_are_mapped():
+    """Plugin CSS written for Material reads --md-* variables; Sumi defines the common ones."""
+    css = (ROOT / 'src/mkdocs_sumi/theme/assets/css/sumi.css').read_text(encoding='utf-8')
+    for name in ('--md-primary-fg-color', '--md-accent-fg-color', '--md-default-fg-color--lighter',
+                 '--md-default-bg-color', '--md-code-bg-color', '--md-typeset-a-color', '--md-code-font-family'):
+        assert re.search(rf'^\s*{name}:', css, re.M), name
+
+
+def test_mkdocstrings_page(tmp_path):
+    """An API page built by mkdocstrings gets Sumi's symbol badges and loads its CSS after Sumi's."""
+    pytest.importorskip('mkdocstrings_handlers.python')
+    (tmp_path / 'src').mkdir()
+    (tmp_path / 'src' / 'demo.py').write_text(textwrap.dedent('''
+        """Demo module."""
+
+        def add(a: int, b: int = 0) -> int:
+            """Add numbers.
+
+            Args:
+                a: First.
+                b: Second.
+            """
+            return a + b
+        '''), encoding='utf-8')
+    out = _site(tmp_path, {'index.md': '# API\n\n::: demo\n'}, BASIC + """
+      - mkdocstrings:
+          handlers:
+            python:
+              paths: [src]
+              options:
+                show_root_heading: true
+                show_symbol_type_heading: true
+                show_source: true
+    """)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert 'doc-symbol-function' in html
+    assert 'class="mkdocstrings-source"' in html
+    assert html.index('assets/css/sumi.css') < html.index('assets/_mkdocstrings.css')

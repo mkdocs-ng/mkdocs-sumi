@@ -51,6 +51,7 @@
       var mode = s || p;
       if (mode === 'auto' || !mode) mode = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       d.dataset.theme = mode;
+      d.dataset.mdColorScheme = mode === 'dark' ? 'slate' : 'default';
       d.classList.replace('no-js', 'js');
     })();
   </script>
