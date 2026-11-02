@@ -10,9 +10,9 @@ Sumi 是 [MkDocs](https://github.com/mkdocs-ng/mkdocs) 的文档主题。它把�
   两行配置，把 Sumi 加到现有的 MkDocs 项目中。
 - :lucide-pen-line: [写作](write/index.md)
   十六个组件，全部用原生 Markdown 书写。
-- :lucide-layout-template: [页面类型](https://mkdocs-ng.github.io/mkdocs-sumi/docs/pages/landing/)
+- :lucide-layout-template: [页面类型](https://sumi.mkdocs-ng.org/docs/pages/landing/)
   首页、博客、发布下载页和打印版（英文）。
-- :lucide-sliders-horizontal: [自定义](https://mkdocs-ng.github.io/mkdocs-sumi/docs/customize/theme/)
+- :lucide-sliders-horizontal: [自定义](https://sumi.mkdocs-ng.org/docs/customize/theme/)
   颜色、导航、搜索、语言、版本和模板覆盖（英文）。
 {.cards}
 

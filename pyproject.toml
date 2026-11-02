@@ -34,10 +34,10 @@ dependencies = [
 test = ["pytest >=8"]
 
 [project.urls]
-Documentation = "https://mkdocs-ng.github.io/mkdocs-sumi/"
+Documentation = "https://sumi.mkdocs-ng.org/"
 Source = "https://github.com/mkdocs-ng/mkdocs-sumi"
 Issues = "https://github.com/mkdocs-ng/mkdocs-sumi/issues"
-Changelog = "https://mkdocs-ng.github.io/mkdocs-sumi/releases/"
+Changelog = "https://sumi.mkdocs-ng.org/releases/"
 
 [project.entry-points."mkdocs.themes"]
 sumi = "mkdocs_sumi.theme"

@@ -30,7 +30,7 @@ plugins:
   - sumi
 ```
 
-可以在本站试试：打开 [llms.txt](https://mkdocs-ng.github.io/mkdocs-sumi/zh/llms.txt)，或在本页顶部的菜单中选择 **查看 Markdown**。
+可以在本站试试：打开 [llms.txt](https://sumi.mkdocs-ng.org/zh/llms.txt)，或在本页顶部的菜单中选择 **查看 Markdown**。
 
 ## 发现机制
 

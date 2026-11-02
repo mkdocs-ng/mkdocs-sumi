@@ -25,8 +25,8 @@ Sumi 能读取为 Material for MkDocs 编写的内容和大部分配置。切换
 | `pymdownx.arithmatex` | 用内置的 KaTeX 渲染 |
 | `pymdownx.keys` | 保留；Sumi 自带的 `++Ctrl+K++` 让位 |
 | `extra.social`、`extra.alternate`、`extra.analytics` | 原样读取，包括 `fontawesome/brands/…` 图标名 |
-| `mkdocstrings` API 页面 | 有样式：签名、符号徽章（`show_symbol_type_heading`）、标签、嵌套成员、反向链接和源码面板。[推荐配置（英文）](https://mkdocs-ng.github.io/mkdocs-sumi/docs/customize/plugin-authors/#mkdocstrings) |
-| 使用 Material `--md-*` 颜色或 `[data-md-color-scheme]` 的插件 CSS | 跟随 Sumi 的配色和深色模式。插件作者请看：[让插件适配 Sumi（英文）](https://mkdocs-ng.github.io/mkdocs-sumi/docs/customize/plugin-authors/) |
+| `mkdocstrings` API 页面 | 有样式：签名、符号徽章（`show_symbol_type_heading`）、标签、嵌套成员、反向链接和源码面板。[推荐配置（英文）](https://sumi.mkdocs-ng.org/docs/customize/plugin-authors/#mkdocstrings) |
+| 使用 Material `--md-*` 颜色或 `[data-md-color-scheme]` 的插件 CSS | 跟随 Sumi 的配色和深色模式。插件作者请看：[让插件适配 Sumi（英文）](https://sumi.mkdocs-ng.org/docs/customize/plugin-authors/) |
 | `mike` 多版本 | `theme.version_provider: mike` |
 | 博客：`blog/posts/`、`.authors.yml`、`date`、`authors`、`tags`、`<!-- more -->` | 原样读取 |
 | front matter 中的 `hide: [toc, navigation]` | 改为 `hide: [toc, sidebar]` |
@@ -34,7 +34,7 @@ Sumi 能读取为 Material for MkDocs 编写的内容和大部分配置。切换
 
 ## 需要调整的部分
 
-- Material 的 `theme.features` 和 `theme.palette` 列表会被忽略，请改用[主题选项（英文）](https://mkdocs-ng.github.io/mkdocs-sumi/docs/customize/theme/)。
+- Material 的 `theme.features` 和 `theme.palette` 列表会被忽略，请改用[主题选项（英文）](https://sumi.mkdocs-ng.org/docs/customize/theme/)。
 - 写成 `:material-…:` 或 `:octicons-…:` 的图标仍需 `pymdownx.emoji` 扩展。Sumi 自带的行内图标是 `:lucide-name:` 和 `:brand-name:`。
 - 不模拟 Material Insiders 的功能。
 
