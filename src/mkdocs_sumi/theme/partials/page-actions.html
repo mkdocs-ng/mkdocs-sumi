@@ -1,6 +1,6 @@
 <div class="sumi-actions">
   {%- if sumi.markdown_url %}
-  <button class="sumi-chip-btn sumi-copy-page" type="button" data-sumi-copy-page>{{ icon('copy') }}<span>{{ t('copy_markdown') }}</span></button>
+  <button class="sumi-chip-btn sumi-copy-page" type="button" data-sumi-copy-page aria-label="{{ t('copy_markdown') }}" title="{{ t('copy_markdown') }}">{{ icon('copy') }}<span>{{ t('copy_markdown') }}</span></button>
   {%- endif %}
   <div class="sumi-menu sumi-actions-menu">
     <button class="sumi-icon-btn sumi-chip-icon" type="button" aria-haspopup="true" aria-expanded="false" aria-label="{{ t('page_actions') }}" title="{{ t('page_actions') }}">{{ icon('chevron-down') }}</button>

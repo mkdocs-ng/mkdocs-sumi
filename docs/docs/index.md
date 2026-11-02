@@ -9,7 +9,7 @@ Sumi is a documentation theme for [MkDocs](https://github.com/mkdocs-ng/mkdocs).
 - :lucide-rocket: [Install](start/install.md)
   Add Sumi to an existing MkDocs project in two lines of configuration.
 - :lucide-pen-line: [Write](write/index.md)
-  Twelve components, all written in native Markdown.
+  Sixteen components, all written in native Markdown.
 - :lucide-layout-template: [Pages](pages/landing.md)
   Landing pages, a blog, release downloads and a print edition.
 - :lucide-sliders-horizontal: [Customize](customize/theme.md)
@@ -22,7 +22,7 @@ Sumi is a documentation theme for [MkDocs](https://github.com/mkdocs-ng/mkdocs).
 | --- | --- |
 | Reading | Top tabs, collapsible sidebar, breadcrumbs, table of contents with scroll spy, previous / next |
 | Discovery | Local full-text search with CJK support, merged with a command palette (<kbd>⌘</kbd> <kbd>K</kbd>) |
-| Authoring | Callouts, tabs, steps, cards, fields, captions, file trees, Mermaid, KaTeX, keys, 1 900+ icons |
+| Authoring | Callouts, tabs, steps, cards, fields, captions, galleries, badges, file trees, Mermaid, ECharts, mind maps, KaTeX, keys, 1 900+ icons |
 | Pages | Data-driven landing page, blog with tags and Atom feed, releases with checksums, whole-site print edition |
 | Outputs | HTML, print, a Markdown copy of every page, `llms.txt`, Atom |
 | Operations | Dark mode, mike versions, language switcher, edit links, Git "last updated" dates, analytics |

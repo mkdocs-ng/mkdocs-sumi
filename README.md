@@ -19,6 +19,7 @@
 
 <p align="center">
   <a href="https://mkdocs-ng.github.io/mkdocs-sumi/">Documentation</a> ·
+  <a href="https://mkdocs-ng.github.io/mkdocs-sumi/zh/">中文文档</a> ·
   <a href="https://mkdocs-ng.github.io/mkdocs-sumi/docs/write/">Components</a> ·
   <a href="https://mkdocs-ng.github.io/mkdocs-sumi/releases/">Releases</a>
 </p>

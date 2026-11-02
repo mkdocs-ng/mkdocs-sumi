@@ -26,4 +26,10 @@
   </div>
 </dialog>
 <dialog class="sumi-zoom" aria-label="{{ t('zoom_image') }}"><img alt=""></dialog>
+{%- if 'mermaid' in (sumi.features or []) %}
+<dialog class="sumi-diagram-view" aria-label="{{ t('diagram_expand') }}">
+  <button type="button" class="sumi-icon-btn sumi-diagram-view-close" data-close aria-label="{{ t('close') }}" title="{{ t('close') }}"><svg class="sumi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+  <div class="sumi-diagram-view-body"></div>
+</dialog>
+{%- endif %}
 <div class="sumi-toast" role="status" aria-live="polite"></div>

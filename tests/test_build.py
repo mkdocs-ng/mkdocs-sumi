@@ -89,6 +89,15 @@ def test_pages_and_assets(site):
     assert not (site / 'assets' / 'sumi' / 'vendor' / 'mermaid').exists()
 
 
+def test_social_meta(site):
+    html = (site / 'guide' / 'index.html').read_text()
+    assert '<meta property="og:type" content="article">' in html
+    assert '<meta property="og:locale" content="en_US">' in html
+    assert '<meta name="twitter:card" content="summary">' in html
+    home = (site / 'index.html').read_text()
+    assert '<meta property="og:type" content="website">' in home
+
+
 def test_landing_page(site):
     html = (site / 'index.html').read_text()
     assert 'sumi-hero' in html and 'Hello<br>world' in html
@@ -154,6 +163,8 @@ def test_blog(site):
     assert post.is_file()
     index = (site / 'blog' / 'index.html').read_text()
     assert 'Hello' in index and 'data-tags="news"' in index and 'Excerpt.' in index
+    assert 'data-view="list"' in index
+    assert 'sumi-post-cover--blank' in index and '<span>news</span>' in index
     feed = (site / 'blog' / 'feed.xml').read_text()
     assert '<feed' in feed and 'https://example.com/blog/2026/01/02/hello/' in feed
     guide = (site / 'guide' / 'index.html').read_text()

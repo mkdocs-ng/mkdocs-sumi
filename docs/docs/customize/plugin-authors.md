@@ -102,7 +102,7 @@ Some plugins exist to fill a gap that Sumi covers itself. If yours is one of the
 | `tags` | Tags on blog posts, with filters on the index |
 | `search` | MkDocs' `search` plugin, shown in Sumi's command palette |
 | `privacy`, `offline` | Not needed: fonts, icons and scripts are bundled, nothing is fetched at read time |
-| `social` | Not built in. Sumi writes `og:title` and `og:type` but no `og:image`, so a social card plugin can add one without duplicates |
+| `social` | Not built in. Sumi writes `og:title`, `og:description` and `twitter:card`, and writes `og:image` only when `social_image` or a page `image:` is set, so a social card plugin can add its own image without duplicates |
 {.compact}
 
 ## Test against Sumi

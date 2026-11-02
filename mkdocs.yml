@@ -8,7 +8,7 @@ copyright: Copyright &copy; 2026 The MkDocs NG contributors · Apache-2.0
 
 theme:
   name: sumi
-  announcement: 'Sumi 0.1 is out: <a href="blog/2026/11/01/introducing-sumi/">read the announcement</a>.'
+  announcement: 'New to Sumi? <a href="blog/2026/11/01/introducing-sumi/">Read the introduction</a>.'
 
 plugins:
   - search
@@ -16,6 +16,8 @@ plugins:
       full_output: true
   - sumi:
       git_dates: true
+      blog:
+        layout: cards
       assistant_links: [claude, chatgpt]
 
 markdown_extensions:
@@ -23,6 +25,13 @@ markdown_extensions:
       permalink: "#"
 
 extra:
+  alternate:
+    - name: English
+      link: https://mkdocs-ng.github.io/mkdocs-sumi/
+      lang: en
+    - name: 简体中文
+      link: https://mkdocs-ng.github.io/mkdocs-sumi/zh/
+      lang: zh
   social:
     - icon: brand-github
       link: https://github.com/mkdocs-ng/mkdocs-sumi
@@ -49,10 +58,13 @@ nav:
       - Fields: docs/write/fields.md
       - Tables: docs/write/tables.md
       - Images and figures: docs/write/images.md
+      - Galleries: docs/write/gallery.md
       - File trees: docs/write/filetree.md
       - Diagrams: docs/write/diagrams.md
+      - Charts and mind maps: docs/write/charts.md
       - Math: docs/write/math.md
       - Keys and icons: docs/write/keys-icons.md
+      - Badges: docs/write/badges.md
     - Pages:
       - Landing pages: docs/pages/landing.md
       - Blog: docs/pages/blog.md
