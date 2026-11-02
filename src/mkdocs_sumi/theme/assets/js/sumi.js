@@ -128,16 +128,24 @@
   var scrim;
   function setDrawer(open) {
     if (!side) return;
+    // An announcement bar pushes the header down until the page scrolls, so
+    // start the drawer and its scrim where the header ends.
+    var head = $('.sumi-header');
+    var top = head ? Math.max(0, Math.round(head.getBoundingClientRect().bottom)) + 'px' : '';
+    if (open) side.style.top = top;
     side.classList.toggle('is-open', open);
     doc.body.classList.toggle('sumi-locked', open);
     if (menuBtn) menuBtn.setAttribute('aria-expanded', String(open));
     if (open) {
       scrim = doc.createElement('div');
       scrim.className = 'sumi-scrim';
+      scrim.style.top = top;
       scrim.addEventListener('click', function () { setDrawer(false); });
       doc.body.appendChild(scrim);
     } else if (scrim) { scrim.remove(); scrim = null; }
   }
+  // Templates that replace the page layout (404, print) have no drawer.
+  if (menuBtn && !side) { menuBtn.remove(); menuBtn = null; }
   if (menuBtn) menuBtn.addEventListener('click', function () { setDrawer(!side.classList.contains('is-open')); });
   if (side) {
     var current = $('.is-current', side);

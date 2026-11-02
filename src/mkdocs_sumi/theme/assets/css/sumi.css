@@ -218,7 +218,7 @@ button { font: inherit; color: inherit; }
 /* ── Buttons & menus ───────────────────────────────────────────────────── */
 .sumi-icon-btn {
   display: inline-grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 8px;
-  background: transparent; color: var(--sumi-fg-2); cursor: pointer; transition: background .15s, color .15s;
+  flex: none; background: transparent; color: var(--sumi-fg-2); cursor: pointer; transition: background .15s, color .15s;
 }
 .sumi-icon-btn:hover { background: var(--sumi-bg-soft); color: var(--sumi-fg); }
 .sumi-icon-btn .sumi-icon { width: 19px; height: 19px; }
@@ -260,7 +260,8 @@ button { font: inherit; color: inherit; }
   border-bottom: 1px solid var(--sumi-line);
 }
 .sumi-header-inner { display: flex; align-items: center; gap: 8px; height: 100%; max-width: 1480px; margin: 0 auto; padding: 0 20px; }
-.sumi-brand { display: inline-flex; align-items: center; gap: 10px; margin-right: 18px; color: var(--sumi-fg); font-weight: 650; font-size: 16.5px; letter-spacing: -0.01em; white-space: nowrap; }
+.sumi-brand { display: inline-flex; min-width: 0; align-items: center; gap: 10px; margin-right: 18px; color: var(--sumi-fg); font-weight: 650; font-size: 16.5px; letter-spacing: -0.01em; white-space: nowrap; }
+.sumi-brand-name { overflow: hidden; text-overflow: ellipsis; }
 .sumi-brand:hover { color: var(--sumi-fg); }
 .sumi-mark, .sumi-logo { width: 28px; height: 28px; flex: none; }
 .sumi-logo { object-fit: contain; }
@@ -317,6 +318,8 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
   height: 100%; overflow-y: auto; overscroll-behavior: contain; padding: 26px 10px 40px 0; margin-right: -10px;
   scrollbar-width: thin; scrollbar-color: var(--sumi-line-2) transparent;
 }
+/* Only the small-screen drawer shows the top-level tabs. */
+.sumi-sidebar-tabs, .sumi-sidebar--tabs-only { display: none; }
 .sumi-sidebar-title { padding: 0 10px 10px; color: var(--sumi-fg); font-weight: 650; font-size: 15px; letter-spacing: -0.005em; }
 .sumi-nav-list { list-style: none; margin: 0; padding: 0; }
 .sumi-nav-list .sumi-nav-list { margin: 2px 0 6px 10px; padding-left: 10px; border-left: 1px solid var(--sumi-line); }
@@ -938,14 +941,19 @@ dialog { color: inherit; }
   .sumi-tabs-nav { display: none; }
   .sumi-sidebar {
     position: fixed; inset: var(--sumi-header-h) auto 0 0; z-index: 35; width: min(320px, 86vw); height: auto; padding-left: 12px;
+    /* The desktop rule's align-self: start would size the drawer to its
+       content, so a long nav ran under the header and off the screen. */
+    align-self: stretch;
     background: var(--sumi-bg); border-right: 1px solid var(--sumi-line); box-shadow: var(--sumi-shadow-lg);
     transform: translateX(-102%); transition: transform .22s var(--sumi-ease); visibility: hidden;
   }
   .sumi-sidebar.is-open { transform: none; visibility: visible; }
-  .sumi-sidebar-tabs { display: block; }
+  .sumi-sidebar-tabs { display: block; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--sumi-line); }
+  .sumi-sidebar-tabs a.is-active { color: var(--sumi-fg); font-weight: 600; }
+  .sumi-sidebar--tabs-only { display: block; }
   body.sumi-locked { overflow: hidden; }
   .sumi-scrim { position: fixed; inset: var(--sumi-header-h) 0 0; z-index: 34; background: rgba(15, 14, 12, .35); }
-  .sumi-search-btn { width: 36px; padding: 0; justify-content: center; border: 0; background: none; margin: 0; }
+  .sumi-search-btn { flex: none; width: 36px; padding: 0; justify-content: center; border: 0; background: none; margin: 0; }
   .sumi-search-btn:hover { background: var(--sumi-bg-soft); box-shadow: none; }
   .sumi-search-label, .sumi-search-kbd { display: none; }
   .sumi-search-btn .sumi-icon { width: 19px; height: 19px; color: var(--sumi-fg-2); }
@@ -960,11 +968,11 @@ dialog { color: inherit; }
   .sumi-table--wide { width: auto; }
 }
 @media (max-width: 520px) {
+  .sumi-brand { margin-right: 4px; gap: 8px; }
   .sumi-brand-name { font-size: 15.5px; }
   .sumi-header-inner { padding: 0 12px; gap: 2px; }
   .sumi-article-top { flex-wrap: wrap; }
 }
-.sumi-sidebar-tabs { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; scroll-behavior: auto !important; }
