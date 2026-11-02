@@ -163,7 +163,11 @@ class SumiPlugin(BasePlugin[SumiConfig]):
             'language': self.language, 'math': self.config.math, 'mermaid': self.config.mermaid,
             'echarts': self.config.echarts, 'markmap': self.config.markmap}
         if self.config.git_dates:
-            self.git_dates = _git_dates(config.docs_dir)
+            # On a multi-language site (MkDocs NG 1.11+), untranslated pages come
+            # from the default language's docs_dir.
+            languages = config.get('languages') or ()
+            dirs = [config.docs_dir] + [lang.docs_dir for lang in languages if getattr(lang, 'docs_dir', None)]
+            self.git_dates = _git_dates(list(dict.fromkeys(dirs)))
         self.authors = dict(self.config.blog.authors)
         return config
 
@@ -207,7 +211,7 @@ class SumiPlugin(BasePlugin[SumiConfig]):
                     f.dest_uri = slug + ('/index.html' if config.use_directory_urls else '.html')
                     f.__dict__.pop('url', None)
                     f.__dict__.pop('abs_dest_path', None)
-        authors_file = os.path.join(config.docs_dir, d, '.authors.yml')
+        authors_file = _source_path(files, config, posixpath.join(d, '.authors.yml'))
         if os.path.isfile(authors_file):
             with open(authors_file, encoding='utf-8') as fh:
                 data = yaml.safe_load(fh) or {}
@@ -350,7 +354,8 @@ class SumiPlugin(BasePlugin[SumiConfig]):
             'markdown_url': self._markdown_url(page, config),
             'llms_txt': 'llms_txt' in config.plugins,
             'assistant_links': self.config.assistant_links,
-            'last_updated': self.git_dates.get(page.file.src_uri),
+            'last_updated': self.git_dates.get(os.path.normcase(os.path.realpath(page.file.abs_src_path)))
+            if page.file.abs_src_path else None,
             'reading_time': page.meta.get('reading_time'),
             'print_url': self.config.print.path if self.config.print.enabled else None,
             'is_post': False,
@@ -421,7 +426,7 @@ class SumiPlugin(BasePlugin[SumiConfig]):
     def _releases(self, page: Page, config: MkDocsConfig) -> list[dict[str, Any]]:
         data = page.meta.get('releases')
         if isinstance(data, str):
-            path = os.path.normpath(os.path.join(config.docs_dir, data))
+            path = _source_path(self.files, config, data)
             if not os.path.isfile(path):
                 raise PluginError(f"Releases file '{data}' referenced by '{page.file.src_uri}' does not exist.")
             with open(path, encoding='utf-8') as fh:
@@ -613,18 +618,25 @@ def _rebase(html: str, page_url: str, target: str, anchor: str | None, absolute:
     return html
 
 
-def _git_dates(docs_dir: str) -> dict[str, datetime.datetime]:
-    """Map each docs file (relative path) to its last commit date, in one `git log` call."""
+def _source_path(files: Files | None, config: MkDocsConfig, rel: str) -> str:
+    """The file at `rel` in the docs, wherever it really is (a language's own or the default one)."""
+    file = files.get_file_from_path(rel) if files is not None else None
+    if file is not None and file.abs_src_path:
+        return file.abs_src_path
+    return os.path.normpath(os.path.join(config.docs_dir, rel))
+
+
+def _git_dates(docs_dirs: list[str]) -> dict[str, datetime.datetime]:
+    """Map each docs file (absolute, real path) to its last commit date, in one `git log` call."""
     try:
-        root = subprocess.run(['git', 'rev-parse', '--show-toplevel'], cwd=docs_dir, capture_output=True,
+        root = subprocess.run(['git', 'rev-parse', '--show-toplevel'], cwd=docs_dirs[0], capture_output=True,
                               text=True, check=True).stdout.strip()
-        out = subprocess.run(['git', 'log', '--format=@%cI', '--name-only', '--', '.'], cwd=docs_dir,
+        out = subprocess.run(['git', 'log', '--format=@%cI', '--name-only', '--', *docs_dirs], cwd=root,
                              capture_output=True, text=True, check=True).stdout
     except (OSError, subprocess.CalledProcessError):
         log.info('sumi: git_dates is enabled but git history is unavailable.')
         return {}
-    prefix = os.path.relpath(os.path.realpath(docs_dir), os.path.realpath(root)).replace(os.sep, '/')
-    prefix = '' if prefix == '.' else prefix + '/'
+    root = os.path.realpath(root)
     dates: dict[str, datetime.datetime] = {}
     current = None
     for line in out.splitlines():
@@ -633,8 +645,8 @@ def _git_dates(docs_dir: str) -> dict[str, datetime.datetime]:
             if stamp.endswith('Z'):  # newer Git writes UTC as "Z", which Python 3.10 can't parse
                 stamp = stamp[:-1] + '+00:00'
             current = datetime.datetime.fromisoformat(stamp)
-        elif line and current is not None and line.startswith(prefix):
-            dates.setdefault(line[len(prefix):], current)
+        elif line and current is not None:
+            dates.setdefault(os.path.normcase(os.path.join(root, line)), current)
     return dates
 
 

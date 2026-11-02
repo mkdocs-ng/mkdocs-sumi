@@ -55,7 +55,9 @@ mike set-default --push latest
 
 ## Languages
 
-For a site published in several languages, list them under `extra.alternate`. A language menu appears in the header and in the command palette.
+On a site with several languages, the header shows a language menu, and the command palette gets a *Switch to …* command for each language. With MkDocs NG 1.11 or later, list the languages under `languages` and the menu links each page to the same page in the other languages; see [Languages](i18n.md#multilingual-sites).
+
+With an older MkDocs, or to link to other sites, list them under `extra.alternate` yourself:
 
 ```yaml title="mkdocs.yml"
 extra:

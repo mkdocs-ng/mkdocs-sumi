@@ -1234,3 +1234,6 @@ a.sumi-sidebar-title { display: block; margin: 0 0 6px; padding: 5px 10px; borde
 a.sumi-sidebar-title:hover { background: var(--sumi-bg-soft); color: var(--sumi-fg); }
 a.sumi-sidebar-title.is-current { color: var(--sumi-accent); }
 .sumi-filetree details { margin: 0; }
+
+/* ── Untranslated page note (multi-language sites) ─────────────────────── */
+.sumi-prose .sumi-untranslated { --c: var(--c-quote); font-size: 14px; }

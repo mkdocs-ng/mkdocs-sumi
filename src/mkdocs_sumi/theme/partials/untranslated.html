@@ -1,0 +1,8 @@
+{#- Shown on a page of a multi-language site that has no translation yet, so it
+    is built from the default language's version (MkDocs NG 1.11+ `languages`). -#}
+{%- if i18n and i18n.fallback %}
+{%- set source = (i18n.languages | selectattr('code', 'equalto', i18n.default_language) | first) %}
+<div class="sumi-callout sumi-untranslated" role="note" lang="{{ i18n.language.code }}" data-pagefind-ignore>
+  <div class="sumi-callout-body"><p>{{ t('untranslated', language=source.name) }}</p></div>
+</div>
+{%- endif %}
