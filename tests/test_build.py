@@ -89,6 +89,15 @@ def test_pages_and_assets(site):
     assert not (site / 'assets' / 'sumi' / 'vendor' / 'mermaid').exists()
 
 
+def test_social_meta(site):
+    html = (site / 'guide' / 'index.html').read_text()
+    assert '<meta property="og:type" content="article">' in html
+    assert '<meta property="og:locale" content="en_US">' in html
+    assert '<meta name="twitter:card" content="summary">' in html
+    home = (site / 'index.html').read_text()
+    assert '<meta property="og:type" content="website">' in home
+
+
 def test_landing_page(site):
     html = (site / 'index.html').read_text()
     assert 'sumi-hero' in html and 'Hello<br>world' in html

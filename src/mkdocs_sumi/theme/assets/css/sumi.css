@@ -39,7 +39,7 @@
   --sumi-bg-sunken: #eae8e2;
   --sumi-fg: #1d1c1a;
   --sumi-fg-2: #4a4741;
-  --sumi-fg-3: #75716a;
+  --sumi-fg-3: #6c6861;
   --sumi-line: rgba(29, 28, 26, 0.1);
   --sumi-line-2: rgba(29, 28, 26, 0.17);
   --sumi-link: #2b5d8e;
@@ -62,7 +62,7 @@
 
   --hl-kw: #b23a26;
   --hl-str: #4b7224;
-  --hl-com: #8b867d;
+  --hl-com: #6f6b63;
   --hl-fn: #2b5d8e;
   --hl-num: #985f0c;
   --hl-type: #7a3b74;
@@ -114,7 +114,7 @@
 
   --hl-kw: #f2896d;
   --hl-str: #a8d17f;
-  --hl-com: #868177;
+  --hl-com: #948f85;
   --hl-fn: #8fbcec;
   --hl-num: #e6b56a;
   --hl-type: #d99bd2;
@@ -809,6 +809,8 @@ a.sumi-meta:hover { color: var(--sumi-fg); }
 .sumi-footer a { color: var(--sumi-fg-2); }
 .sumi-footer a:hover { color: var(--sumi-fg); }
 .sumi-footer-left { display: flex; flex-direction: column; gap: 2px; }
+.sumi-footer-left a { text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); text-underline-offset: 3px; }
+.sumi-footer-left a:hover { text-decoration-color: currentColor; }
 .sumi-footer-right { display: flex; align-items: center; gap: 2px; }
 .sumi-footer-right .sumi-icon-btn { width: 34px; height: 34px; }
 .sumi-footer-right .sumi-icon-btn .sumi-icon { width: 17px; height: 17px; }

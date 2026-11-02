@@ -8,7 +8,7 @@ copyright: Copyright &copy; 2026 The MkDocs NG contributors · Apache-2.0
 
 theme:
   name: sumi
-  announcement: 'Sumi 0.1 is out: <a href="blog/2026/11/01/introducing-sumi/">read the announcement</a>.'
+  announcement: 'New to Sumi? <a href="blog/2026/11/01/introducing-sumi/">Read the introduction</a>.'
 
 plugins:
   - search

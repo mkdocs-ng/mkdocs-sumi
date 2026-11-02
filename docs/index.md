@@ -3,7 +3,7 @@ template: landing.html
 title: Sumi
 description: A modern, local-first documentation theme for MkDocs.
 hero:
-  eyebrow: "Sumi 0.1 · local-first · for MkDocs"
+  eyebrow: "Local-first · for MkDocs NG"
   title: "Markdown in.<br>*Beautiful docs* out."
   text: "Sumi is a documentation theme for MkDocs that keeps your content plain Markdown, ships every asset with your site, and writes pages that people *and* AI agents can read."
   actions:
