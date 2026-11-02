@@ -193,7 +193,14 @@ def test_print_edition(site):
     assert 'Guide' in html and 'Math' in html
 
 
+def _supports_languages() -> bool:
+    from mkdocs.config.defaults import MkDocsConfig
+
+    return any(name == 'languages' for name, _ in MkDocsConfig._schema)
+
+
 @needs_llms_txt
+@pytest.mark.skipif(not _supports_languages(), reason='the docs site needs MkDocs NG 1.11 (`languages`)')
 def test_docs_site_builds_without_warnings(tmp_path, caplog):
     """The documentation of Sumi is its own regression suite."""
     cfg = load_config(str(ROOT / 'mkdocs.yml'), site_dir=str(tmp_path / 'site'))
@@ -302,12 +309,6 @@ def test_social_preview_without_image(tmp_path):
     home = (out / 'index.html').read_text(encoding='utf-8')
     assert 'og:image' not in home
     assert '<meta name="twitter:card" content="summary">' in home
-
-
-def _supports_languages() -> bool:
-    from mkdocs.config.defaults import MkDocsConfig
-
-    return any(name == 'languages' for name, _ in MkDocsConfig._schema)
 
 
 @pytest.mark.skipif(not _supports_languages(), reason='needs MkDocs NG 1.11 (`languages`)')

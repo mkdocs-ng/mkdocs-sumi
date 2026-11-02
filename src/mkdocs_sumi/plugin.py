@@ -165,7 +165,8 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         if self.config.git_dates:
             # On a multi-language site (MkDocs NG 1.11+), untranslated pages come
             # from the default language's docs_dir.
-            dirs = [config.docs_dir] + [lang.docs_dir for lang in (config.get('languages') or ())]
+            languages = config.get('languages') or ()
+            dirs = [config.docs_dir] + [lang.docs_dir for lang in languages if getattr(lang, 'docs_dir', None)]
             self.git_dates = _git_dates(list(dict.fromkeys(dirs)))
         self.authors = dict(self.config.blog.authors)
         return config
