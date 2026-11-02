@@ -128,6 +128,71 @@
   color-scheme: dark;
 }
 
+/* ── Material compatibility ─────────────────────────────────────────────
+ * Plugins written for Material for MkDocs colour their own CSS with its
+ * --md-* variables. Mapping the common ones to Sumi tokens lets that CSS
+ * follow Sumi's palette and dark mode unchanged. The theme itself never
+ * reads them. */
+:root {
+  --md-primary-fg-color: var(--sumi-accent);
+  --md-primary-fg-color--light: color-mix(in srgb, var(--sumi-accent) 70%, var(--sumi-bg));
+  --md-primary-fg-color--dark: color-mix(in srgb, var(--sumi-accent) 80%, var(--sumi-fg));
+  --md-primary-bg-color: #fff;
+  --md-primary-bg-color--light: rgba(255, 255, 255, 0.7);
+  --md-accent-fg-color: var(--sumi-accent);
+  --md-accent-fg-color--transparent: color-mix(in srgb, var(--sumi-accent) 10%, transparent);
+  --md-accent-bg-color: #fff;
+  --md-accent-bg-color--light: rgba(255, 255, 255, 0.7);
+  --md-default-fg-color: var(--sumi-fg);
+  --md-default-fg-color--light: var(--sumi-fg-2);
+  --md-default-fg-color--lighter: var(--sumi-fg-3);
+  --md-default-fg-color--lightest: var(--sumi-line-2);
+  --md-default-bg-color: var(--sumi-bg);
+  --md-default-bg-color--light: var(--sumi-bg-elev);
+  --md-default-bg-color--lighter: var(--sumi-bg-soft);
+  --md-default-bg-color--lightest: var(--sumi-bg-sunken);
+  --md-code-fg-color: var(--sumi-fg);
+  --md-code-bg-color: var(--sumi-bg-soft);
+  --md-code-hl-color: var(--hl-mark);
+  --md-code-hl-color--light: var(--hl-mark);
+  --md-code-hl-number-color: var(--hl-num);
+  --md-code-hl-special-color: var(--hl-var);
+  --md-code-hl-function-color: var(--hl-fn);
+  --md-code-hl-constant-color: var(--hl-bi);
+  --md-code-hl-keyword-color: var(--hl-kw);
+  --md-code-hl-string-color: var(--hl-str);
+  --md-code-hl-name-color: var(--sumi-fg);
+  --md-code-hl-operator-color: var(--hl-op);
+  --md-code-hl-punctuation-color: var(--hl-op);
+  --md-code-hl-comment-color: var(--hl-com);
+  --md-code-hl-generic-color: var(--sumi-fg-3);
+  --md-code-hl-variable-color: var(--hl-var);
+  --md-typeset-color: var(--sumi-fg);
+  --md-typeset-a-color: var(--sumi-link);
+  --md-typeset-mark-color: var(--hl-mark);
+  --md-typeset-del-color: var(--hl-del-bg);
+  --md-typeset-ins-color: var(--hl-ins-bg);
+  --md-typeset-kbd-color: var(--sumi-bg-elev);
+  --md-typeset-kbd-accent-color: var(--sumi-bg-elev);
+  --md-typeset-kbd-border-color: var(--sumi-line-2);
+  --md-typeset-table-color: var(--sumi-line);
+  --md-typeset-table-color--light: var(--sumi-bg-soft);
+  --md-admonition-fg-color: var(--sumi-fg);
+  --md-admonition-bg-color: var(--sumi-bg-elev);
+  --md-footer-fg-color: var(--sumi-fg-2);
+  --md-footer-fg-color--light: var(--sumi-fg-3);
+  --md-footer-fg-color--lighter: var(--sumi-fg-3);
+  --md-footer-bg-color: var(--sumi-bg);
+  --md-footer-bg-color--dark: var(--sumi-bg-sunken);
+  --md-shadow-z1: var(--sumi-shadow-sm);
+  --md-shadow-z2: var(--sumi-shadow-md);
+  --md-shadow-z3: var(--sumi-shadow-lg);
+  --md-text-font: var(--sumi-font);
+  --md-text-font-family: var(--sumi-font);
+  --md-code-font: var(--sumi-font-mono);
+  --md-code-font-family: var(--sumi-font-mono);
+}
+
 /* ── Base ───────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: calc(var(--sumi-header-h) + 20px); }
@@ -457,7 +522,9 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 .sumi-table--compact :is(th, td) { padding: 6px 10px; font-size: 13.5px; }
 .sumi-table--striped tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--sumi-bg-soft) 60%, transparent); }
 .sumi-table--center :is(th, td) { text-align: center; }
-.sumi-table--wide { width: min(100vw - 40px, calc(var(--sumi-content-w) + var(--sumi-rail-w) + 48px)); }
+/* Wide tables reach into the table-of-contents column, never past it. */
+.sumi-table--wide { width: min(100vw - 40px, calc(var(--sumi-content-w) + var(--sumi-rail-w) + 48px), calc(100% + var(--sumi-rail-w) + 48px)); }
+.sumi-shell--no-toc .sumi-table--wide { width: auto; }
 
 /* ── Callouts (and MkDocs admonitions) ─────────────────────────────────── */
 .sumi-callout, .sumi-prose .admonition, .sumi-prose details:where(:not(.sumi-filetree *, .sumi-faq *, .sumi-toc-inline)) {
@@ -585,7 +652,35 @@ code.doc-symbol.doc-symbol-class::after { content: "class"; }
 code.doc-symbol.doc-symbol-function::after { content: "func"; }
 code.doc-symbol.doc-symbol-method::after { content: "meth"; }
 code.doc-symbol.doc-symbol-attribute::after { content: "attr"; }
+code.doc-symbol.doc-symbol-type_alias { background: color-mix(in srgb, var(--c-note) 14%, transparent); color: var(--c-note); }
+code.doc-symbol.doc-symbol-type_alias::after { content: "type"; }
+code.doc-symbol.doc-symbol-parameter, code.doc-symbol.doc-symbol-type_parameter { background: color-mix(in srgb, var(--hl-var) 13%, transparent); color: var(--hl-var); }
+code.doc-symbol.doc-symbol-parameter::after { content: "param"; }
+code.doc-symbol.doc-symbol-type_parameter::after { content: "tparam"; }
 .sumi-toc code.doc-symbol.doc-symbol { margin-right: 4px; font-size: .68em; }
+.sumi-prose a:has(> code.doc-symbol) { text-decoration: none; }
+/* Parameter headings (parameter_headings: true) stay inline in their section. */
+.sumi-prose .doc-heading-parameter, .sumi-prose .doc-heading-type_parameter { display: inline; margin: 0; font-size: inherit; }
+.sumi-prose :is(.doc-heading-parameter, .doc-heading-type_parameter) .headerlink { display: none; }
+.sumi-prose :is(.doc-heading-parameter, .doc-heading-type_parameter):hover .headerlink { display: inline; opacity: 1; }
+/* Signatures are always Python-like: the language label only covers long lines. */
+.sumi-prose .doc-signature > .sumi-code-lang { display: none; }
+/* "Source code in …": a quiet, collapsed code panel rather than a blue note. */
+.sumi-prose details.mkdocstrings-source {
+  --c: var(--c-quote);
+  --sumi-admon-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg>');
+  background: var(--sumi-bg-elev);
+}
+.sumi-prose details.mkdocstrings-source > summary { font-weight: 550; font-size: 13.5px; }
+.sumi-prose details.mkdocstrings-source pre { margin: 0; }
+/* Backlinks ("Used by", "Returned by"…): small titles, breadcrumb rows. */
+.sumi-prose .doc-backlinks { margin: 0 0 1.15em; font-size: 14px; }
+.sumi-prose .doc-backlink-type { display: block; margin-top: .8em; color: var(--sumi-fg-2); font-weight: 650; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; }
+.sumi-prose ul.doc-backlink-list { margin: .3em 0 0; padding-left: 0; list-style: none; }
+.sumi-prose ul.doc-backlink-list ul.doc-backlink-list { margin: 0; padding-left: 1.2em; }
+.sumi-prose .doc-backlink { margin: 0; }
+.sumi-prose .doc-backlink-crumb a { text-decoration: none; }
+.sumi-prose .doc-backlink-crumb:not(:first-child)::before { background-color: var(--sumi-fg-3); }
 
 /* ── Figures, images, diagrams ─────────────────────────────────────────── */
 .sumi-figure, .sumi-diagram { margin: 1.6em 0; text-align: center; }

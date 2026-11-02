@@ -81,8 +81,14 @@ def test_palette_searches_cjk_and_runs_commands(base_url, page):
     sync_api.expect(dialog).to_be_visible()
     page.keyboard.type('>dark')
     sync_api.expect(page.locator('.sumi-palette-item')).to_have_count(1)
+    page.evaluate("document.addEventListener('sumi:theme', e => { window.sumiTheme = e.detail.theme; })")
     page.keyboard.press('Enter')
-    assert page.evaluate('document.documentElement.dataset.theme') != theme
+    new = page.evaluate('document.documentElement.dataset.theme')
+    assert new != theme
+    # Plugins can follow the switch through the event or Material's attribute.
+    assert page.evaluate('window.sumiTheme') == new
+    scheme = page.evaluate('document.documentElement.dataset.mdColorScheme')
+    assert scheme == ('slate' if new == 'dark' else 'default')
 
 
 def test_tabs_sync_and_persist(base_url, page):
