@@ -18,8 +18,8 @@ logo: null
 # Optional logo for the dark palette; `logo` is used in both when unset.
 logo_dark: null
 favicon: null
-# Social preview image (og:image) for every page: a path in docs_dir or a full URL.
-# A page can set its own with `image:` in front matter. Needs site_url for paths.
+# Image shown when a page is shared on social media (about 1200x630): a path in docs_dir
+# (needs site_url) or a full URL. A page can set its own with `image:` in its front matter.
 social_image: null
 # Mark-up for the header brand, e.g. "MkDocs<b>ng</b>"; defaults to site_name.
 brand: null

@@ -25,7 +25,7 @@ theme:
 | `logo` | string | | An image in `docs/` for the header. The Sumi mark is used if unset. |
 | `logo_dark` | string | | A second header image for the dark palette. `logo` is used in both if unset. |
 | `favicon` | string | | An image in `docs/` for the browser tab. |
-| `social_image` | string | | The preview image shown when a page is shared (`og:image`): a path in `docs/` or a full URL. A page can set its own with `image:` in front matter. Paths need `site_url`. |
+| `social_image` | string | | The preview image shown when a page is shared on X, Slack, Mastodon and the like: an image in `docs/` (about 1200×630, needs `site_url`) or a full URL. A page can use its own with `image:` in its front matter. |
 | `brand` | string | `site_name` | HTML for the header brand, e.g. `"MkDocs<b>ng</b>"`. |
 | `announcement` | string | | HTML for a dismissible bar above the header. A new message reappears for readers who dismissed an older one. |
 | `navigation_tabs` | boolean | `true` | Show top-level sections as tabs in the header. When `false`, the whole navigation is in the sidebar. |

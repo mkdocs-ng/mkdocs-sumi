@@ -10,6 +10,7 @@ edit_uri: edit/main/docs-zh/
 
 theme:
   locale: zh
+  social_image: https://mkdocs-ng.github.io/mkdocs-sumi/assets/social.png
   announcement: 'Sumi 中文文档已上线，组件参考页暂为英文。<a href="https://mkdocs-ng.github.io/mkdocs-sumi/">切换到英文版</a>'
 
 nav:
