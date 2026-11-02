@@ -198,3 +198,11 @@ def test_gallery(md):
 
 def test_badge_is_plain_attr_list(md):
     assert '<strong class="badge tip">Stable</strong>' in md('**Stable**{.badge .tip}')
+
+
+def test_fence_inside_a_list_item_is_a_code_block(md):
+    html = md('1. Install\n\n    ```sh\n    pip install x\n    ```\n\n2. Run\n{.steps}')
+    assert '<code>sh' not in html
+    assert '<div class="highlight"><pre>' in html and 'pip' in html
+    titled = md('- Step\n\n    ```py title="app.py"\n    print(1)\n    ```\n')
+    assert 'data-title="app.py"' in titled and '<pre>' in titled

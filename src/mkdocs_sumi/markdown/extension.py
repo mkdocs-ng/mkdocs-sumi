@@ -184,7 +184,9 @@ class FencePreprocessor(Preprocessor):
             html = charts.echarts(body, f.title, height) if f.lang == 'echarts' else charts.markmap(body, f.title, height)
             if html is not None:
                 return ['', ind + self._stash(html), '']
-        if f.tab is None and f.title is None:
+        if ind and self._nested_fences_unsupported():
+            block = self._indented_block(f)
+        elif f.tab is None and f.title is None:
             block = [f.raw, *f.lines, f.closer]
         else:
             block = [f'{ind}{f.opener}{f.info}', *f.lines, f.closer]
@@ -193,6 +195,21 @@ class FencePreprocessor(Preprocessor):
                     f'<div class="sumi-code-title">{icon("file-code")}<span>{escape(f.title)}</span></div>')
             return ['', ind + self._stash(head), '', *block, '', ind + self._stash('</div>'), '']
         return block
+
+    def _nested_fences_unsupported(self) -> bool:
+        # Python-Markdown's `fenced_code` only sees fences at the start of a
+        # line, so a fence inside a list item or callout came out as inline
+        # code. `pymdownx.superfences` handles nesting itself.
+        names = {type(e).__module__ for e in self.md.registeredExtensions}
+        return 'pymdownx.superfences' not in names
+
+    def _indented_block(self, f: _Fence) -> list[str]:
+        """Rewrite an indented fence as an indented code block, which nests."""
+        ind = f.indent + '    '
+        names = {type(e).__module__ for e in self.md.registeredExtensions}
+        body = [ln[len(f.indent):] if ln.startswith(f.indent) else ln.lstrip() for ln in f.lines]
+        head = [f'{ind}:::{f.lang}'] if f.lang and 'markdown.extensions.codehilite' in names else []
+        return ['', *head, *[(ind + ln) if ln.strip() else '' for ln in body], '']
 
     def run(self, lines: list[str]) -> list[str]:
         items = self._scan(lines)

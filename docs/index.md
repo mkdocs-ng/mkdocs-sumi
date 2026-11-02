@@ -83,8 +83,8 @@ sections:
   - type: stats
     items:
       - {value: "0", label: "runtime services or CDNs"}
-      - {value: "12", label: "native-Markdown components"}
-      - {value: "9 KB", label: "core script, gzipped. No framework."}
+      - {value: "16", label: "native-Markdown components"}
+      - {value: "11 KB", label: "core script, gzipped. No framework."}
       - {value: "2", label: "interface languages: English, 中文"}
   - type: steps
     eyebrow: Three minutes
