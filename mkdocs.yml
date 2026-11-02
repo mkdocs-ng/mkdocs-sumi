@@ -21,18 +21,65 @@ plugins:
         layout: cards
       assistant_links: [claude, chatgpt]
 
+# English at the root, Chinese at /zh/. Chinese pages live in docs-zh/; a page
+# that isn't translated yet is shown in English with a note.
+languages:
+  en: English
+  zh:
+    name: 简体中文
+    site_description: 一个现代、本地优先的 MkDocs 文档主题。写 Markdown，出好文档。
+    docs_dir: docs-zh
+    edit_uri: edit/main/docs-zh/
+    theme:
+      announcement: 'Sumi 中文文档已上线，部分页面暂为英文。<a href="blog/2026/11/01/introducing-sumi/">阅读 Sumi 介绍</a>'
+    nav:
+      - 首页: index.md
+      - 文档:
+        - docs/index.md
+        - 快速开始:
+          - 安装: docs/start/install.md
+          - 第一个站点: docs/start/first-site.md
+          - 从 Material 迁移: docs/start/migrate.md
+        - 写作:
+          - docs/write/index.md
+          - 提示框: docs/write/callouts.md
+          - 代码块: docs/write/code.md
+          - 标签页: docs/write/tabs.md
+          - 步骤: docs/write/steps.md
+          - 卡片: docs/write/cards.md
+          - 字段: docs/write/fields.md
+          - 表格: docs/write/tables.md
+          - 图片与插图: docs/write/images.md
+          - 图库: docs/write/gallery.md
+          - 文件树: docs/write/filetree.md
+          - 图表: docs/write/diagrams.md
+          - 数据图与思维导图: docs/write/charts.md
+          - 数学公式: docs/write/math.md
+          - 按键与图标: docs/write/keys-icons.md
+          - 徽章: docs/write/badges.md
+        - 页面类型:
+          - 首页: docs/pages/landing.md
+          - 博客: docs/pages/blog.md
+          - 发布与下载: docs/pages/releases.md
+          - 打印版: docs/pages/print.md
+        - 自定义:
+          - 主题选项: docs/customize/theme.md
+          - 插件选项: docs/customize/plugin.md
+          - 导航: docs/customize/navigation.md
+          - 搜索与命令: docs/customize/search.md
+          - 语言与中文排版: docs/customize/i18n.md
+          - 覆盖模板: docs/customize/overrides.md
+          - 面向插件作者: docs/customize/plugin-authors.md
+        - 面向 AI 与智能体: docs/ai.md
+        - 设计原则: docs/design.md
+      - 发布记录: releases.md
+      - 博客: blog/index.md
+
 markdown_extensions:
   - toc:
       permalink: "#"
 
 extra:
-  alternate:
-    - name: English
-      link: https://mkdocs-ng.github.io/mkdocs-sumi/
-      lang: en
-    - name: 简体中文
-      link: https://mkdocs-ng.github.io/mkdocs-sumi/zh/
-      lang: zh
   social:
     - icon: brand-github
       link: https://github.com/mkdocs-ng/mkdocs-sumi

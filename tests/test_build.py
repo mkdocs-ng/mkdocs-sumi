@@ -217,9 +217,10 @@ def test_git_dates_parse_utc_written_as_z(tmp_path, monkeypatch):
 
     monkeypatch.setattr(plugin.subprocess, 'run', fake_run)
     (tmp_path / 'docs').mkdir()
-    dates = plugin._git_dates(str(tmp_path / 'docs'))
-    assert dates['a.md'] == datetime.datetime(2026, 11, 1, 12, 2, 53, tzinfo=datetime.timezone.utc)
-    assert dates['b.md'].utcoffset() == datetime.timedelta(hours=2)
+    dates = plugin._git_dates([str(tmp_path / 'docs')])
+    key = lambda name: os.path.normcase(os.path.join(os.path.realpath(tmp_path), 'docs', name))  # noqa: E731
+    assert dates[key('a.md')] == datetime.datetime(2026, 11, 1, 12, 2, 53, tzinfo=datetime.timezone.utc)
+    assert dates[key('b.md')].utcoffset() == datetime.timedelta(hours=2)
 
 
 def test_logo_dark(tmp_path):
@@ -301,3 +302,39 @@ def test_social_preview_without_image(tmp_path):
     home = (out / 'index.html').read_text(encoding='utf-8')
     assert 'og:image' not in home
     assert '<meta name="twitter:card" content="summary">' in home
+
+
+def _supports_languages() -> bool:
+    from mkdocs.config.defaults import MkDocsConfig
+
+    return any(name == 'languages' for name, _ in MkDocsConfig._schema)
+
+
+@pytest.mark.skipif(not _supports_languages(), reason='needs MkDocs NG 1.11 (`languages`)')
+def test_multi_language_site(tmp_path):
+    """One config builds both languages; untranslated pages say so and pages list their translations."""
+    config = BASIC + """
+    languages:
+      en: English
+      zh:
+        name: 简体中文
+        site_name: 测试
+    """
+    out = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'index.zh.md': '# 首页\n',
+        'guide.md': '# Guide\n',
+    }, config)
+    home = (out / 'zh' / 'index.html').read_text(encoding='utf-8')
+    assert '<html lang="zh"' in home
+    assert 'sumi-untranslated' not in home
+    assert '<link rel="alternate" hreflang="en" href="https://example.com/">' in home
+    assert '<link rel="alternate" hreflang="zh" href="https://example.com/zh/">' in home
+    assert '<link rel="alternate" hreflang="x-default" href="https://example.com/">' in home
+    guide = (out / 'zh' / 'guide' / 'index.html').read_text(encoding='utf-8')
+    assert 'sumi-untranslated' in guide
+    assert '本页还没有翻译，下面是 English 版本。' in guide
+    assert 'lang="en"' in guide
+    # The language menu links to the same page in the other language.
+    assert 'href="../../guide/" hreflang="en"' in guide
+    assert 'sumi-untranslated' not in (out / 'guide' / 'index.html').read_text(encoding='utf-8')
