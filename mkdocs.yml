@@ -49,10 +49,13 @@ nav:
       - Fields: docs/write/fields.md
       - Tables: docs/write/tables.md
       - Images and figures: docs/write/images.md
+      - Galleries: docs/write/gallery.md
       - File trees: docs/write/filetree.md
       - Diagrams: docs/write/diagrams.md
+      - Charts and mind maps: docs/write/charts.md
       - Math: docs/write/math.md
       - Keys and icons: docs/write/keys-icons.md
+      - Badges: docs/write/badges.md
     - Pages:
       - Landing pages: docs/pages/landing.md
       - Blog: docs/pages/blog.md

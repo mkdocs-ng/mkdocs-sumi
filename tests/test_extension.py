@@ -151,3 +151,50 @@ def test_no_leftover_placeholders(md):
         > ```
         """)
     assert not re.search(r'\x02|wzxhzdk', html)
+
+
+def test_echarts_fence_yaml_and_json(md):
+    html = md('```echarts title="Sales" height="240"\nseries:\n  - type: bar\n    data: [1, 2]\n```')
+    assert '<figure class="sumi-chart">' in html
+    assert 'style="height:240px"' in html
+    assert '"series":[{"type":"bar","data":[1,2]}]' in html
+    assert '<figcaption>Sales</figcaption>' in html
+    assert 'class="sumi-chart"' in md('```echarts\n{"series": []}\n```')
+
+
+def test_echarts_fence_invalid_stays_code(md, caplog):
+    html = md('```echarts\n- just\n- a list\n```')
+    assert 'sumi-chart' not in html
+    assert 'option object' in caplog.text
+
+
+def test_echarts_option_cannot_close_script(md):
+    html = md('```echarts\ntitle: {text: "</script><b>x"}\n```')
+    assert '</script><b>' not in html
+
+
+def test_markmap_outline():
+    from mkdocs_sumi.markdown.charts import outline
+
+    tree = outline('# Root\n## A\n- a1\n  - a11\n- a2\n## B\n')
+    assert tree['content'] == 'Root'
+    assert [c['content'] for c in tree['children']] == ['A', 'B']
+    a = tree['children'][0]
+    assert [c['content'] for c in a['children']] == ['a1', 'a2']
+    assert a['children'][0]['children'][0]['content'] == 'a11'
+    assert outline('- **x**\n- y')['children'][0]['content'] == '<strong>x</strong>'
+
+
+def test_markmap_fence_has_list_fallback(md):
+    html = md('```markmap\n# Root\n- one\n- two\n```')
+    assert 'class="sumi-markmap"' in html
+    assert '<ul><li>one</li><li>two</li></ul>' in html
+
+
+def test_gallery(md):
+    html = md('- ![a](a.png)\n  First\n- ![b](b.png)\n{.gallery cols="2"}')
+    assert '<ul class="sumi-gallery" style="--cols:2">' in html
+
+
+def test_badge_is_plain_attr_list(md):
+    assert '<strong class="badge tip">Stable</strong>' in md('**Stable**{.badge .tip}')

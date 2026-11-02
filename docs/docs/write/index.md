@@ -4,7 +4,7 @@ description: An overview of every component Sumi adds to Markdown, and the one r
 
 # Writing with Sumi
 
-Sumi adds twelve components to Markdown. None of them introduces new syntax that breaks on GitHub: each one is a blockquote, a list, a table, an image or a code fence, sometimes followed by a single attribute line in braces.
+Sumi adds sixteen components to Markdown. None of them introduces new syntax that breaks on GitHub: each one is a blockquote, a list, a table, an image or a code fence, sometimes followed by a single attribute line in braces.
 
 ```markdown
 1. Install the theme
@@ -26,10 +26,14 @@ If a renderer does not know Sumi, the reader still sees a numbered list. Sumi se
 | Fields | table + `{.fields}` | [Fields](fields.md) |
 | Table options | table + `{.wide}`, `{caption="…"}` | [Tables](tables.md) |
 | Figure | image + `{caption="…"}` | [Images](images.md) |
+| Gallery | list of images + `{.gallery}` | [Galleries](gallery.md) |
 | File tree | ```` ```filetree ```` | [File trees](filetree.md) |
 | Diagram | ```` ```mermaid ```` | [Diagrams](diagrams.md) |
+| Chart | ```` ```echarts ```` (YAML or JSON) | [Charts](charts.md) |
+| Mind map | ```` ```markmap ```` | [Mind maps](charts.md#mind-maps) |
 | Math | `$…$`, `$$…$$` | [Math](math.md) |
 | Keys and icons | `++Ctrl+K++`, `:lucide-rocket:` | [Keys and icons](keys-icons.md) |
+| Badge | `**New**{.badge}` | [Badges](badges.md) |
 {.wide}
 
 ## Attribute lines

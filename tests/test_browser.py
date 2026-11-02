@@ -110,6 +110,18 @@ def test_mermaid_and_math_render(base_url, page):
     sync_api.expect(page.locator('.katex').first).to_be_visible()
 
 
+def test_charts_and_mind_maps_render(base_url, page):
+    url, _ = base_url
+    page.goto(url + 'docs/write/charts/', wait_until='networkidle')
+    chart = page.locator('.sumi-chart').first
+    chart.scroll_into_view_if_needed()
+    sync_api.expect(chart.locator('.sumi-chart-canvas svg')).to_be_visible()
+    mm = page.locator('.sumi-markmap').first
+    mm.scroll_into_view_if_needed()
+    sync_api.expect(mm.locator('svg.sumi-markmap-svg g.markmap-node').first).to_be_attached()
+    sync_api.expect(mm.locator('.sumi-markmap-outline')).to_be_hidden()
+
+
 def test_copy_as_markdown(base_url, browser):
     url, _ = base_url
     ctx = browser.new_context(permissions=['clipboard-read', 'clipboard-write'])

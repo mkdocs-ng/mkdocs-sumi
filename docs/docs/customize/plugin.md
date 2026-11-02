@@ -22,6 +22,8 @@ plugins:
 | `language` | string | `theme.locale` | Language of default callout titles and generated text. |
 | `math` | boolean | `true` | Parse `$…$` and `$$…$$` and load KaTeX on pages that use them. |
 | `mermaid` | boolean | `true` | Render `mermaid` fences and load Mermaid on pages that use them. |
+| `echarts` | boolean | `true` | Render `echarts` fences (YAML or JSON options) as charts. See [Charts](../write/charts.md). |
+| `markmap` | boolean | `true` | Render `markmap` fences (Markdown outlines) as mind maps. See [Mind maps](../write/charts.md#mind-maps). |
 | `markdown_copy` | boolean | `true` | Show **Copy as Markdown** and **View as Markdown** when a Markdown copy of the page exists. |
 | `assistant_links` | list | `[]` | Add "Open in Claude" or "Open in ChatGPT" to the page menu: `claude`, `chatgpt`. Off by default, because they send the page address to a third party. |
 | `git_dates` | boolean | `false` | Show "Last updated" from the last Git commit that touched each page. One `git log` runs per build. |

@@ -71,6 +71,8 @@ class SumiConfig(base.Config):
     language = c.Optional(c.Type(str))
     math = c.Type(bool, default=True)
     mermaid = c.Type(bool, default=True)
+    echarts = c.Type(bool, default=True)
+    markmap = c.Type(bool, default=True)
     markdown_copy = c.Type(bool, default=True)
     assistant_links = c.ListOfItems(c.Choice(['chatgpt', 'claude']), default=[])
     git_dates = c.Type(bool, default=False)
@@ -157,7 +159,8 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         if 'mkdocs_sumi.markdown.extension' not in exts:
             exts.append('mkdocs_sumi.markdown.extension')
         config.mdx_configs['mkdocs_sumi.markdown.extension'] = {
-            'language': self.language, 'math': self.config.math, 'mermaid': self.config.mermaid}
+            'language': self.language, 'math': self.config.math, 'mermaid': self.config.mermaid,
+            'echarts': self.config.echarts, 'markmap': self.config.markmap}
         if self.config.git_dates:
             self.git_dates = _git_dates(config.docs_dir)
         self.authors = dict(self.config.blog.authors)
@@ -284,6 +287,10 @@ class SumiPlugin(BasePlugin[SumiConfig]):
             feats.add('mermaid')
         if 'sumi-math' in html or 'class="arithmatex"' in html:
             feats.add('math')
+        if 'class="sumi-chart"' in html:
+            feats.add('echarts')
+        if 'class="sumi-markmap"' in html:
+            feats.add('markmap')
         if 'sumi-tabs' in html or 'tabbed-set' in html:
             feats.add('tabs')
         self.features[page.file.src_uri] = feats
@@ -435,7 +442,7 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         used = set().union(*self.features.values()) if self.features else set()
         vendor = resources.files('mkdocs_sumi').joinpath('vendor')
         dest = os.path.join(config.site_dir, 'assets', 'sumi', 'vendor')
-        wanted = {'mermaid': 'mermaid', 'math': 'katex'}
+        wanted = {'mermaid': 'mermaid', 'math': 'katex', 'echarts': 'echarts', 'markmap': 'markmap'}
         for feature, name in wanted.items():
             if feature in used:
                 with resources.as_file(vendor.joinpath(name)) as src:

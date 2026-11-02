@@ -715,6 +715,56 @@ code.doc-symbol.doc-symbol-type_parameter::after { content: "tparam"; }
 .sumi-math.math-display .katex-display { margin: 0; }
 .sumi-math:not([data-rendered]) { white-space: pre-wrap; }
 
+/* ── Badges, galleries, charts, mind maps ─────────────────────────────── */
+.sumi-prose :is(strong, em, span, code).badge {
+  --c: var(--sumi-fg-2);
+  display: inline-block; padding: 1px 8px; border: 1px solid color-mix(in srgb, var(--c) 30%, transparent); border-radius: 999px;
+  background: color-mix(in srgb, var(--c) 9%, transparent); color: var(--c); font-family: var(--sumi-font); font-size: .78em;
+  font-style: normal; font-weight: 600; line-height: 1.55; letter-spacing: .01em; vertical-align: .1em; white-space: nowrap;
+}
+.sumi-prose .badge.note, .sumi-prose .badge.info { --c: var(--c-note); }
+.sumi-prose .badge.tip, .sumi-prose .badge.success { --c: var(--c-tip); }
+.sumi-prose .badge.important, .sumi-prose .badge.new { --c: var(--c-important); }
+.sumi-prose .badge.warning { --c: var(--c-warning); }
+.sumi-prose .badge.caution, .sumi-prose .badge.danger, .sumi-prose .badge.deprecated { --c: var(--c-caution); }
+.sumi-prose .badge.accent { --c: var(--sumi-accent); }
+.sumi-prose h1 .badge, .sumi-prose h2 .badge, .sumi-prose h3 .badge { font-size: .5em; vertical-align: .35em; }
+
+.sumi-prose ul.sumi-gallery {
+  --cols: 3; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, calc((100% - (var(--cols) - 1) * 12px) / var(--cols))), 1fr));
+  gap: 12px; margin: 1.4em 0; padding: 0; list-style: none;
+}
+.sumi-gallery > li { display: flex; flex-direction: column; gap: 6px; margin: 0; color: var(--sumi-fg-3); font-size: 13.5px; line-height: 1.5; text-align: center; }
+.sumi-gallery > li > p { margin: 0; }
+.sumi-gallery img {
+  display: block; width: 100%; aspect-ratio: var(--ratio, 4 / 3); object-fit: cover; margin: 0 0 4px; border: 1px solid var(--sumi-line);
+  border-radius: var(--sumi-radius); background: var(--sumi-bg-soft);
+}
+.sumi-gallery a { display: block; }
+
+.sumi-chart, .sumi-markmap { position: relative; margin: 1.6em 0; text-align: center; }
+.sumi-chart-canvas, .sumi-markmap-svg, .sumi-markmap-outline {
+  width: 100%; border: 1px solid var(--sumi-line); border-radius: var(--sumi-radius); background: var(--sumi-bg-elev);
+}
+.sumi-chart-source { display: none; margin: 0; text-align: left; }
+.no-js .sumi-chart-canvas { display: none; }
+.no-js .sumi-chart-source { display: block; }
+.sumi-chart figcaption, .sumi-markmap figcaption { margin-top: 10px; color: var(--sumi-fg-3); font-size: 13.5px; }
+.sumi-markmap-svg { display: block; height: var(--h, 420px); }
+.sumi-markmap-outline { padding: 14px 20px; text-align: left; font-size: 14.5px; }
+.sumi-markmap-outline > p { margin: 0 0 6px; font-weight: 650; }
+.sumi-markmap-outline ul { margin: 0; padding-left: 1.2em; }
+.sumi-markmap[data-rendered] .sumi-markmap-outline { display: none; }
+.sumi-markmap .markmap {
+  --markmap-font: 400 14px/20px var(--sumi-font); --markmap-text-color: var(--sumi-fg);
+  --markmap-a-color: var(--sumi-link); --markmap-a-hover-color: var(--sumi-link);
+  --markmap-code-bg: var(--sumi-bg-soft); --markmap-code-color: var(--sumi-fg-2); --markmap-circle-open-bg: var(--sumi-bg-elev);
+}
+@media print {
+  .sumi-markmap-outline { display: block !important; border: 0; }
+  .sumi-markmap-svg { display: none; }
+}
+
 /* ── Tabs ───────────────────────────────────────────────────────────────── */
 .sumi-tabs { margin: 0 0 1.3em; border: 1px solid var(--sumi-line); border-radius: var(--sumi-radius); background: var(--sumi-code-bg); overflow: hidden; }
 .sumi-tablist { display: flex; gap: 2px; padding: 0 8px; overflow-x: auto; border-bottom: 1px solid var(--sumi-line); background: var(--sumi-code-head); scrollbar-width: none; }

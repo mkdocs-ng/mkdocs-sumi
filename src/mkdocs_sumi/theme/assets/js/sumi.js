@@ -442,6 +442,79 @@
     });
   }
 
+  // Run fn(el) once el comes within 400px of the viewport.
+  function whenNear(els, fn) {
+    if (!('IntersectionObserver' in window)) { els.forEach(fn); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        fn(e.target);
+      });
+    }, { rootMargin: '400px 0px' });
+    els.forEach(function (el) { io.observe(el); });
+  }
+  function readJSON(el) {
+    try { return JSON.parse(el.textContent); } catch (e) { return null; }
+  }
+
+  /* ── ECharts (lazy) ────────────────────────────────────────────────── */
+  if (features.indexOf('echarts') >= 0) {
+    var charts = [];
+    var echartsReady = null;
+    var drawChart = function (fig) {
+      var box = $('.sumi-chart-canvas', fig);
+      var option = readJSON($('.sumi-chart-option', fig));
+      if (!box || !option) return;
+      if (fig._chart) fig._chart.dispose();
+      var css = getComputedStyle(root);
+      var dark = root.dataset.theme === 'dark';
+      var chart = window.echarts.init(box, dark ? 'dark' : null, { renderer: 'svg' });
+      // The accent first, then Sumi's other named accents.
+      var palette = dark
+        ? ['#86b4ea', '#e7b45a', '#9ccc6e', '#dc93d4', '#6fd0c6', '#ef7258', '#bdb6aa']
+        : ['#2f5d93', '#9a6512', '#4b6b2f', '#7a3b74', '#1f6f6a', '#c4432b', '#75716a'];
+      var accent = css.getPropertyValue('--sumi-accent').trim();
+      if (accent) palette = [accent].concat(palette.filter(function (c) { return c.toLowerCase() !== accent.toLowerCase(); }));
+      chart.setOption(Object.assign({
+        color: palette,
+        backgroundColor: 'transparent',
+        textStyle: { fontFamily: css.getPropertyValue('--sumi-font').trim() }
+      }, option));
+      fig._chart = chart;
+      fig.dataset.rendered = '';
+    };
+    whenNear($$('.sumi-chart'), function (fig) {
+      echartsReady = echartsReady || loadScript(url('assets/sumi/vendor/echarts/echarts.min.js'));
+      echartsReady.then(function () { drawChart(fig); charts.push(fig); }).catch(function () {});
+    });
+    listeners.push(function () { charts.forEach(drawChart); });
+    if ('ResizeObserver' in window) {
+      var ro = new ResizeObserver(function () { charts.forEach(function (f) { if (f._chart) f._chart.resize(); }); });
+      $$('.sumi-chart').forEach(function (f) { ro.observe(f); });
+    }
+  }
+
+  /* ── Markmap (lazy) ────────────────────────────────────────────────── */
+  if (features.indexOf('markmap') >= 0) {
+    var markmapReady = null;
+    whenNear($$('.sumi-markmap'), function (fig) {
+      var data = readJSON($('.sumi-markmap-data', fig));
+      if (!data) return;
+      markmapReady = markmapReady || loadScript(url('assets/sumi/vendor/markmap/d3.min.js')).then(function () {
+        return loadScript(url('assets/sumi/vendor/markmap/markmap-view.js'));
+      });
+      markmapReady.then(function () {
+        var ns = 'http://www.w3.org/2000/svg';
+        var svgEl = doc.createElementNS(ns, 'svg');
+        svgEl.setAttribute('class', 'sumi-markmap-svg');
+        fig.insertBefore(svgEl, fig.firstChild);
+        window.markmap.Markmap.create(svgEl, { duration: 250, maxWidth: 260, initialExpandLevel: -1 }, data);
+        fig.dataset.rendered = '';
+      }).catch(function () {});
+    });
+  }
+
   /* ── KaTeX (lazy) ──────────────────────────────────────────────────── */
   if (features.indexOf('math') >= 0) {
     loadScript(url('assets/sumi/vendor/katex/katex.min.js')).then(function () {
