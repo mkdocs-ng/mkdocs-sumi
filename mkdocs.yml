@@ -25,6 +25,13 @@ markdown_extensions:
       permalink: "#"
 
 extra:
+  alternate:
+    - name: English
+      link: https://mkdocs-ng.github.io/mkdocs-sumi/
+      lang: en
+    - name: 简体中文
+      link: https://mkdocs-ng.github.io/mkdocs-sumi/zh/
+      lang: zh
   social:
     - icon: brand-github
       link: https://github.com/mkdocs-ng/mkdocs-sumi
