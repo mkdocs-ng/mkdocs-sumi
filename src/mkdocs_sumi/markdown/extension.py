@@ -12,6 +12,9 @@ copy that MkDocs publishes for LLMs:
 - adjacent fences with `{tab="…"}` become a tab set;
 - `title="…"` on a fence adds a file name header;
 - ```` ```filetree ```` and ```` ```mermaid ```` fences become a file tree and a diagram;
+- ```` ```echarts ```` (YAML or JSON) and ```` ```markmap ```` fences become a chart and a mind map;
+- `{.gallery}` after a list of images makes an image grid;
+- `**New**{.badge}` is a status badge (plain `attr_list`, styled by the theme);
 - `$…$` and `$$…$$` are math, rendered by KaTeX in the browser;
 - `++Ctrl+K++` is a key chord and `:lucide-rocket:` an inline icon.
 """
@@ -30,7 +33,7 @@ from markdown.treeprocessors import Treeprocessor
 from markdown.util import AtomicString
 
 from mkdocs_sumi.icons import has_icon, icon
-from mkdocs_sumi.markdown import filetree
+from mkdocs_sumi.markdown import charts, filetree
 from mkdocs_sumi.markdown.attrs import Attrs, match_attr_line, parse_attrs
 
 # ---------------------------------------------------------------------------
@@ -175,7 +178,15 @@ class FencePreprocessor(Preprocessor):
             title = f'<figcaption>{escape(f.title)}</figcaption>' if f.title else ''
             html = f'<figure class="sumi-diagram"><pre class="mermaid">{escape(body)}</pre>{title}</figure>'
             return ['', ind + self._stash(html), '']
-        if f.tab is None and f.title is None:
+        if f.lang in ('echarts', 'markmap') and self.ext.getConfig(f.lang):
+            _, height = _take(f.info, 'height')
+            body = '\n'.join(ln[len(ind):] if ln.startswith(ind) else ln for ln in f.lines)
+            html = charts.echarts(body, f.title, height) if f.lang == 'echarts' else charts.markmap(body, f.title, height)
+            if html is not None:
+                return ['', ind + self._stash(html), '']
+        if ind and self._nested_fences_unsupported():
+            block = self._indented_block(f)
+        elif f.tab is None and f.title is None:
             block = [f.raw, *f.lines, f.closer]
         else:
             block = [f'{ind}{f.opener}{f.info}', *f.lines, f.closer]
@@ -184,6 +195,21 @@ class FencePreprocessor(Preprocessor):
                     f'<div class="sumi-code-title">{icon("file-code")}<span>{escape(f.title)}</span></div>')
             return ['', ind + self._stash(head), '', *block, '', ind + self._stash('</div>'), '']
         return block
+
+    def _nested_fences_unsupported(self) -> bool:
+        # Python-Markdown's `fenced_code` only sees fences at the start of a
+        # line, so a fence inside a list item or callout came out as inline
+        # code. `pymdownx.superfences` handles nesting itself.
+        names = {type(e).__module__ for e in self.md.registeredExtensions}
+        return 'pymdownx.superfences' not in names
+
+    def _indented_block(self, f: _Fence) -> list[str]:
+        """Rewrite an indented fence as an indented code block, which nests."""
+        ind = f.indent + '    '
+        names = {type(e).__module__ for e in self.md.registeredExtensions}
+        body = [ln[len(f.indent):] if ln.startswith(f.indent) else ln.lstrip() for ln in f.lines]
+        head = [f'{ind}:::{f.lang}'] if f.lang and 'markdown.extensions.codehilite' in names else []
+        return ['', *head, *[(ind + ln) if ln.strip() else '' for ln in body], '']
 
     def run(self, lines: list[str]) -> list[str]:
         items = self._scan(lines)
@@ -366,6 +392,11 @@ class ComponentTreeprocessor(Treeprocessor):
             cols = values.pop('cols', None)
             if cols:
                 el.set('style', f'--cols:{int(cols) if cols.isdigit() else 2}')
+        if el.tag == 'ul' and 'gallery' in classes:
+            classes[classes.index('gallery')] = 'sumi-gallery'
+            cols = values.pop('cols', None)
+            if cols:
+                el.set('style', f'--cols:{int(cols) if cols.isdigit() else 3}')
         if el.tag == 'ul' and 'checklist' in classes:
             classes[classes.index('checklist')] = 'sumi-checklist'
         if el.tag == 'table':
@@ -544,6 +575,8 @@ class SumiExtension(Extension):
             'language': ['en', 'Language used for default callout titles.'],
             'math': [True, 'Enable `$…$` and `$$…$$` math.'],
             'mermaid': [True, 'Render ```mermaid fences as diagrams.'],
+            'echarts': [True, 'Render ```echarts fences (YAML or JSON options) as charts.'],
+            'markmap': [True, 'Render ```markmap fences (Markdown outlines) as mind maps.'],
             'keys': [True, 'Enable `++Ctrl+K++` key chords.'],
             'icons': [True, 'Enable `:lucide-name:` inline icons.'],
         }

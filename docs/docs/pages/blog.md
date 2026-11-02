@@ -44,6 +44,7 @@ The rest of the post.
 | `authors` | list | Author ids from `.authors.yml`, or plain names. |
 | `tags` | list | Shown on the post and as filters on the index. `categories` is accepted too. |
 | `description` | string | The excerpt on the index and the summary in the feed. Without it, the text before `<!-- more -->` is used. |
+| `image` | string | A cover image, as a path from `docs/`. Shown at the top of the post, on its card in the card view, and as the preview when the post is shared. Set `hide_cover: true` to keep it off the post itself. |
 | `draft` | boolean | Build the page but leave it out of the index and the feed. |
 {.fields}
 
@@ -64,6 +65,19 @@ The format is the same as the Material blog plugin's, so an existing file can be
 
 Without `docs/blog/index.md`, Sumi creates one titled "Blog". To add an introduction, create the file; any Markdown in it is shown above the list of posts. Tag filters appear when posts have tags, and a filter can be linked to as `blog/#tag=release`.
 
+## List and card views
+
+The index shows posts as a list, or as a grid of cards with cover images. Readers can switch with the buttons next to the tag filters; their choice is remembered. Pick the default with `blog.layout`:
+
+```yaml title="mkdocs.yml"
+plugins:
+  - sumi:
+      blog:
+        layout: cards    # or list (the default)
+```
+
+A post without an `image` gets a cover drawn from the accent colour and its first tag.
+
 ## Feed
 
 An Atom feed is written to `blog/feed.xml` and linked from every page's `<head>`, so feed readers find it from any URL. It needs `site_url` to produce absolute links.
@@ -77,4 +91,5 @@ plugins:
         dir: blog        # folder under docs/ that contains posts
         feed: true
         feed_items: 20
+        layout: list     # or cards
 ```

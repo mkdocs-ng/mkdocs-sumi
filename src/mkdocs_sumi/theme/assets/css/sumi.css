@@ -39,7 +39,7 @@
   --sumi-bg-sunken: #eae8e2;
   --sumi-fg: #1d1c1a;
   --sumi-fg-2: #4a4741;
-  --sumi-fg-3: #75716a;
+  --sumi-fg-3: #6c6861;
   --sumi-line: rgba(29, 28, 26, 0.1);
   --sumi-line-2: rgba(29, 28, 26, 0.17);
   --sumi-link: #2b5d8e;
@@ -62,7 +62,7 @@
 
   --hl-kw: #b23a26;
   --hl-str: #4b7224;
-  --hl-com: #8b867d;
+  --hl-com: #6f6b63;
   --hl-fn: #2b5d8e;
   --hl-num: #985f0c;
   --hl-type: #7a3b74;
@@ -114,7 +114,7 @@
 
   --hl-kw: #f2896d;
   --hl-str: #a8d17f;
-  --hl-com: #868177;
+  --hl-com: #948f85;
   --hl-fn: #8fbcec;
   --hl-num: #e6b56a;
   --hl-type: #d99bd2;
@@ -693,9 +693,77 @@ code.doc-symbol.doc-symbol-type_parameter::after { content: "tparam"; }
 }
 .sumi-diagram pre.mermaid[data-processed] { white-space: normal; color: inherit; }
 .sumi-diagram pre.mermaid svg { max-width: 100%; height: auto; }
+.sumi-diagram { position: relative; }
+.sumi-diagram-tools {
+  position: absolute; top: 8px; right: 8px; display: flex; gap: 2px; padding: 2px; border: 1px solid var(--sumi-line); border-radius: 8px;
+  background: var(--sumi-bg-elev); opacity: 0; transition: opacity .15s;
+}
+.sumi-diagram:hover .sumi-diagram-tools, .sumi-diagram:focus-within .sumi-diagram-tools { opacity: 1; }
+@media (hover: none) { .sumi-diagram-tools { opacity: 1; } }
+.sumi-diagram-tools .sumi-icon-btn { width: 30px; height: 30px; }
+.sumi-diagram-tools .sumi-icon-btn .sumi-icon { width: 16px; height: 16px; }
+.sumi-diagram-view {
+  width: 96vw; max-width: 96vw; height: 92vh; max-height: 92vh; padding: 0; border: 1px solid var(--sumi-line);
+  border-radius: 12px; background: var(--sumi-bg-elev); color: var(--sumi-fg); box-shadow: var(--sumi-shadow-lg);
+}
+.sumi-diagram-view::backdrop { background: rgba(15, 14, 12, .42); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+.sumi-diagram-view-body { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 48px 24px 24px; overflow: auto; }
+.sumi-diagram-view-body svg { width: 100%; height: 100%; max-width: none; }
+.sumi-diagram-view-close { position: absolute; top: 10px; right: 10px; z-index: 1; }
+@media print { .sumi-diagram-tools { display: none; } }
 .sumi-math.math-display { margin: 1.4em 0; overflow-x: auto; overflow-y: hidden; text-align: center; font-family: var(--sumi-font-mono); color: var(--sumi-fg-2); }
 .sumi-math.math-display .katex-display { margin: 0; }
 .sumi-math:not([data-rendered]) { white-space: pre-wrap; }
+
+/* ── Badges, galleries, charts, mind maps ─────────────────────────────── */
+.sumi-prose :is(strong, em, span, code).badge {
+  --c: var(--sumi-fg-2);
+  display: inline-block; padding: 1px 8px; border: 1px solid color-mix(in srgb, var(--c) 30%, transparent); border-radius: 999px;
+  background: color-mix(in srgb, var(--c) 9%, transparent); color: var(--c); font-family: var(--sumi-font); font-size: .78em;
+  font-style: normal; font-weight: 600; line-height: 1.55; letter-spacing: .01em; vertical-align: .1em; white-space: nowrap;
+}
+.sumi-prose .badge.note, .sumi-prose .badge.info { --c: var(--c-note); }
+.sumi-prose .badge.tip, .sumi-prose .badge.success { --c: var(--c-tip); }
+.sumi-prose .badge.important, .sumi-prose .badge.new { --c: var(--c-important); }
+.sumi-prose .badge.warning { --c: var(--c-warning); }
+.sumi-prose .badge.caution, .sumi-prose .badge.danger, .sumi-prose .badge.deprecated { --c: var(--c-caution); }
+.sumi-prose .badge.accent { --c: var(--sumi-accent); }
+.sumi-prose h1 .badge, .sumi-prose h2 .badge, .sumi-prose h3 .badge { font-size: .5em; vertical-align: .35em; }
+
+.sumi-prose ul.sumi-gallery {
+  --cols: 3; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, calc((100% - (var(--cols) - 1) * 12px) / var(--cols))), 1fr));
+  gap: 12px; margin: 1.4em 0; padding: 0; list-style: none;
+}
+.sumi-gallery > li { display: flex; flex-direction: column; gap: 6px; margin: 0; color: var(--sumi-fg-3); font-size: 13.5px; line-height: 1.5; text-align: center; }
+.sumi-gallery > li > p { margin: 0; }
+.sumi-gallery img {
+  display: block; width: 100%; aspect-ratio: var(--ratio, 4 / 3); object-fit: cover; margin: 0 0 4px; border: 1px solid var(--sumi-line);
+  border-radius: var(--sumi-radius); background: var(--sumi-bg-soft);
+}
+.sumi-gallery a { display: block; }
+
+.sumi-chart, .sumi-markmap { position: relative; margin: 1.6em 0; text-align: center; }
+.sumi-chart-canvas, .sumi-markmap-svg, .sumi-markmap-outline {
+  width: 100%; border: 1px solid var(--sumi-line); border-radius: var(--sumi-radius); background: var(--sumi-bg-elev);
+}
+.sumi-chart-source { display: none; margin: 0; text-align: left; }
+.no-js .sumi-chart-canvas { display: none; }
+.no-js .sumi-chart-source { display: block; }
+.sumi-chart figcaption, .sumi-markmap figcaption { margin-top: 10px; color: var(--sumi-fg-3); font-size: 13.5px; }
+.sumi-markmap-svg { display: block; height: var(--h, 420px); }
+.sumi-markmap-outline { padding: 14px 20px; text-align: left; font-size: 14.5px; }
+.sumi-markmap-outline > p { margin: 0 0 6px; font-weight: 650; }
+.sumi-markmap-outline ul { margin: 0; padding-left: 1.2em; }
+.sumi-markmap[data-rendered] .sumi-markmap-outline { display: none; }
+.sumi-markmap .markmap {
+  --markmap-font: 400 14px/20px var(--sumi-font); --markmap-text-color: var(--sumi-fg);
+  --markmap-a-color: var(--sumi-link); --markmap-a-hover-color: var(--sumi-link);
+  --markmap-code-bg: var(--sumi-bg-soft); --markmap-code-color: var(--sumi-fg-2); --markmap-circle-open-bg: var(--sumi-bg-elev);
+}
+@media print {
+  .sumi-markmap-outline { display: block !important; border: 0; }
+  .sumi-markmap-svg { display: none; }
+}
 
 /* ── Tabs ───────────────────────────────────────────────────────────────── */
 .sumi-tabs { margin: 0 0 1.3em; border: 1px solid var(--sumi-line); border-radius: var(--sumi-radius); background: var(--sumi-code-bg); overflow: hidden; }
@@ -791,6 +859,8 @@ a.sumi-meta:hover { color: var(--sumi-fg); }
 .sumi-footer a { color: var(--sumi-fg-2); }
 .sumi-footer a:hover { color: var(--sumi-fg); }
 .sumi-footer-left { display: flex; flex-direction: column; gap: 2px; }
+.sumi-footer-left a { text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); text-underline-offset: 3px; }
+.sumi-footer-left a:hover { text-decoration-color: currentColor; }
 .sumi-footer-right { display: flex; align-items: center; gap: 2px; }
 .sumi-footer-right .sumi-icon-btn { width: 34px; height: 34px; }
 .sumi-footer-right .sumi-icon-btn .sumi-icon { width: 17px; height: 17px; }
@@ -1053,7 +1123,38 @@ a.sumi-feature:hover .sumi-feature-more .sumi-icon { transform: translateX(3px);
 .sumi-tag.is-active span { color: color-mix(in srgb, var(--sumi-bg) 70%, transparent); }
 .sumi-tag--static { height: 24px; padding: 0 9px; border-color: transparent; background: var(--sumi-bg-soft); font-size: 12.5px; cursor: inherit; }
 a.sumi-tag--static { cursor: pointer; }
+.sumi-blog-bar { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 28px; }
+.sumi-blog-bar .sumi-tag-filter { margin-bottom: 0; }
+.sumi-view-toggle { display: flex; flex: none; gap: 2px; margin-left: auto; padding: 2px; border: 1px solid var(--sumi-line); border-radius: 9px; background: var(--sumi-bg-elev); }
+.sumi-view-toggle .sumi-icon-btn { width: 30px; height: 30px; }
+.sumi-view-toggle .sumi-icon-btn .sumi-icon { width: 16px; height: 16px; }
+.sumi-view-toggle [aria-pressed="true"] { background: var(--sumi-bg-soft); color: var(--sumi-fg); }
+.no-js .sumi-view-toggle { display: none; }
 .sumi-post-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--sumi-line); }
+.sumi-post-cover { display: none; }
+.sumi-blog[data-view="cards"] { max-width: 72rem; }
+.sumi-blog[data-view="cards"] .sumi-post-list {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 20px; border-top: 0;
+}
+.sumi-blog[data-view="cards"] .sumi-post-card { overflow: hidden; border: 1px solid var(--sumi-line); border-radius: 14px; background: var(--sumi-bg-elev); transition: border-color .15s, box-shadow .15s, transform .15s var(--sumi-ease); }
+.sumi-blog[data-view="cards"] .sumi-post-card:hover { border-color: var(--sumi-line-2); box-shadow: var(--sumi-shadow-md); transform: translateY(-2px); }
+.sumi-blog[data-view="cards"] .sumi-post-link { display: flex; flex-direction: column; height: 100%; padding: 0 18px 18px; }
+.sumi-blog[data-view="cards"] .sumi-post-cover {
+  display: grid; place-items: center; aspect-ratio: 16 / 9; margin: 0 -18px 16px; overflow: hidden; border-bottom: 1px solid var(--sumi-line); background: var(--sumi-bg-soft);
+}
+.sumi-blog[data-view="cards"] .sumi-post-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s var(--sumi-ease); }
+.sumi-blog[data-view="cards"] .sumi-post-card:hover .sumi-post-cover img { transform: scale(1.03); }
+.sumi-post-cover--blank {
+  background:
+    radial-gradient(circle at 78% 30%, color-mix(in srgb, var(--sumi-accent) 22%, transparent), transparent 55%),
+    linear-gradient(135deg, var(--sumi-bg-soft), var(--sumi-bg-sunken)) !important;
+}
+.sumi-post-cover--blank span { color: color-mix(in srgb, var(--sumi-accent) 80%, var(--sumi-fg)); font-family: var(--sumi-font-mono); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; }
+.sumi-blog[data-view="cards"] .sumi-post-title { font-size: 1.15rem; }
+.sumi-blog[data-view="cards"] .sumi-post-excerpt { font-size: 14.5px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.sumi-blog[data-view="cards"] .sumi-post-foot { margin-top: auto; }
+.sumi-post-hero { margin: 4px 0 28px; }
+.sumi-post-hero img { display: block; width: 100%; max-height: 420px; object-fit: cover; border: 1px solid var(--sumi-line); border-radius: 14px; }
 .sumi-post-card { border-bottom: 1px solid var(--sumi-line); }
 .sumi-post-link { display: block; padding: 26px 4px; color: var(--sumi-fg-2); text-decoration: none; }
 .sumi-post-link:hover { color: var(--sumi-fg-2); }

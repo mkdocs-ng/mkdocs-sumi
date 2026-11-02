@@ -3,7 +3,7 @@ template: landing.html
 title: Sumi
 description: A modern, local-first documentation theme for MkDocs.
 hero:
-  eyebrow: "Sumi 0.1 · local-first · for MkDocs"
+  eyebrow: "Local-first · for MkDocs NG"
   title: "Markdown in.<br>*Beautiful docs* out."
   text: "Sumi is a documentation theme for MkDocs that keeps your content plain Markdown, ships every asset with your site, and writes pages that people *and* AI agents can read."
   actions:
@@ -83,8 +83,8 @@ sections:
   - type: stats
     items:
       - {value: "0", label: "runtime services or CDNs"}
-      - {value: "12", label: "native-Markdown components"}
-      - {value: "9 KB", label: "core script, gzipped. No framework."}
+      - {value: "16", label: "native-Markdown components"}
+      - {value: "11 KB", label: "core script, gzipped. No framework."}
       - {value: "2", label: "interface languages: English, 中文"}
   - type: steps
     eyebrow: Three minutes

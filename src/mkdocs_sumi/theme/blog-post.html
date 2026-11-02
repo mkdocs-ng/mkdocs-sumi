@@ -14,6 +14,9 @@
     </div>
   </div>
   {%- endif %}
+  {%- if page.meta.image and not page.meta.hide_cover %}
+  <figure class="sumi-post-hero"><img src="{{ page.meta.image | url }}" alt="{{ page.meta.image_alt or '' }}"></figure>
+  {%- endif %}
   <div class="sumi-content sumi-prose">{{ page.content }}</div>
   {%- if sumi.post and sumi.post.authors %}
   <div class="sumi-post-authors">

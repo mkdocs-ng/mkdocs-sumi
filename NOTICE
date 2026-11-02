@@ -17,6 +17,12 @@ to each component in the package.
   Copyright Knut Sveidqvist.
 - KaTeX (src/mkdocs_sumi/vendor/katex) — MIT License,
   Copyright Khan Academy and other contributors.
+- Apache ECharts (src/mkdocs_sumi/vendor/echarts) — Apache License 2.0,
+  Copyright The Apache Software Foundation. See vendor/echarts/NOTICE.
+- D3 (src/mkdocs_sumi/vendor/markmap/d3.min.js) — ISC License,
+  Copyright Mike Bostock.
+- markmap-view (src/mkdocs_sumi/vendor/markmap/markmap-view.js) — MIT License,
+  Copyright Gerald.
 
 Sumi's design principles were inspired by Oink (https://github.com/pgsty/oink),
 a documentation distribution for Hugo by Feng Ruohang. No code from Oink is

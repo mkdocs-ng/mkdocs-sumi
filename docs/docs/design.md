@@ -22,7 +22,7 @@ A built Sumi site makes no network requests that you did not configure. Fonts (I
 
 ## Pay only for what you use
 
-The core of the theme is one stylesheet and one script with no framework. Heavier runtimes are loaded on demand: Mermaid only on pages with a diagram, KaTeX only on pages with a formula, the search index only when the palette is opened. Vendor files are copied into the site only if some page uses them.
+The core of the theme is one stylesheet and one script with no framework. Heavier runtimes are loaded on demand: Mermaid only when a diagram nears the viewport, and only the code for that diagram type, KaTeX only on pages with a formula, the search index only when the palette is opened. Vendor files are copied into the site only if some page uses them.
 
 ## Degrade gracefully
 

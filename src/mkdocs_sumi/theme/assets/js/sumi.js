@@ -1,6 +1,7 @@
 /*!
  * Sumi theme runtime. Vanilla JavaScript, no dependencies.
- * Heavy runtimes (Mermaid, KaTeX) are loaded only on pages that use them.
+ * Heavy runtimes (Mermaid, KaTeX) are loaded only on pages that use them;
+ * Mermaid is an ES module split per diagram type and loads near the viewport.
  */
 (function () {
   'use strict';
@@ -317,34 +318,201 @@
   }
 
   /* ── Mermaid (lazy) ────────────────────────────────────────────────── */
+  // The ES module build is split per diagram type, so a page with one
+  // flowchart fetches the core and the flowchart code only. Nothing loads
+  // until a diagram comes near the viewport, and diagrams render one by one.
   var features = S.features || [];
   if (features.indexOf('mermaid') >= 0) {
     var diagrams = $$('pre.mermaid');
-    diagrams.forEach(function (d) { d.dataset.source = d.textContent; });
-    var render = function () {
+    var mermaidReady = null;
+    var queue = Promise.resolve();
+    var mermaidConfig = function () {
       var dark = root.dataset.theme === 'dark';
       var css = getComputedStyle(root);
-      window.mermaid.initialize({
+      var v = function (name) { return css.getPropertyValue(name).trim(); };
+      return {
         startOnLoad: false, securityLevel: 'strict', theme: 'base',
-        fontFamily: css.getPropertyValue('--sumi-font'),
+        fontFamily: v('--sumi-font'),
         themeVariables: {
           darkMode: dark, fontSize: '14px',
-          background: css.getPropertyValue('--sumi-bg-elev').trim(),
-          primaryColor: css.getPropertyValue('--sumi-bg-soft').trim(),
-          primaryBorderColor: css.getPropertyValue('--sumi-line-2').trim(),
-          primaryTextColor: css.getPropertyValue('--sumi-fg').trim(),
-          lineColor: css.getPropertyValue('--sumi-fg-3').trim(),
-          secondaryColor: css.getPropertyValue('--sumi-bg-sunken').trim(),
-          tertiaryColor: css.getPropertyValue('--sumi-bg-elev').trim(),
-          noteBkgColor: dark ? '#3a3220' : '#fbf3dc', noteTextColor: css.getPropertyValue('--sumi-fg').trim()
+          background: v('--sumi-bg-elev'),
+          primaryColor: v('--sumi-bg-soft'),
+          primaryBorderColor: v('--sumi-line-2'),
+          primaryTextColor: v('--sumi-fg'),
+          lineColor: v('--sumi-fg-3'),
+          secondaryColor: v('--sumi-bg-sunken'),
+          tertiaryColor: v('--sumi-bg-elev'),
+          noteBkgColor: dark ? '#3a3220' : '#fbf3dc', noteTextColor: v('--sumi-fg')
         }
-      });
-      diagrams.forEach(function (d) { d.removeAttribute('data-processed'); d.innerHTML = esc(d.dataset.source); });
-      return window.mermaid.run({ nodes: diagrams });
+      };
     };
-    loadScript(url('assets/sumi/vendor/mermaid/mermaid.min.js')).then(render).then(function () {
-      listeners.push(function () { render(); });
-    }).catch(function () {});
+    var loadMermaid = function () {
+      if (!mermaidReady) {
+        var src = new URL(url('assets/sumi/vendor/mermaid/mermaid.esm.min.js'), location.href).href;
+        mermaidReady = import(src).then(function (m) {
+          window.mermaid = m.default;
+          return m.default;
+        });
+      }
+      return mermaidReady;
+    };
+    var renderOne = function (d) {
+      queue = queue.then(function () {
+        return loadMermaid().then(function (mermaid) {
+          mermaid.initialize(mermaidConfig());
+          d.removeAttribute('data-processed');
+          d.innerHTML = esc(d.dataset.source);
+          return mermaid.run({ nodes: [d] });
+        }).then(function () {
+          d.dataset.rendered = '';
+          diagramTools(d);
+        }).catch(function () { d.classList.add('is-failed'); });
+      });
+      return queue;
+    };
+    diagrams.forEach(function (d) { d.dataset.source = d.textContent; });
+    if ('IntersectionObserver' in window) {
+      var seen = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          seen.unobserve(e.target);
+          renderOne(e.target);
+        });
+      }, { rootMargin: '400px 0px' });
+      diagrams.forEach(function (d) { seen.observe(d); });
+    } else {
+      diagrams.forEach(renderOne);
+    }
+    // Redraw diagrams that are already drawn when the colour scheme changes.
+    listeners.push(function () {
+      diagrams.forEach(function (d) { if (d.hasAttribute('data-rendered')) renderOne(d); });
+    });
+    window.addEventListener('beforeprint', function () {
+      diagrams.forEach(function (d) { if (!d.hasAttribute('data-rendered')) renderOne(d); });
+    });
+  }
+
+  // Expand, copy source and download buttons for a drawn diagram.
+  function diagramTools(d) {
+    var fig = d.closest('.sumi-diagram');
+    if (!fig || $('.sumi-diagram-tools', fig)) return;
+    var bar = doc.createElement('div');
+    bar.className = 'sumi-diagram-tools';
+    var btn = function (label, icon, fn) {
+      var b = doc.createElement('button');
+      b.type = 'button'; b.className = 'sumi-icon-btn';
+      b.setAttribute('aria-label', label); b.title = label;
+      b.innerHTML = icon;
+      b.addEventListener('click', fn);
+      bar.appendChild(b);
+    };
+    var icon = function (paths) {
+      return '<svg class="sumi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + paths + '</svg>';
+    };
+    btn(t('diagram_expand'), icon('<path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/>'), function () {
+      var view = $('.sumi-diagram-view');
+      if (!view) return;
+      var box = $('.sumi-diagram-view-body', view);
+      box.innerHTML = '';
+      var svgEl = $('svg', d);
+      if (!svgEl) return;
+      var clone = svgEl.cloneNode(true);
+      clone.removeAttribute('style'); clone.removeAttribute('width'); clone.removeAttribute('height');
+      box.appendChild(clone);
+      view.showModal();
+    });
+    btn(t('diagram_source'), svg('copy'), function () {
+      copyText(d.dataset.source.trim()).then(function () { toast(t('copied')); }, function () {});
+    });
+    btn(t('diagram_download'), icon('<path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/>'), function () {
+      var svgEl = $('svg', d);
+      if (!svgEl) return;
+      var blob = new Blob(['<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(svgEl)], { type: 'image/svg+xml' });
+      var a = doc.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = 'diagram.svg';
+      doc.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    });
+    fig.appendChild(bar);
+  }
+  var diagramView = $('.sumi-diagram-view');
+  if (diagramView) {
+    diagramView.addEventListener('click', function (e) {
+      if (e.target === diagramView || e.target.closest('[data-close]')) diagramView.close();
+    });
+  }
+
+  // Run fn(el) once el comes within 400px of the viewport.
+  function whenNear(els, fn) {
+    if (!('IntersectionObserver' in window)) { els.forEach(fn); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        fn(e.target);
+      });
+    }, { rootMargin: '400px 0px' });
+    els.forEach(function (el) { io.observe(el); });
+  }
+  function readJSON(el) {
+    try { return JSON.parse(el.textContent); } catch (e) { return null; }
+  }
+
+  /* ── ECharts (lazy) ────────────────────────────────────────────────── */
+  if (features.indexOf('echarts') >= 0) {
+    var charts = [];
+    var echartsReady = null;
+    var drawChart = function (fig) {
+      var box = $('.sumi-chart-canvas', fig);
+      var option = readJSON($('.sumi-chart-option', fig));
+      if (!box || !option) return;
+      if (fig._chart) fig._chart.dispose();
+      var css = getComputedStyle(root);
+      var dark = root.dataset.theme === 'dark';
+      var chart = window.echarts.init(box, dark ? 'dark' : null, { renderer: 'svg' });
+      // The accent first, then Sumi's other named accents.
+      var palette = dark
+        ? ['#86b4ea', '#e7b45a', '#9ccc6e', '#dc93d4', '#6fd0c6', '#ef7258', '#bdb6aa']
+        : ['#2f5d93', '#9a6512', '#4b6b2f', '#7a3b74', '#1f6f6a', '#c4432b', '#75716a'];
+      var accent = css.getPropertyValue('--sumi-accent').trim();
+      if (accent) palette = [accent].concat(palette.filter(function (c) { return c.toLowerCase() !== accent.toLowerCase(); }));
+      chart.setOption(Object.assign({
+        color: palette,
+        backgroundColor: 'transparent',
+        textStyle: { fontFamily: css.getPropertyValue('--sumi-font').trim() }
+      }, option));
+      fig._chart = chart;
+      fig.dataset.rendered = '';
+    };
+    whenNear($$('.sumi-chart'), function (fig) {
+      echartsReady = echartsReady || loadScript(url('assets/sumi/vendor/echarts/echarts.min.js'));
+      echartsReady.then(function () { drawChart(fig); charts.push(fig); }).catch(function () {});
+    });
+    listeners.push(function () { charts.forEach(drawChart); });
+    if ('ResizeObserver' in window) {
+      var ro = new ResizeObserver(function () { charts.forEach(function (f) { if (f._chart) f._chart.resize(); }); });
+      $$('.sumi-chart').forEach(function (f) { ro.observe(f); });
+    }
+  }
+
+  /* ── Markmap (lazy) ────────────────────────────────────────────────── */
+  if (features.indexOf('markmap') >= 0) {
+    var markmapReady = null;
+    whenNear($$('.sumi-markmap'), function (fig) {
+      var data = readJSON($('.sumi-markmap-data', fig));
+      if (!data) return;
+      markmapReady = markmapReady || loadScript(url('assets/sumi/vendor/markmap/d3.min.js')).then(function () {
+        return loadScript(url('assets/sumi/vendor/markmap/markmap-view.js'));
+      });
+      markmapReady.then(function () {
+        var ns = 'http://www.w3.org/2000/svg';
+        var svgEl = doc.createElementNS(ns, 'svg');
+        svgEl.setAttribute('class', 'sumi-markmap-svg');
+        fig.insertBefore(svgEl, fig.firstChild);
+        window.markmap.Markmap.create(svgEl, { duration: 250, maxWidth: 260, initialExpandLevel: -1 }, data);
+        fig.dataset.rendered = '';
+      }).catch(function () {});
+    });
   }
 
   /* ── KaTeX (lazy) ──────────────────────────────────────────────────── */

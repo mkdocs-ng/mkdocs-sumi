@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="sumi-blog">
+<div class="sumi-blog" data-view="{{ sumi.blog_layout or 'list' }}">
   <header class="sumi-blog-head sumi-prose">
     {{ page.content }}
     {%- if sumi.feed_url %}<p class="sumi-blog-feed"><a href="{{ sumi.feed_url | url }}">{{ icon('rss') }}{{ t('subscribe_rss') }}</a></p>{% endif %}
   </header>
+  <div class="sumi-blog-bar">
   {%- if sumi.tags %}
   <div class="sumi-tag-filter" role="toolbar" aria-label="{{ t('tags') }}">
     <button type="button" class="sumi-tag is-active" data-tag="">{{ t('all_posts') }}</button>
@@ -13,10 +14,20 @@
     {%- endfor %}
   </div>
   {%- endif %}
+  <div class="sumi-view-toggle" role="group" aria-label="{{ t('blog_view') }}">
+    <button type="button" class="sumi-icon-btn" data-view="list" aria-label="{{ t('blog_view_list') }}" title="{{ t('blog_view_list') }}">{{ icon('list') }}</button>
+    <button type="button" class="sumi-icon-btn" data-view="cards" aria-label="{{ t('blog_view_cards') }}" title="{{ t('blog_view_cards') }}">{{ icon('layout-grid') }}</button>
+  </div>
+  </div>
   <ol class="sumi-post-list">
     {%- for post in sumi.posts %}
     <li class="sumi-post-card" data-tags="{{ post.tags | join('|') }}">
       <a class="sumi-post-link" href="{{ post.url | url }}">
+        {%- set cover = post.page.meta.image %}
+        <div class="sumi-post-cover{% if not cover %} sumi-post-cover--blank{% endif %}" aria-hidden="true">
+          {%- if cover %}<img src="{{ cover | url }}" alt="" loading="lazy" decoding="async">
+          {%- else %}<span>{{ (post.tags | first) or config.site_name }}</span>{% endif %}
+        </div>
         <div class="sumi-post-meta">
           <time datetime="{{ post.date.isoformat() }}">{{ post.date | sumi_date(sumi_language) }}</time>
           <span aria-hidden="true">·</span><span>{{ t('reading_time', n=post.reading_time) }}</span>
@@ -52,6 +63,22 @@
     });
     history.replaceState(null, '', tag ? '#tag=' + encodeURIComponent(tag) : location.pathname);
   });
+  (function () {
+    var blog = document.querySelector('.sumi-blog');
+    var saved = null;
+    try { saved = localStorage.getItem('sumi.blogView'); } catch (e) {}
+    var set = function (v) {
+      blog.dataset.view = v;
+      document.querySelectorAll('.sumi-view-toggle [data-view]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.view === v)); });
+    };
+    set(saved === 'list' || saved === 'cards' ? saved : blog.dataset.view);
+    document.querySelectorAll('.sumi-view-toggle [data-view]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        set(b.dataset.view);
+        try { localStorage.setItem('sumi.blogView', b.dataset.view); } catch (e) {}
+      });
+    });
+  })();
   (function () {
     var m = location.hash.match(/^#tag=(.+)$/);
     if (!m) return;
