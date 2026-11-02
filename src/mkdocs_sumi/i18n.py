@@ -70,6 +70,10 @@ STRINGS: dict[str, dict[str, str]] = {
         'go_latest': 'Go to the latest version',
         'expand_all': 'Expand all',
         'zoom_image': 'Zoom image',
+        'diagram_expand': 'Expand diagram',
+        'diagram_source': 'Copy diagram source',
+        'diagram_download': 'Download SVG',
+        'close': 'Close',
         'cmd_toggle_theme': 'Toggle light / dark',
         'cmd_copy_markdown': 'Copy this page as Markdown',
         'cmd_view_markdown': 'Open this page as Markdown',
@@ -151,6 +155,10 @@ STRINGS: dict[str, dict[str, str]] = {
         'go_latest': '前往最新版本',
         'expand_all': '全部展开',
         'zoom_image': '放大图片',
+        'diagram_expand': '放大查看图表',
+        'diagram_source': '复制图表源码',
+        'diagram_download': '下载 SVG',
+        'close': '关闭',
         'cmd_toggle_theme': '切换浅色 / 深色',
         'cmd_copy_markdown': '复制本页 Markdown',
         'cmd_view_markdown': '以 Markdown 打开本页',
@@ -174,6 +182,7 @@ STRINGS['zh_TW'] = {
     'copy_code': '複製程式碼', 'toggle_theme': '切換深色模式', 'navigation': '導覽', 'language': '語言',
     'version': '版本', 'last_updated': '最後更新', 'keyboard_shortcuts': '鍵盤快捷鍵',
     'not_found_title': '找不到頁面', 'blog': '部落格', 'tags': '標籤',
+    'diagram_expand': '放大檢視圖表', 'diagram_source': '複製圖表原始碼', 'close': '關閉',
 }
 
 
