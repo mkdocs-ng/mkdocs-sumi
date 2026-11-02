@@ -35,10 +35,19 @@
   <meta name="theme-color" content="#f8f7f4" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
   {%- if page and page.title %}
+  {%- set meta = page.meta or {} %}
+  {%- set og_description = meta.description or config.site_description %}
+  {%- set og_image = meta.image or theme.social_image %}
+  {%- if og_image and '://' not in og_image %}
+    {%- set og_image = (config.site_url | trim('/')) ~ '/' ~ (og_image | trim('/')) if config.site_url else none %}
+  {%- endif %}
   <meta property="og:type" content="{{ 'article' if sumi.is_post else 'website' }}">
-  <meta property="og:title" content="{{ page.title | striptags }}">
+  <meta property="og:title" content="{{ config.site_name if page.is_homepage else page.title | striptags }}">
   <meta property="og:site_name" content="{{ config.site_name }}">
+  {%- if og_description %}<meta property="og:description" content="{{ og_description | striptags | e }}">{% endif %}
   {%- if page.canonical_url %}<meta property="og:url" content="{{ page.canonical_url }}">{% endif %}
+  {%- if og_image %}<meta property="og:image" content="{{ og_image }}">{% endif %}
+  <meta name="twitter:card" content="{{ 'summary_large_image' if og_image else 'summary' }}">
   {%- endif %}
   {%- endblock %}
   {%- block htmltitle %}

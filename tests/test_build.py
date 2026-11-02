@@ -262,3 +262,31 @@ def test_mkdocstrings_page(tmp_path):
     assert 'doc-symbol-function' in html
     assert 'class="mkdocstrings-source"' in html
     assert html.index('assets/css/sumi.css') < html.index('assets/_mkdocstrings.css')
+
+
+def test_social_preview_tags(tmp_path):
+    """Shared links get a title, description and image; the home page uses the site name."""
+    config = BASIC.replace('site_name: Test\n', 'site_name: Test\n    site_description: A test site.\n').replace(
+        '      name: sumi\n', '      name: sumi\n      social_image: img/social.png\n')
+    out = _site(tmp_path, {
+        'index.md': '# Welcome\n',
+        'guide.md': '---\ndescription: How to use it.\nimage: https://cdn.example.com/guide.png\n---\n# Guide\n',
+        'img/social.png': '',
+    }, config)
+    home = (out / 'index.html').read_text(encoding='utf-8')
+    assert '<meta property="og:title" content="Test">' in home
+    assert '<meta property="og:description" content="A test site.">' in home
+    assert '<meta property="og:image" content="https://example.com/img/social.png">' in home
+    assert '<meta name="twitter:card" content="summary_large_image">' in home
+    guide = (out / 'guide' / 'index.html').read_text(encoding='utf-8')
+    assert '<meta property="og:title" content="Guide">' in guide
+    assert '<meta property="og:description" content="How to use it.">' in guide
+    assert '<meta property="og:image" content="https://cdn.example.com/guide.png">' in guide
+
+
+def test_social_preview_without_image(tmp_path):
+    """Without an image, links still share as a small summary card."""
+    out = _site(tmp_path, {'index.md': '# Home\n'}, BASIC)
+    home = (out / 'index.html').read_text(encoding='utf-8')
+    assert 'og:image' not in home
+    assert '<meta name="twitter:card" content="summary">' in home
