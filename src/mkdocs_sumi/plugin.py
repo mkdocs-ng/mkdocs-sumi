@@ -414,6 +414,22 @@ class SumiPlugin(BasePlugin[SumiConfig]):
     @event_priority(-50)
     def on_env(self, env: Environment, *, config: MkDocsConfig, files: Files) -> Environment:
         self.files = files
+        self._install(env)
+        # Some plugins (print-site, for one) render the theme's templates with
+        # a fresh `theme.get_env()` after the build: give that env Sumi's
+        # helpers too, or base.html fails on `t` and `icon`.
+        theme = config.theme
+        if not getattr(theme, '_sumi_env_patched', False):
+            get_env = theme.get_env
+
+            def sumi_get_env() -> Environment:
+                return self._install(get_env())
+
+            theme.get_env = sumi_get_env  # type: ignore[method-assign]
+            theme._sumi_env_patched = True  # type: ignore[attr-defined]
+        return env
+
+    def _install(self, env: Environment) -> Environment:
         env.globals['icon'] = icon
         env.globals['t'] = translator(self.language)
         env.globals['sumi_language'] = self.language

@@ -24,9 +24,11 @@ Sumi reads the content and most of the configuration written for Material for Mk
 | `pymdownx.superfences`, `pymdownx.highlight` | Supported; Sumi then leaves highlighting to them |
 | `pymdownx.arithmatex` | Rendered with the bundled KaTeX |
 | `pymdownx.keys` | Kept; Sumi's own `++Ctrl+K++` steps aside |
+| Grid cards (`<div class="grid cards" markdown>`) and `{ .md-button }` links | Drawn as Sumi cards and buttons |
 | `extra.social`, `extra.alternate`, `extra.analytics` | Read as-is, including `fontawesome/brands/…` icon names |
 | `mkdocstrings` API pages | Styled: signatures, symbol badges (`show_symbol_type_heading`), labels, nested members, backlinks and source panels. [Recommended options](../customize/plugin-authors.md#mkdocstrings) |
 | Plugin CSS that uses Material's `--md-*` colours or `[data-md-color-scheme]` | Follows Sumi's palette and dark mode. Authors: [make your plugin work with Sumi](../customize/plugin-authors.md) |
+| `print-site` plugin | Builds; Sumi also has its own [print edition](../pages/print.md) |
 | `mike` versions | `theme.version_provider: mike` |
 | Blog: `blog/posts/`, `.authors.yml`, `date`, `authors`, `tags`, `<!-- more -->` | Read as-is |
 | `hide: [toc, navigation]` front matter | `hide: [toc, sidebar]` |
