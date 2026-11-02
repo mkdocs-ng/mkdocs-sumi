@@ -16,6 +16,8 @@ plugins:
       full_output: true
   - sumi:
       git_dates: true
+      blog:
+        layout: cards
       assistant_links: [claude, chatgpt]
 
 markdown_extensions:

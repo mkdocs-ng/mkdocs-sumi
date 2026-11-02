@@ -71,6 +71,9 @@ STRINGS: dict[str, dict[str, str]] = {
         'expand_all': 'Expand all',
         'zoom_image': 'Zoom image',
         'diagram_expand': 'Expand diagram',
+        'blog_view': 'Layout',
+        'blog_view_list': 'List view',
+        'blog_view_cards': 'Card view',
         'diagram_source': 'Copy diagram source',
         'diagram_download': 'Download SVG',
         'close': 'Close',
@@ -156,6 +159,9 @@ STRINGS: dict[str, dict[str, str]] = {
         'expand_all': '全部展开',
         'zoom_image': '放大图片',
         'diagram_expand': '放大查看图表',
+        'blog_view': '布局',
+        'blog_view_list': '列表视图',
+        'blog_view_cards': '卡片视图',
         'diagram_source': '复制图表源码',
         'diagram_download': '下载 SVG',
         'close': '关闭',
@@ -182,6 +188,7 @@ STRINGS['zh_TW'] = {
     'copy_code': '複製程式碼', 'toggle_theme': '切換深色模式', 'navigation': '導覽', 'language': '語言',
     'version': '版本', 'last_updated': '最後更新', 'keyboard_shortcuts': '鍵盤快捷鍵',
     'not_found_title': '找不到頁面', 'blog': '部落格', 'tags': '標籤',
+    'blog_view': '版面', 'blog_view_list': '列表檢視', 'blog_view_cards': '卡片檢視',
     'diagram_expand': '放大檢視圖表', 'diagram_source': '複製圖表原始碼', 'close': '關閉',
 }
 

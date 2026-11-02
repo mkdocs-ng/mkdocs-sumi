@@ -1123,7 +1123,38 @@ a.sumi-feature:hover .sumi-feature-more .sumi-icon { transform: translateX(3px);
 .sumi-tag.is-active span { color: color-mix(in srgb, var(--sumi-bg) 70%, transparent); }
 .sumi-tag--static { height: 24px; padding: 0 9px; border-color: transparent; background: var(--sumi-bg-soft); font-size: 12.5px; cursor: inherit; }
 a.sumi-tag--static { cursor: pointer; }
+.sumi-blog-bar { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 28px; }
+.sumi-blog-bar .sumi-tag-filter { margin-bottom: 0; }
+.sumi-view-toggle { display: flex; flex: none; gap: 2px; margin-left: auto; padding: 2px; border: 1px solid var(--sumi-line); border-radius: 9px; background: var(--sumi-bg-elev); }
+.sumi-view-toggle .sumi-icon-btn { width: 30px; height: 30px; }
+.sumi-view-toggle .sumi-icon-btn .sumi-icon { width: 16px; height: 16px; }
+.sumi-view-toggle [aria-pressed="true"] { background: var(--sumi-bg-soft); color: var(--sumi-fg); }
+.no-js .sumi-view-toggle { display: none; }
 .sumi-post-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--sumi-line); }
+.sumi-post-cover { display: none; }
+.sumi-blog[data-view="cards"] { max-width: 72rem; }
+.sumi-blog[data-view="cards"] .sumi-post-list {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 20px; border-top: 0;
+}
+.sumi-blog[data-view="cards"] .sumi-post-card { overflow: hidden; border: 1px solid var(--sumi-line); border-radius: 14px; background: var(--sumi-bg-elev); transition: border-color .15s, box-shadow .15s, transform .15s var(--sumi-ease); }
+.sumi-blog[data-view="cards"] .sumi-post-card:hover { border-color: var(--sumi-line-2); box-shadow: var(--sumi-shadow-md); transform: translateY(-2px); }
+.sumi-blog[data-view="cards"] .sumi-post-link { display: flex; flex-direction: column; height: 100%; padding: 0 18px 18px; }
+.sumi-blog[data-view="cards"] .sumi-post-cover {
+  display: grid; place-items: center; aspect-ratio: 16 / 9; margin: 0 -18px 16px; overflow: hidden; border-bottom: 1px solid var(--sumi-line); background: var(--sumi-bg-soft);
+}
+.sumi-blog[data-view="cards"] .sumi-post-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s var(--sumi-ease); }
+.sumi-blog[data-view="cards"] .sumi-post-card:hover .sumi-post-cover img { transform: scale(1.03); }
+.sumi-post-cover--blank {
+  background:
+    radial-gradient(circle at 78% 30%, color-mix(in srgb, var(--sumi-accent) 22%, transparent), transparent 55%),
+    linear-gradient(135deg, var(--sumi-bg-soft), var(--sumi-bg-sunken)) !important;
+}
+.sumi-post-cover--blank span { color: color-mix(in srgb, var(--sumi-accent) 80%, var(--sumi-fg)); font-family: var(--sumi-font-mono); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; }
+.sumi-blog[data-view="cards"] .sumi-post-title { font-size: 1.15rem; }
+.sumi-blog[data-view="cards"] .sumi-post-excerpt { font-size: 14.5px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.sumi-blog[data-view="cards"] .sumi-post-foot { margin-top: auto; }
+.sumi-post-hero { margin: 4px 0 28px; }
+.sumi-post-hero img { display: block; width: 100%; max-height: 420px; object-fit: cover; border: 1px solid var(--sumi-line); border-radius: 14px; }
 .sumi-post-card { border-bottom: 1px solid var(--sumi-line); }
 .sumi-post-link { display: block; padding: 26px 4px; color: var(--sumi-fg-2); text-decoration: none; }
 .sumi-post-link:hover { color: var(--sumi-fg-2); }

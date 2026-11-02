@@ -163,6 +163,8 @@ def test_blog(site):
     assert post.is_file()
     index = (site / 'blog' / 'index.html').read_text()
     assert 'Hello' in index and 'data-tags="news"' in index and 'Excerpt.' in index
+    assert 'data-view="list"' in index
+    assert 'sumi-post-cover--blank' in index and '<span>news</span>' in index
     feed = (site / 'blog' / 'feed.xml').read_text()
     assert '<feed' in feed and 'https://example.com/blog/2026/01/02/hello/' in feed
     guide = (site / 'guide' / 'index.html').read_text()

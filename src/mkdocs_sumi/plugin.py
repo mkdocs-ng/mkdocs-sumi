@@ -60,6 +60,7 @@ class _BlogConfig(base.Config):
     feed = c.Type(bool, default=True)
     feed_items = c.Type(int, default=20)
     authors = c.Type(dict, default={})
+    layout = c.Choice(['list', 'cards'], default='list')
 
 
 class _PrintConfig(base.Config):
@@ -371,6 +372,7 @@ class SumiPlugin(BasePlugin[SumiConfig]):
                     ctx['newer'] = posts[i - 1] if i > 0 else None
                     ctx['older'] = posts[i + 1] if i + 1 < len(posts) else None
             ctx['feed_url'] = f'{self._blog_dir()}/feed.xml' if self.config.blog.feed else None
+            ctx['blog_layout'] = page.meta.get('blog_layout') or self.config.blog.layout
         if page.meta.get('template') == 'releases.html':
             ctx['releases'] = self._releases(page, config)
         ctx['nav_json'] = Markup(self._nav_index())

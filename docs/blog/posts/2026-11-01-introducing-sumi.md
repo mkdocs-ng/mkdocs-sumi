@@ -2,6 +2,8 @@
 date: 2026-11-01
 authors: [xianpeng]
 tags: [release, design]
+image: assets/screens/home-light.jpg
+hide_cover: true
 description: Sumi 0.1 is a local-first documentation theme for MkDocs that keeps your content in plain Markdown and publishes it for people and agents alike.
 ---
 
