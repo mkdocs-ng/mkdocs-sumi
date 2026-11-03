@@ -145,3 +145,38 @@ def test_mobile_drawer(base_url, browser):
     page.wait_for_timeout(400)
     assert sidebar.bounding_box()['x'] >= 0
     ctx.close()
+
+
+def test_mobile_drawer_fits_the_screen_and_lists_the_tabs(base_url, browser):
+    url, _ = base_url
+    # A short screen, so the docs nav is taller than the drawer.
+    ctx = browser.new_context(viewport={'width': 320, 'height': 500})
+    page = ctx.new_page()
+    page.goto(url + 'docs/write/callouts/', wait_until='networkidle')
+    page.locator('.sumi-menu-btn').click()
+    page.wait_for_timeout(400)
+    header = page.locator('.sumi-header').bounding_box()
+    box = page.locator('#sumi-sidebar').bounding_box()
+    # The drawer starts below the header and ends at the bottom of the screen.
+    assert abs(box['y'] - (header['y'] + header['height'])) < 2
+    assert abs(box['y'] + box['height'] - 500) < 2
+    inner = page.locator('.sumi-sidebar-inner')
+    assert inner.evaluate('e => e.scrollHeight > e.clientHeight')
+    # The header tabs are hidden on small screens, so the drawer lists them.
+    tabs = page.locator('.sumi-sidebar-tabs')
+    assert tabs.is_visible()
+    assert tabs.locator('a.is-active').inner_text() == 'Docs'
+    # The menu button keeps its size next to a long site name.
+    assert page.locator('.sumi-menu-btn').bounding_box()['width'] >= 35
+    ctx.close()
+
+
+def test_mobile_drawer_on_a_page_outside_the_tabs(base_url, browser):
+    url, _ = base_url
+    ctx = browser.new_context(viewport={'width': 390, 'height': 844})
+    page = ctx.new_page()
+    page.goto(url + 'releases/', wait_until='networkidle')
+    page.locator('.sumi-menu-btn').click()
+    page.wait_for_timeout(400)
+    assert page.locator('.sumi-sidebar-tabs').is_visible()
+    ctx.close()

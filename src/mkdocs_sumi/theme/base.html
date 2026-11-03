@@ -12,6 +12,8 @@
   {%- set side_items = nav.items -%}
 {%- endif -%}
 {%- if 'sidebar' in hide or 'navigation' in hide or layout in ('wide', 'landing', 'blog') -%}{%- set side_items = [] -%}{%- endif -%}
+{#- On small screens the header tabs are hidden, so the drawer lists them too. -#}
+{%- set drawer_tabs = tabs_on and 'navigation' not in hide and layout != 'landing' -%}
 {%- set toc_list = page.toc.items if page and page.toc else [] -%}
 {%- if toc_list | length == 1 and toc_list[0].level == 1 -%}{%- set toc_list = toc_list[0].children -%}{%- endif -%}
 {%- set show_toc = toc_list | length > 0 and 'toc' not in hide and layout not in ('wide', 'landing', 'blog') -%}
@@ -98,9 +100,17 @@
   <div class="sumi-version-banner" hidden></div>
   {%- block layout %}
   <div class="sumi-shell{% if not side_items %} sumi-shell--no-side{% endif %}{% if not show_toc %} sumi-shell--no-toc{% endif %}">
-    {%- if side_items %}
-    <aside class="sumi-sidebar" id="sumi-sidebar" aria-label="{{ t('navigation') }}">
+    {%- if side_items or drawer_tabs %}
+    <aside class="sumi-sidebar{% if not side_items %} sumi-sidebar--tabs-only{% endif %}" id="sumi-sidebar" aria-label="{{ t('navigation') }}">
       <div class="sumi-sidebar-inner">
+        {%- if drawer_tabs %}
+        <ul class="sumi-nav-list sumi-sidebar-tabs">
+          {%- for item in nav.items if not (item.is_page and item.is_homepage) %}
+          <li class="sumi-nav-page"><a{% if item.active %} class="is-active"{% endif %} href="{{ m.first_url(item) | trim }}"{% if item.is_link and item.url.startswith('http') %} target="_blank" rel="noopener"{% endif %}>{{ item.title }}</a></li>
+          {%- endfor %}
+        </ul>
+        {%- endif %}
+        {%- if side_items %}
         {%- if tabs_on and active_top and active_top.is_section %}
         {%- set top_index = side_items[0] if side_items and side_items[0].is_page and side_items[0].file.name == 'index' else None %}
         {%- if top_index %}
@@ -111,6 +121,7 @@
         {%- endif %}
         {%- endif %}
         <nav class="sumi-nav">{{ m.nav_tree(side_items, 1) }}</nav>
+        {%- endif %}
       </div>
     </aside>
     {%- endif %}
