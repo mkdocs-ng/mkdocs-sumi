@@ -45,11 +45,11 @@ sections:
       - icon: command
         title: 搜索即命令面板
         text: "按 ⌘K 搜索所有标题，中文、日文同样可搜；输入 `>` 可切换主题、复制、打印等。"
-        link: https://sumi.mkdocs-ng.org/docs/customize/search/
+        link: docs/customize/search/
       - icon: layout-template
         title: 文档、博客、首页、发布页
         text: 整个项目站点共用一套设计语言，从数据驱动的首页到带订阅源的博客和下载页。
-        link: https://sumi.mkdocs-ng.org/docs/pages/landing/
+        link: docs/pages/landing/
       - icon: puzzle
         title: 保留你的 MkDocs 内容
         text: "Admonition、`pymdownx` 标签页与折叠块、`mike` 多版本以及 Material 的 `extra` 配置都能继续使用。"

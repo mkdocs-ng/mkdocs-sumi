@@ -31,7 +31,7 @@ languages:
     docs_dir: docs-zh
     edit_uri: edit/main/docs-zh/
     theme:
-      announcement: 'Sumi 中文文档已上线，部分页面暂为英文。<a href="blog/2026/11/01/introducing-sumi/">阅读 Sumi 介绍</a>'
+      announcement: 'Sumi 中文文档已上线。<a href="blog/2026/11/01/introducing-sumi/">阅读 Sumi 介绍</a>'
     nav:
       - 首页: index.md
       - 文档:
@@ -50,7 +50,7 @@ languages:
           - 字段: docs/write/fields.md
           - 表格: docs/write/tables.md
           - 图片与插图: docs/write/images.md
-          - 图库: docs/write/gallery.md
+          - 图集: docs/write/gallery.md
           - 文件树: docs/write/filetree.md
           - 图表: docs/write/diagrams.md
           - 数据图与思维导图: docs/write/charts.md

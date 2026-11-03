@@ -55,14 +55,14 @@ description: 用 Sumi 从空文件夹开始搭建并部署一个新站点。
     ```
 {.steps}
 
-## 导航如何生成
+## 导航如何生成 {#how-navigation-is-built}
 
 顶层分区会成为页眉中的**标签**，当前标签内的页面显示在**侧边栏**中。如果一个分区的第一页是 `index.md`，它就是该分区的首页，点击分区标题会打开它。
 
 > [!TIP]
 > 不写 `nav:` 时，MkDocs 会按文件夹结构生成导航。博客文章会自动从侧边栏中排除。
 
-## 部署
+## 部署 {#deploy}
 
 `mkdocs build` 会把纯 HTML、CSS 和 JavaScript 写入 `site/`。把这个文件夹上传到任意静态托管服务即可：GitHub Pages、Cloudflare Pages、Netlify、对象存储或 Nginx 服务器都行。部署后不需要运行任何程序。
 
