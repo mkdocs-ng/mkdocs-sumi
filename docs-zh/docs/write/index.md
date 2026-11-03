@@ -14,31 +14,29 @@ Sumi 为 Markdown 增加了十六个组件。它们都没有引入会在 GitHub 
 
 不认识 Sumi 的渲染器看到的是一个编号列表；Sumi 看到的是一组操作步骤。
 
-## 组件
-
-各组件的详细说明目前只有英文版，下表链接到英文页面。
+## 组件 {#components}
 
 | 组件 | 写法 | 说明页 |
 | --- | --- | --- |
-| 提示框 | `> [!NOTE]`、`> [!TIP]-` | [Callouts](https://sumi.mkdocs-ng.org/docs/write/callouts/) |
-| 带标题的代码块 | ```` ```py title="app.py" ```` | [Code blocks](https://sumi.mkdocs-ng.org/docs/write/code/) |
-| 标签页 | ```` ```sh {tab="Linux"} ```` | [Tabs](https://sumi.mkdocs-ng.org/docs/write/tabs/) |
-| 步骤 | 有序列表 + `{.steps}` | [Steps](https://sumi.mkdocs-ng.org/docs/write/steps/) |
-| 卡片 | 链接组成的无序列表 + `{.cards}` | [Cards](https://sumi.mkdocs-ng.org/docs/write/cards/) |
-| 字段表 | 表格 + `{.fields}` | [Fields](https://sumi.mkdocs-ng.org/docs/write/fields/) |
-| 表格选项 | 表格 + `{.wide}`、`{caption="…"}` | [Tables](https://sumi.mkdocs-ng.org/docs/write/tables/) |
-| 图片与图注 | 图片 + `{caption="…"}` | [Images](https://sumi.mkdocs-ng.org/docs/write/images/) |
-| 图集 | 图片列表 + `{.gallery}` | [Galleries](https://sumi.mkdocs-ng.org/docs/write/gallery/) |
-| 文件树 | ```` ```filetree ```` | [File trees](https://sumi.mkdocs-ng.org/docs/write/filetree/) |
-| 图表（Mermaid） | ```` ```mermaid ```` | [Diagrams](https://sumi.mkdocs-ng.org/docs/write/diagrams/) |
-| 数据图表 | ```` ```echarts ````（YAML 或 JSON） | [Charts](https://sumi.mkdocs-ng.org/docs/write/charts/) |
-| 思维导图 | ```` ```markmap ```` | [Mind maps](https://sumi.mkdocs-ng.org/docs/write/charts/#mind-maps) |
-| 数学公式 | `$…$`、`$$…$$` | [Math](https://sumi.mkdocs-ng.org/docs/write/math/) |
-| 按键与图标 | `++Ctrl+K++`、`:lucide-rocket:` | [Keys and icons](https://sumi.mkdocs-ng.org/docs/write/keys-icons/) |
-| 徽章 | `**新**{.badge}` | [Badges](https://sumi.mkdocs-ng.org/docs/write/badges/) |
+| 提示框 | `> [!NOTE]`、`> [!TIP]-` | [提示框](callouts.md) |
+| 带标题的代码块 | ```` ```py title="app.py" ```` | [代码块](code.md) |
+| 标签页 | ```` ```sh {tab="Linux"} ```` | [标签页](tabs.md) |
+| 步骤 | 有序列表 + `{.steps}` | [步骤](steps.md) |
+| 卡片 | 链接组成的无序列表 + `{.cards}` | [卡片](cards.md) |
+| 字段表 | 表格 + `{.fields}` | [字段](fields.md) |
+| 表格选项 | 表格 + `{.wide}`、`{caption="…"}` | [表格](tables.md) |
+| 图片与图注 | 图片 + `{caption="…"}` | [图片与插图](images.md) |
+| 图集 | 图片列表 + `{.gallery}` | [图集](gallery.md) |
+| 文件树 | ```` ```filetree ```` | [文件树](filetree.md) |
+| 图表（Mermaid） | ```` ```mermaid ```` | [图表](diagrams.md) |
+| 数据图表 | ```` ```echarts ````（YAML 或 JSON） | [数据图](charts.md) |
+| 思维导图 | ```` ```markmap ```` | [思维导图](charts.md#mind-maps) |
+| 数学公式 | `$…$`、`$$…$$` | [数学公式](math.md) |
+| 按键与图标 | `++Ctrl+K++`、`:lucide-rocket:` | [按键与图标](keys-icons.md) |
+| 徽章 | `**新**{.badge}` | [徽章](badges.md) |
 {.wide}
 
-## 属性行
+## 属性行 {#attribute-lines}
 
 属性行是一个只包含 `{…}` 的段落，紧跟在它所修饰的块下方。它可以带类名、id 和键值对：
 
@@ -51,7 +49,7 @@ Sumi 为 Markdown 增加了十六个组件。它们都没有引入会在 GitHub 
 
 Sumi 不认识的类名会原样保留，你可以在 `extra_css` 中自己给这些块加样式。
 
-## 一个例子
+## 一个例子 {#an-example}
 
 下面三个组件就是用上面的写法渲染出来的。
 
@@ -69,7 +67,7 @@ Sumi 不认识的类名会原样保留，你可以在 `extra_css` 中自己给�
 | `palette` | string | `auto`、`light` 或 `dark` |
 {.fields}
 
-## Markdown 扩展
+## Markdown 扩展 {#markdown-extensions}
 
 `sumi` 插件会替你启用以下 Python-Markdown 扩展，无需额外配置：
 

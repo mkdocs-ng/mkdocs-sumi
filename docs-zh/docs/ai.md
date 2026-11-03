@@ -6,7 +6,7 @@ description: Sumi 如何为 AI 智能体发布每个页面：Markdown 副本、l
 
 越来越多的文档读者不是人。编程智能体、AI 助手和搜索工具会读你的页面来回答关于项目的问题，而它们并不擅长读 HTML：导航、脚本和样式对它们来说都是噪音。Sumi 把每个页面发布两次：一份给人看的网页，一份给程序读的纯 Markdown。
 
-## Sumi 发布的内容
+## Sumi 发布的内容 {#what-sumi-publishes}
 
 | 输出 | 位置 | 读者 |
 | --- | --- | --- |
@@ -32,7 +32,7 @@ plugins:
 
 可以在本站试试：打开 [llms.txt](https://sumi.mkdocs-ng.org/zh/llms.txt)，或在本页顶部的菜单中选择 **查看 Markdown**。
 
-## 发现机制
+## 发现机制 {#discovery}
 
 每个 HTML 页面都会在 `<head>` 中声明它的 Markdown 副本：
 
@@ -43,7 +43,7 @@ plugins:
 
 智能体落在任何一个页面上，都能直接找到干净的版本，不用去猜 URL。
 
-## 复制为 Markdown
+## 复制为 Markdown {#copy-as-markdown}
 
 每页顶部的 **复制为 Markdown** 按钮会复制页面源码，也就是智能体读到的同一份文本，方便你粘贴到对话中。旁边的菜单还可以打开 Markdown 副本、打印页面，以及（如果你启用）在 AI 助手中打开本页：
 
@@ -56,7 +56,7 @@ plugins:
 > [!NOTE]
 > 助手链接默认关闭：点击时会把页面地址发送给第三方服务。
 
-## 为什么原生 Markdown 在这里很重要
+## 为什么原生 Markdown 在这里很重要 {#why-native-markdown-matters-here}
 
 用私有语法写的组件，比如 MDX、短代码或 HTML 小部件，到了智能体那里要么是一堆需要解读的原始标记，要么干脆丢失。Sumi 的组件是普通 Markdown 加一行属性，所以 Markdown 副本读起来很自然：提示框是引用，步骤是编号列表，标签页是带标签的连续代码块。
 
