@@ -359,3 +359,22 @@ def test_theme_env_from_other_plugins(tmp_path):
     cfg.plugins['render-later'] = RenderLater()
     build.build(cfg)
     assert 'class="sumi-skip"' in out['html']
+
+
+def test_section_index_link_is_outside_the_toggle(tmp_path):
+    """A section's index link sits next to its <summary>, not inside it (no control inside a control)."""
+    out = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'docs/index.md': '# Docs\n',
+        'docs/guide/index.md': '# Guide\n',
+        'docs/guide/one.md': '# One\n',
+        'docs/more/two.md': '# Two\n',
+    }, BASIC)
+    html = (out / 'docs' / 'guide' / 'one' / 'index.html').read_text(encoding='utf-8')
+    html = html.split('<nav class="sumi-nav">')[1].split('</nav>')[0]
+    summaries = re.findall(r'<summary\b.*?</summary>', html, re.S)
+    assert summaries and not any('<a ' in s for s in summaries)
+    assert re.search(r'<a class="sumi-nav-head" href="\.\./">Guide</a>', html)
+    assert '<summary class="sumi-nav-toggle" aria-label="Guide">' in html
+    # A section without an index page keeps its title inside the toggle.
+    assert re.search(r'<summary><span>More</span>', html)
