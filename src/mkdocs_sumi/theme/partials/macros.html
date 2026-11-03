@@ -13,16 +13,18 @@
     {%- set first = item.children[0] if item.children else None -%}
     {%- set has_index = first and first.is_page and first.file and first.file.name == 'index' -%}
     {%- set rest = item.children[1:] if has_index else item.children -%}
-    <li class="sumi-nav-section{% if item.active %} is-active{% endif %}">
+    <li class="sumi-nav-section{% if has_index %} sumi-nav-section--index{% endif %}{% if item.active %} is-active{% endif %}">
+      {%- if has_index %}
+      {#- The section's link sits outside <summary>: a link inside the toggle
+          is a control inside a control, which screen readers can't use. -#}
+      <a class="sumi-nav-head{% if first.active %} is-current{% endif %}" href="{{ first.url | url }}"{% if first.active %} aria-current="page"{% endif %}>{{ item.title }}</a>
+      {%- endif %}
       <details{% if item.active or depth == 1 %} open{% endif %}>
-        <summary>
-          {%- if has_index %}
-          <a href="{{ first.url | url }}"{% if first.active %} aria-current="page" class="is-current"{% endif %}>{{ item.title }}</a>
-          {%- else %}
-          <span>{{ item.title }}</span>
-          {%- endif %}
-          {{ icon('chevron-right', 'sumi-chevron') }}
-        </summary>
+        {%- if has_index %}
+        <summary class="sumi-nav-toggle" aria-label="{{ item.title }}">{{ icon('chevron-right', 'sumi-chevron') }}</summary>
+        {%- else %}
+        <summary><span>{{ item.title }}</span>{{ icon('chevron-right', 'sumi-chevron') }}</summary>
+        {%- endif %}
         {{ nav_tree(rest, depth + 1) }}
       </details>
     </li>

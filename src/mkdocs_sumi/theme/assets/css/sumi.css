@@ -326,19 +326,24 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 .sumi-sidebar-title { padding: 0 10px 10px; color: var(--sumi-fg); font-weight: 650; font-size: 15px; letter-spacing: -0.005em; }
 .sumi-nav-list { list-style: none; margin: 0; padding: 0; }
 .sumi-nav-list .sumi-nav-list { margin: 2px 0 6px 10px; padding-left: 10px; border-left: 1px solid var(--sumi-line); }
-.sumi-nav-page a, .sumi-nav-link a, .sumi-nav-section summary {
+.sumi-nav-page a, .sumi-nav-link a, .sumi-nav-section summary, .sumi-nav-head {
   display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 7px; color: var(--sumi-fg-2);
   font-size: 14.5px; line-height: 1.45; transition: color .12s, background .12s;
 }
-.sumi-nav-page a:hover, .sumi-nav-link a:hover, .sumi-nav-section summary:hover { color: var(--sumi-fg); background: var(--sumi-bg-soft); }
-.sumi-nav-page a.is-current, .sumi-nav-section summary a.is-current {
+.sumi-nav-page a:hover, .sumi-nav-link a:hover, .sumi-nav-section summary:hover, .sumi-nav-head:hover { color: var(--sumi-fg); background: var(--sumi-bg-soft); }
+.sumi-nav-page a.is-current, .sumi-nav-head.is-current {
   color: var(--sumi-accent-ink); font-weight: 600; background: color-mix(in srgb, var(--sumi-accent) 8%, transparent);
 }
 .sumi-nav-list .sumi-nav-list .sumi-nav-page a.is-current { box-shadow: -11px 0 0 -9.5px var(--sumi-accent); border-radius: 0 7px 7px 0; }
 .sumi-nav-section summary { list-style: none; cursor: pointer; font-weight: 550; color: var(--sumi-fg); }
 .sumi-nav-section summary::-webkit-details-marker { display: none; }
-.sumi-nav-section summary a { flex: 1; color: inherit; margin: -5px -10px; padding: 5px 10px; border-radius: 7px; }
-.sumi-nav-section summary a.is-current { color: var(--sumi-accent-ink); }
+/* A section with an index page: the title is a link and the chevron is a
+   separate toggle laid over the right end of the same row. */
+.sumi-nav-section--index { position: relative; }
+.sumi-nav-head { padding-right: 36px; font-weight: 550; color: var(--sumi-fg); }
+.sumi-nav-section .sumi-nav-toggle {
+  position: absolute; top: 0; right: 0; justify-content: center; width: 32px; height: calc(14.5px * 1.45 + 10px); padding: 0;
+}
 .sumi-nav-section summary > span { flex: 1; }
 .sumi-nav-list[data-depth="1"] > .sumi-nav-section { margin-top: 10px; }
 .sumi-nav-list[data-depth="1"] > .sumi-nav-section:first-child { margin-top: 0; }
