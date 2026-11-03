@@ -339,3 +339,23 @@ def test_multi_language_site(tmp_path):
     # The language menu links to the same page in the other language.
     assert 'href="../../guide/" hreflang="en"' in guide
     assert 'sumi-untranslated' not in (out / 'guide' / 'index.html').read_text(encoding='utf-8')
+
+
+def test_theme_env_from_other_plugins(tmp_path):
+    """Plugins that render main.html with a fresh `theme.get_env()` (print-site does) get Sumi's helpers."""
+    from mkdocs.plugins import BasePlugin
+
+    out = {}
+
+    class RenderLater(BasePlugin):
+        def on_post_build(self, *, config):
+            env = config.theme.get_env()
+            out['html'] = env.get_template('main.html').render(config=config, base_url='.', nav=[], page=None)
+
+    (tmp_path / 'docs').mkdir()
+    (tmp_path / 'docs' / 'index.md').write_text('# Home\n', encoding='utf-8')
+    (tmp_path / 'mkdocs.yml').write_text(textwrap.dedent(BASIC), encoding='utf-8')
+    cfg = load_config(str(tmp_path / 'mkdocs.yml'))
+    cfg.plugins['render-later'] = RenderLater()
+    build.build(cfg)
+    assert 'class="sumi-skip"' in out['html']

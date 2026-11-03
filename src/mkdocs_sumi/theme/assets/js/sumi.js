@@ -148,6 +148,19 @@
     }
   }
 
+  /* ── Scrollable code and tables: reachable by keyboard ─────────────── */
+  // A box that scrolls sideways needs focus so keyboard users can scroll it.
+  function focusScrollable() {
+    $$('.sumi-prose pre, .sumi-prose div.sumi-table, .sumi-prose .sumi-math.math-display').forEach(function (el) {
+      var scrolls = el.scrollWidth > el.clientWidth + 1;
+      if (scrolls && !el.hasAttribute('tabindex')) { el.setAttribute('tabindex', '0'); el.dataset.sumiFocus = ''; }
+      else if (!scrolls && el.hasAttribute('data-sumi-focus')) { el.removeAttribute('tabindex'); el.removeAttribute('data-sumi-focus'); }
+    });
+  }
+  window.addEventListener('load', focusScrollable);
+  var focusTimer;
+  window.addEventListener('resize', function () { clearTimeout(focusTimer); focusTimer = setTimeout(focusScrollable, 200); });
+
   /* ── Code blocks: copy button and language label ───────────────────── */
   $$('.sumi-prose pre').forEach(function (pre) {
     if (pre.classList.contains('mermaid') || pre.closest('.linenos')) return;
@@ -570,16 +583,30 @@
     if (index || loading) return loading;
     if (!S.search) { index = []; return Promise.resolve(index); }
     loading = fetch(S.search).then(function (r) { return r.json(); }).then(function (data) {
-      var titles = {};
-      (data.docs || []).forEach(function (d) { if (d.location.indexOf('#') < 0) titles[d.location] = d.title; });
-      index = (data.docs || []).map(function (d) {
+      var titles = {}, headings = {}, firstSection = {};
+      (data.docs || []).forEach(function (d) {
+        var hash = d.location.indexOf('#');
+        if (hash < 0) { titles[d.location] = d.title; return; }
+        var pageLoc = d.location.slice(0, hash);
+        (headings[pageLoc] = headings[pageLoc] || []).push(d.title);
+        if (!(pageLoc in firstSection)) firstSection[pageLoc] = d.location;
+      });
+      var esc_re = function (s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); };
+      index = [];
+      (data.docs || []).forEach(function (d) {
         var hash = d.location.indexOf('#');
         var pageLoc = hash < 0 ? d.location : d.location.slice(0, hash);
+        // The first heading of a page usually repeats the page itself: keep one result.
+        if (hash >= 0 && firstSection[pageLoc] === d.location && d.title === titles[pageLoc]) return;
         var text = (d.text || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-        return {
+        // A page's full text keeps the heading permalinks ("Title # …"): drop them.
+        if (hash < 0 && headings[pageLoc]) headings[pageLoc].forEach(function (h) {
+          text = text.replace(new RegExp('(^|\\s)(' + esc_re(h) + ') [#¶§¤] ', 'g'), '$1$2 ');
+        });
+        index.push({
           title: d.title || '', page: titles[pageLoc] || '', loc: d.location, text: text,
           lt: (d.title || '').toLowerCase(), lx: text.toLowerCase(), section: hash >= 0
-        };
+        });
       });
       return index;
     }).catch(function () { index = []; return index; });

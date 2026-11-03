@@ -206,3 +206,11 @@ def test_fence_inside_a_list_item_is_a_code_block(md):
     assert '<div class="highlight"><pre>' in html and 'pip' in html
     titled = md('- Step\n\n    ```py title="app.py"\n    print(1)\n    ```\n')
     assert 'data-title="app.py"' in titled and '<pre>' in titled
+
+
+def test_echarts_canvas_is_named_for_screen_readers(md):
+    assert 'role="img" aria-label="Sales"' in md('```echarts title="Sales"\nseries: []\n```')
+    # Without a fence title, the chart's own title names it.
+    assert 'role="img" aria-label="Build time"' in md('```echarts\ntitle: {text: Build time}\nseries: []\n```')
+    # With no name at all, the canvas is not announced as an unnamed image.
+    assert 'role="img"' not in md('```echarts\nseries: []\n```')

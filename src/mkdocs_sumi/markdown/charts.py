@@ -38,6 +38,14 @@ def _caption(title: str | None) -> str:
     return f'<figcaption>{escape(title)}</figcaption>' if title else ''
 
 
+def _option_title(option: dict) -> str | None:
+    title = option.get('title')
+    if isinstance(title, list):
+        title = title[0] if title else None
+    text = title.get('text') if isinstance(title, dict) else None
+    return text if isinstance(text, str) and text.strip() else None
+
+
 def echarts(body: str, title: str | None, height: str | None) -> str | None:
     """Return the figure for an ECharts option written in YAML or JSON, or None if it is invalid."""
     try:
@@ -52,10 +60,12 @@ def echarts(body: str, title: str | None, height: str | None) -> str | None:
         log.warning("Sumi: an echarts fence must contain an option object (a mapping), got %s.", type(option).__name__)
         return None
     h = _height(height, 360)
+    # Screen readers need a name for the drawing: the fence title, else the chart's own title.
+    label = title or _option_title(option)
+    named = f' role="img" aria-label="{escape(label)}"' if label else ''
     return (
         f'<figure class="sumi-chart">'
-        f'<div class="sumi-chart-canvas" style="height:{h}px" role="img"'
-        f'{f" aria-label={chr(34)}{escape(title)}{chr(34)}" if title else ""}></div>'
+        f'<div class="sumi-chart-canvas" style="height:{h}px"{named}></div>'
         f'<script type="application/json" class="sumi-chart-option">{_script_json(option)}</script>'
         f'<pre class="sumi-chart-source"><code>{escape(body)}</code></pre>'
         f'{_caption(title)}</figure>'

@@ -33,6 +33,8 @@
     "PingFang SC", "Microsoft YaHei", monospace;
 
   --sumi-accent: #c4432b;
+  /* The accent, a little darker, for small text on tinted backgrounds (WCAG AA). */
+  --sumi-accent-ink: color-mix(in srgb, var(--sumi-accent) 88%, #000);
   --sumi-bg: #f8f7f4;
   --sumi-bg-elev: #ffffff;
   --sumi-bg-soft: #f1efea;
@@ -54,10 +56,10 @@
   --sumi-selection: color-mix(in srgb, var(--sumi-accent) 20%, transparent);
 
   --c-note: #2f6aa3;
-  --c-tip: #2f7d4f;
+  --c-tip: #2a7047;
   --c-important: #7445a6;
-  --c-warning: #a86b0c;
-  --c-caution: #c0392b;
+  --c-warning: #97600b;
+  --c-caution: #ad3327;
   --c-quote: #75716a;
 
   --hl-kw: #b23a26;
@@ -86,6 +88,7 @@
 
 [data-theme="dark"] {
   --sumi-accent: #ef7258;
+  --sumi-accent-ink: var(--sumi-accent);
   --sumi-bg: #141413;
   --sumi-bg-elev: #1c1b19;
   --sumi-bg-soft: #201f1c;
@@ -244,7 +247,7 @@ button { font: inherit; color: inherit; }
 }
 .sumi-menu-list a:hover, .sumi-menu-list button:hover { background: var(--sumi-bg-soft); color: var(--sumi-fg); }
 .sumi-menu-list .sumi-icon { width: 16px; height: 16px; color: var(--sumi-fg-3); }
-.sumi-menu-list [aria-current="true"] { color: var(--sumi-accent); font-weight: 600; }
+.sumi-menu-list [aria-current="true"] { color: var(--sumi-accent-ink); font-weight: 600; }
 
 /* ── Announcement ──────────────────────────────────────────────────────── */
 .sumi-announce { position: relative; background: var(--sumi-fg); color: var(--sumi-bg); font-size: 14px; }
@@ -326,13 +329,13 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 }
 .sumi-nav-page a:hover, .sumi-nav-link a:hover, .sumi-nav-section summary:hover { color: var(--sumi-fg); background: var(--sumi-bg-soft); }
 .sumi-nav-page a.is-current, .sumi-nav-section summary a.is-current {
-  color: var(--sumi-accent); font-weight: 600; background: color-mix(in srgb, var(--sumi-accent) 8%, transparent);
+  color: var(--sumi-accent-ink); font-weight: 600; background: color-mix(in srgb, var(--sumi-accent) 8%, transparent);
 }
 .sumi-nav-list .sumi-nav-list .sumi-nav-page a.is-current { box-shadow: -11px 0 0 -9.5px var(--sumi-accent); border-radius: 0 7px 7px 0; }
 .sumi-nav-section summary { list-style: none; cursor: pointer; font-weight: 550; color: var(--sumi-fg); }
 .sumi-nav-section summary::-webkit-details-marker { display: none; }
 .sumi-nav-section summary a { flex: 1; color: inherit; margin: -5px -10px; padding: 5px 10px; border-radius: 7px; }
-.sumi-nav-section summary a.is-current { color: var(--sumi-accent); }
+.sumi-nav-section summary a.is-current { color: var(--sumi-accent-ink); }
 .sumi-nav-section summary > span { flex: 1; }
 .sumi-nav-list[data-depth="1"] > .sumi-nav-section { margin-top: 10px; }
 .sumi-nav-list[data-depth="1"] > .sumi-nav-section:first-child { margin-top: 0; }
@@ -449,12 +452,14 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 .sumi-prose .highlight, .sumi-prose .codehilite { position: relative; margin: 0 0 1.25em; }
 .sumi-prose .highlight pre, .sumi-prose .codehilite pre { margin: 0; }
 .sumi-prose .highlight .hll { display: block; margin: 0 -18px; padding: 0 18px; background: var(--hl-mark); box-shadow: inset 3px 0 0 var(--hl-num); }
-.sumi-prose .highlighttable { width: 100%; border-collapse: collapse; }
+.sumi-prose .highlighttable { width: 100%; margin: 0; border-collapse: collapse; }
 .sumi-prose .highlighttable td { padding: 0; border: 0; }
 .sumi-prose .highlighttable .linenos { width: 1%; user-select: none; }
 .sumi-prose .highlighttable .linenos pre { color: var(--sumi-fg-3); border-right: 0; border-radius: var(--sumi-radius) 0 0 var(--sumi-radius); background: var(--sumi-code-head); text-align: right; }
 .sumi-prose .highlighttable .code pre { border-radius: 0 var(--sumi-radius) var(--sumi-radius) 0; }
 .sumi-prose .linenos .normal, .sumi-prose .linenos .special { color: var(--sumi-fg-3); }
+/* pymdownx.highlight `anchor_linenums` turns line numbers into links. */
+.sumi-prose .linenos a, .sumi-prose .linenodiv a { color: inherit; text-decoration: none; }
 .sumi-copy {
   position: absolute; top: 8px; right: 8px; z-index: 2; display: grid; place-items: center; width: 30px; height: 30px; padding: 0;
   border: 1px solid var(--sumi-line); border-radius: 7px; background: var(--sumi-bg-elev); color: var(--sumi-fg-3); cursor: pointer;
@@ -513,7 +518,7 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 /* ── Tables ─────────────────────────────────────────────────────────────── */
 .sumi-table { margin: 0 0 1.4em; overflow-x: auto; border: 1px solid var(--sumi-line); border-radius: var(--sumi-radius); background: var(--sumi-bg-elev); scrollbar-width: thin; }
 .sumi-prose table { width: 100%; border-collapse: collapse; font-size: 14.5px; line-height: 1.55; font-variant-numeric: tabular-nums; }
-.sumi-prose :not(.sumi-table) > table { margin: 0 0 1.4em; }
+.sumi-prose :not(.sumi-table) > table:not(.highlighttable) { margin: 0 0 1.4em; }
 .sumi-prose th { padding: 10px 14px; background: var(--sumi-bg-soft); color: var(--sumi-fg); font-weight: 600; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--sumi-line-2); }
 .sumi-prose td { padding: 10px 14px; border-top: 1px solid var(--sumi-line); vertical-align: top; }
 .sumi-prose tbody tr:first-child td { border-top: 0; }
@@ -598,6 +603,30 @@ details.sumi-callout[open] > summary::after, .sumi-prose details[open]:where(:no
 .sumi-cards > li a:first-of-type::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
 .sumi-cards > li > p:first-child { margin: 0; }
 .sumi-cards .sumi-icon-inline { display: block; width: 26px; height: 26px; margin-bottom: 12px; padding: 5px; border-radius: 8px; background: color-mix(in srgb, var(--sumi-accent) 10%, transparent); box-sizing: content-box; }
+
+/* Material's grid cards (`<div class="grid cards" markdown>`) and plain
+   grids, so pages written for Material keep their layout. */
+.sumi-prose .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 14px; margin: 1.4em 0; }
+.sumi-prose .grid.cards > :is(ul, ol) { display: contents; }
+.sumi-prose .grid.cards > :is(ul, ol) > li, .sumi-prose .grid > .card {
+  display: block; margin: 0; padding: 18px 20px; border: 1px solid var(--sumi-line); border-radius: 12px; background: var(--sumi-bg-elev);
+  color: var(--sumi-fg-2); font-size: 14.5px; line-height: 1.6; list-style: none; transition: border-color .15s, box-shadow .15s;
+}
+.sumi-prose .grid.cards > :is(ul, ol) > li:hover, .sumi-prose .grid > .card:hover { border-color: var(--sumi-line-2); box-shadow: var(--sumi-shadow-md); }
+.sumi-prose .grid.cards > :is(ul, ol) > li > :first-child, .sumi-prose .grid > .card > :first-child { margin-top: 0; }
+.sumi-prose .grid.cards > :is(ul, ol) > li > :last-child, .sumi-prose .grid > .card > :last-child { margin-bottom: 0; }
+.sumi-prose .grid.cards > :is(ul, ol) > li > hr, .sumi-prose .grid > .card > hr { margin: 10px 0; }
+.sumi-prose .grid.cards strong { color: var(--sumi-fg); }
+
+/* Material's `{ .md-button }` links, drawn as Sumi buttons. */
+.sumi-prose .md-button {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 40px; margin: 4px 4px 4px 0; padding: 0 16px; border: 1px solid var(--sumi-line-2); border-radius: 10px;
+  background: var(--sumi-bg-elev); color: var(--sumi-fg); font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: var(--sumi-shadow-sm);
+  transition: box-shadow .15s, border-color .15s, background .15s;
+}
+.sumi-prose .md-button:hover { color: var(--sumi-fg); border-color: color-mix(in srgb, var(--sumi-fg) 30%, transparent); box-shadow: var(--sumi-shadow-md); }
+.sumi-prose .md-button--primary { background: var(--sumi-fg); border-color: var(--sumi-fg); color: var(--sumi-bg); }
+.sumi-prose .md-button--primary:hover { color: var(--sumi-bg); border-color: var(--sumi-fg); background: color-mix(in srgb, var(--sumi-fg) 88%, var(--sumi-accent)); }
 
 /* ── Fields ─────────────────────────────────────────────────────────────── */
 .sumi-fields { margin: 1.4em 0; border-top: 1px solid var(--sumi-line); }
@@ -727,7 +756,7 @@ code.doc-symbol.doc-symbol-type_parameter::after { content: "tparam"; }
 .sumi-prose .badge.important, .sumi-prose .badge.new { --c: var(--c-important); }
 .sumi-prose .badge.warning { --c: var(--c-warning); }
 .sumi-prose .badge.caution, .sumi-prose .badge.danger, .sumi-prose .badge.deprecated { --c: var(--c-caution); }
-.sumi-prose .badge.accent { --c: var(--sumi-accent); }
+.sumi-prose .badge.accent { --c: var(--sumi-accent-ink); }
 .sumi-prose h1 .badge, .sumi-prose h2 .badge, .sumi-prose h3 .badge { font-size: .5em; vertical-align: .35em; }
 
 .sumi-prose ul.sumi-gallery {
@@ -790,6 +819,7 @@ code.doc-symbol.doc-symbol-type_parameter::after { content: "tparam"; }
 .sumi-prose .tabbed-block { display: none; padding: 14px 16px 2px; }
 .sumi-prose .tabbed-block > :is(.highlight, pre) { margin-left: -16px; margin-right: -16px; }
 .sumi-prose .tabbed-block > :first-child:is(.highlight, pre) { margin-top: -14px; }
+.sumi-prose .tabbed-block > :last-child:is(.highlight, pre) { margin-bottom: -2px; }
 .sumi-prose .tabbed-block pre { border-left: 0; border-right: 0; border-radius: 0; }
 .sumi-prose .tabbed-set > input:nth-child(1):checked ~ .tabbed-content > :nth-child(1),
 .sumi-prose .tabbed-set > input:nth-child(2):checked ~ .tabbed-content > :nth-child(2),
@@ -891,7 +921,7 @@ dialog { color: inherit; }
 .sumi-palette-title { display: block; font-size: 14.5px; font-weight: 550; line-height: 1.4; }
 .sumi-palette-path { display: block; color: var(--sumi-fg-3); font-size: 12.5px; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sumi-palette-snippet { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 2px; color: var(--sumi-fg-2); font-size: 13px; line-height: 1.5; }
-.sumi-palette mark { background: none; color: var(--sumi-accent); font-weight: 650; }
+.sumi-palette mark { background: none; color: var(--sumi-accent-ink); font-weight: 650; }
 .sumi-palette-empty { padding: 36px 12px; color: var(--sumi-fg-3); text-align: center; font-size: 14px; }
 .sumi-palette-foot { display: flex; gap: 18px; padding: 10px 16px; border-top: 1px solid var(--sumi-line); background: var(--sumi-bg-soft); color: var(--sumi-fg-3); font-size: 12px; }
 .sumi-palette-foot span { display: inline-flex; align-items: center; gap: 4px; }
@@ -1189,7 +1219,7 @@ a.sumi-tag--static { cursor: pointer; }
 .sumi-release-date { margin-left: auto; color: var(--sumi-fg-3); font-size: 13.5px; }
 .sumi-release-summary { color: var(--sumi-fg-2); }
 .sumi-badge { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; background: var(--sumi-bg-soft); color: var(--sumi-fg-2); font-size: 12px; font-weight: 600; }
-.sumi-badge--latest { background: color-mix(in srgb, var(--sumi-accent) 13%, transparent); color: var(--sumi-accent); }
+.sumi-badge--latest { background: color-mix(in srgb, var(--sumi-accent) 13%, transparent); color: var(--sumi-accent-ink); }
 .sumi-badge--pre { background: color-mix(in srgb, var(--c-warning) 15%, transparent); color: var(--c-warning); }
 .sumi-assets td a { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; text-decoration: none; font-family: var(--sumi-font-mono); font-size: 13.5px; }
 .sumi-assets td a .sumi-icon { width: 15px; height: 15px; }
@@ -1232,7 +1262,7 @@ a.sumi-tag--static { cursor: pointer; }
 }
 a.sumi-sidebar-title { display: block; margin: 0 0 6px; padding: 5px 10px; border-radius: 7px; }
 a.sumi-sidebar-title:hover { background: var(--sumi-bg-soft); color: var(--sumi-fg); }
-a.sumi-sidebar-title.is-current { color: var(--sumi-accent); }
+a.sumi-sidebar-title.is-current { color: var(--sumi-accent-ink); }
 .sumi-filetree details { margin: 0; }
 
 /* ── Untranslated page note (multi-language sites) ─────────────────────── */
