@@ -30,7 +30,7 @@ sections:
 ---
 ```
 
-指向 Markdown 文件的链接，例如 `guide.md` 或 `guide/speed.md#cache`，会指向由该文件生成的页面。和 Markdown 链接一样，它相对于首页本身，文件不存在时构建会给出警告。其他链接相对于站点根目录，和 `nav` 条目一样。文本字段可以使用行内 Markdown。
+指向 Markdown 文件的链接，例如 `guide.md` 或 `guide/speed.md#cache`，会指向由该文件生成的页面。和 Markdown 链接一样，它相对于首页本身，文件不存在时构建会给出警告。其他链接相对于站点根目录，和 `nav` 条目一样。文本字段可以使用行内 Markdown，其中的 Markdown 链接（例如 `[指南](guide.md)`）也按同样的方式处理。
 
 ## 主视觉 {#hero}
 
