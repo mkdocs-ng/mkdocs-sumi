@@ -606,7 +606,8 @@
         var pageLoc = hash < 0 ? d.location : d.location.slice(0, hash);
         // The first heading of a page usually repeats the page itself: keep one result.
         if (hash >= 0 && firstSection[pageLoc] === d.location && d.title === titles[pageLoc]) return;
-        var text = (d.text || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+        // Drop real tags only: text like `a < b && c > d` stays.
+        var text = (d.text || '').replace(/<\/?[a-zA-Z][^<>]*>/g, ' ').replace(/\s+/g, ' ').trim();
         // A page's full text keeps the heading permalinks ("Title # …"): drop them.
         if (hash < 0 && headings[pageLoc]) headings[pageLoc].forEach(function (h) {
           text = text.replace(new RegExp('(^|\\s)(' + esc_re(h) + ') [#¶§¤] ', 'g'), '$1$2 ');
@@ -631,14 +632,15 @@
     });
     return out;
   }
+  // Mark every term in one pass over the raw text, then escape each piece: marking
+  // escaped HTML term by term matched inside "&quot;" and inside earlier <mark>s.
   function highlight(text, ts) {
-    var h = esc(text);
-    ts.forEach(function (w) {
-      if (!w) return;
-      var re = new RegExp('(' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/&/g, '&amp;').replace(/</g, '&lt;') + ')', 'ig');
-      h = h.replace(re, '<mark>$1</mark>');
-    });
-    return h;
+    var words = ts.filter(Boolean).sort(function (a, b) { return b.length - a.length; })
+      .map(function (w) { return w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); });
+    if (!words.length) return esc(text);
+    return String(text).split(new RegExp('(' + words.join('|') + ')', 'ig')).map(function (part, i) {
+      return i % 2 ? '<mark>' + esc(part) + '</mark>' : esc(part);
+    }).join('');
   }
   function snippet(text, ts) {
     var lx = text.toLowerCase(), pos = -1;

@@ -10,7 +10,7 @@
     <div class="sumi-post-meta">
       <time datetime="{{ sumi.post.date.isoformat() }}">{{ sumi.post.date | sumi_date(sumi_language) }}</time>
       <span aria-hidden="true">·</span><span>{{ t('reading_time', n=sumi.post.reading_time) }}</span>
-      {%- for tag in sumi.post.tags %}<a class="sumi-tag sumi-tag--static" href="{{ sumi.blog_index_url | url }}#tag={{ tag | urlencode }}">{{ tag }}</a>{% endfor %}
+      {%- for tag in sumi.post.tags %}<a class="sumi-tag sumi-tag--static" href="{{ sumi.blog_index_url | url }}#tag={{ tag | urlencode }}">{{ tag | e }}</a>{% endfor %}
     </div>
   </div>
   {%- endif %}

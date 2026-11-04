@@ -7,9 +7,11 @@ import re
 import textwrap
 from pathlib import Path
 
+import jinja2
 import pytest
 from mkdocs.commands import build
 from mkdocs.config import load_config
+from mkdocs.exceptions import Abort
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -429,3 +431,63 @@ def test_section_index_link_is_outside_the_toggle(tmp_path):
     assert '<summary class="sumi-nav-toggle" aria-label="Guide">' in html
     # A section without an index page keeps its title inside the toggle.
     assert re.search(r'<summary><span>More</span>', html)
+
+
+def test_theme_without_plugin_says_what_is_missing(tmp_path):
+    with pytest.raises(jinja2.TemplateNotFound, match='needs its plugin'):
+        _site(tmp_path, {'index.md': '# Home\n'}, 'site_name: Test\ntheme: sumi\n')
+
+
+def test_blog_tags_written_as_one_string(tmp_path):
+    out = _site(tmp_path, {
+        'blog/index.md': '# Blog\n',
+        'blog/posts/2026-01-02-hello.md': """
+            ---
+            tags: release
+            ---
+            # Hello
+        """,
+        'blog/posts/2026-01-03-more.md': """
+            ---
+            tags: [news, null]
+            ---
+            # More
+        """,
+    }, BASIC + '    extra:\n      sumi:\n        blog: blog/index.md\n')
+    html = (out / 'blog' / 'index.html').read_text(encoding='utf-8')
+    assert re.findall(r'class="sumi-tag" data-tag="([^"]*)"', html) == ['news', 'release']
+
+
+def test_invalid_date_in_post_name_warns(tmp_path, caplog):
+    _site(tmp_path, {
+        'blog/index.md': '# Blog\n',
+        'blog/posts/2026-13-45-oops.md': '# Oops\n',
+    }, BASIC + '    extra:\n      sumi:\n        blog: blog/index.md\n')
+    assert 'invalid date in its name: 2026-13-45' in caplog.text
+
+
+def test_meta_values_are_escaped(tmp_path):
+    out = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'page.md': """
+            ---
+            description: The "fast" way <b>now</b>
+            ---
+            # Fish & "chips"
+        """,
+    }, BASIC)
+    html = (out / 'page' / 'index.html').read_text(encoding='utf-8')
+    assert '<meta name="description" content="The &#34;fast&#34; way &lt;b&gt;now&lt;/b&gt;">' in html
+    assert '<meta property="og:title" content="Fish &amp; &#34;chips&#34;">' in html
+
+
+@pytest.mark.parametrize(('meta', 'message'), [
+    ('template: landing.html\nhero: just a string', "'hero' must be a mapping"),
+    ('template: landing.html\nsections: features', "'sections' must be a list"),
+    ('template: releases.html\nreleases:\n  - just-a-string', 'must be a mapping'),
+])
+def test_malformed_front_matter_is_a_clear_error(tmp_path, caplog, meta, message):
+    with pytest.raises(Abort):
+        _site(tmp_path, {'index.md': f'---\n{meta}\n---\n# Home\n'}, BASIC)
+    assert message in caplog.text
+    assert 'Traceback' not in caplog.text
