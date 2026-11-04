@@ -92,6 +92,20 @@ def test_palette_searches_cjk_and_runs_commands(base_url, page):
     assert scheme == ('slate' if new == 'dark' else 'default')
 
 
+def test_palette_highlights_without_breaking_the_markup(base_url, page):
+    url, _ = base_url
+    page.goto(url + 'docs/', wait_until='networkidle')
+    page.keyboard.press('Control+k')
+    # "t" and "q" sit inside "&quot;", and "mark" inside the <mark> of an earlier term.
+    page.keyboard.type('a t q mark')
+    results = page.locator('.sumi-palette-results')
+    sync_api.expect(page.locator('.sumi-palette-item').first).to_be_visible()
+    text = results.inner_text()
+    for broken in ('&quot;', '&amp;', '&lt;', 'mark>'):
+        assert broken not in text
+    assert page.locator('.sumi-palette-results mark mark').count() == 0
+
+
 def test_tabs_sync_and_persist(base_url, page):
     url, _ = base_url
     page.goto(url + 'docs/write/tabs/', wait_until='networkidle')

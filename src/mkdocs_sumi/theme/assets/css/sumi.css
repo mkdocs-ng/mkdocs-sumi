@@ -643,8 +643,9 @@ details.sumi-callout[open] > summary::after, .sumi-prose details[open]:where(:no
 .sumi-field-name { color: var(--sumi-fg); font-weight: 650; }
 .sumi-field-name code { padding: .12em .45em; font-size: .9em !important; font-weight: 650 !important; }
 .sumi-chip {
-  display: inline-flex; align-items: center; gap: 3px; height: 22px; padding: 0 8px; border-radius: 999px; background: var(--sumi-bg-soft);
-  color: var(--sumi-fg-2); font: 500 12px/1 var(--sumi-font-mono); white-space: nowrap;
+  display: inline-flex; align-items: center; flex-wrap: wrap; gap: 3px; max-width: 100%; min-height: 22px; padding: 4px 8px;
+  border-radius: 11px; background: var(--sumi-bg-soft); color: var(--sumi-fg-2); font: 500 12px/14px var(--sumi-font-mono);
+  overflow-wrap: anywhere;
 }
 .sumi-chip code { padding: 0 !important; background: none !important; font-size: 1em !important; }
 .sumi-chip-key { color: var(--sumi-fg-3); font-family: var(--sumi-font); }

@@ -267,10 +267,10 @@ class SumiPlugin(BasePlugin[SumiConfig]):
             for a in meta_authors:
                 info = self.authors.get(a, {'name': a}) if isinstance(a, str) else a
                 authors.append({'id': a if isinstance(a, str) else info.get('name', ''), **info})
-            tags = page.meta.get('tags') or page.meta.get('categories') or []
+            tags = _tag_list(page.meta.get('tags') or page.meta.get('categories'))
             if not page.meta.get('draft'):
                 self.posts.append(Post(page=page, date=date, updated=_parse_date(page.meta.get('updated')),
-                                       authors=authors, tags=[str(t) for t in tags],
+                                       authors=authors, tags=tags,
                                        reading_time=reading_minutes(markdown)))
         page.meta.setdefault('reading_time', reading_minutes(markdown))
         return markdown
@@ -282,6 +282,12 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         # Before `llms_txt` writes the page's Markdown copy.
         if page.meta.get('template') == 'landing.html' and page.markdown is not None:
             from mkdocs_sumi.landing import landing_markdown
+
+            for key, kind in (('hero', dict), ('sections', list)):
+                if page.meta.get(key) is not None and not isinstance(page.meta[key], kind):
+                    raise PluginError(
+                        f"Landing page '{page.file.src_uri}': '{key}' must be a "
+                        f"{'mapping' if kind is dict else 'list'}, got: {page.meta[key]!r}")
 
             body = re.sub(r'^\s*#\s+[^\n]*\n', '', page.markdown, count=1) if getattr(page, 'content_title', None) else page.markdown
             page.markdown = landing_markdown(page.meta, body, getattr(page, 'content_title', None))
@@ -455,7 +461,11 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         import markdown as md_lib
 
         releases = []
+        if data is not None and not isinstance(data, list):
+            raise PluginError(f"Releases of '{page.file.src_uri}' must be a list, got: {data!r}")
         for n, rel in enumerate(data or []):
+            if not isinstance(rel, dict):
+                raise PluginError(f"Release {n + 1} of '{page.file.src_uri}' must be a mapping, got: {rel!r}")
             rel = dict(rel)
             if rel.get('notes'):
                 rel['notes_html'] = Markup(md_lib.markdown(str(rel['notes']), extensions=['fenced_code', 'tables']))
@@ -700,10 +710,22 @@ def _git_dates(docs_dirs: list[str]) -> dict[str, datetime.datetime]:
     return dates
 
 
+def _tag_list(tags: Any) -> list[str]:
+    """Front matter tags as a list: `tags: release` is one tag, not seven."""
+    if tags is None:
+        return []
+    if not isinstance(tags, (list, tuple)):
+        tags = [tags]
+    return [str(t) for t in tags if t is not None and str(t).strip()]
+
+
 def _file_date(file: File) -> datetime.datetime:
     m = re.search(r'(\d{4})-(\d{2})-(\d{2})', file.src_uri)
     if m:
-        return datetime.datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        try:
+            return datetime.datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        except ValueError:
+            log.warning(f"Sumi: '{file.src_uri}' has an invalid date in its name: {m.group(0)}.")
     if file.abs_src_path and os.path.exists(file.abs_src_path):
         return datetime.datetime.fromtimestamp(os.path.getmtime(file.abs_src_path))
     return datetime.datetime.now()
