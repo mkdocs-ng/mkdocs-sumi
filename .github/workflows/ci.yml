@@ -39,10 +39,8 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.13"
-      - run: pip install -e ".[test]" playwright
-      # The docs site the browser tests build uses `languages`, new in MkDocs NG
-      # 1.11. Drop this step once 1.11.0 is on PyPI.
-      - run: pip install "mkdocs-ng @ git+https://github.com/mkdocs-ng/mkdocs@main"
+      # The docs site the browser tests build uses `languages`, new in MkDocs NG 1.11.
+      - run: pip install -e ".[test]" playwright "mkdocs-ng>=1.11"
       - run: python -m playwright install --with-deps chromium
       - run: pytest tests/test_browser.py
 
@@ -56,10 +54,8 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.13"
-      - run: pip install -e .
-      # The docs use `languages`, new in MkDocs NG 1.11. Drop this step once
-      # 1.11.0 is on PyPI.
-      - run: pip install "mkdocs-ng @ git+https://github.com/mkdocs-ng/mkdocs@main"
+      # The docs use `languages`, new in MkDocs NG 1.11.
+      - run: pip install -e . "mkdocs-ng>=1.11"
       - run: mkdocs build --strict
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         if: github.event_name == 'push'
