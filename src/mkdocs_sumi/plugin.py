@@ -346,6 +346,11 @@ class SumiPlugin(BasePlugin[SumiConfig]):
             for item in group if isinstance(group, list) else []:
                 if isinstance(item, dict) and isinstance(item.get('link'), str):
                     item['link'] = _doc_link(item['link'], page, files)
+        # Markdown links inside text fields (`[Guide](guide.md)`) are rendered
+        # without MkDocs' link resolution, so resolve them here as well.
+        for key in ('hero', 'sections'):
+            if key in page.meta:
+                page.meta[key] = _text_links(page.meta[key], page, files)
 
     def on_page_context(self, context: dict, *, page: Page, config: MkDocsConfig, nav: Navigation) -> dict:
         self._landing_links(page)
@@ -592,6 +597,35 @@ def _doc_link(link: str, page: Page, files: Files) -> str:
     log.warning("Doc file '%s' links to '%s' in its front matter, but the target is not found "
                 'among documentation files.', page.file.src_uri, link)
     return link
+
+
+_MD_LINK_RE = re.compile(r'(\]\()(<[^>\n]+>|[^)\s]+)')
+
+
+def _text_links(value: Any, page: Page, files: Files, key: str | None = None) -> Any:
+    """Resolve `.md` targets of Markdown links in landing front-matter text.
+
+    `link` fields are handled by `_doc_link` itself and `code` blocks are left
+    alone. A resolved target is made relative to the page, as MkDocs does.
+    """
+    if key in ('link', 'code', 'icon', 'image'):
+        return value
+    if isinstance(value, dict):
+        return {k: _text_links(v, page, files, k) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_text_links(v, page, files, key) for v in value]
+    if not isinstance(value, str) or '](' not in value:
+        return value
+
+    def sub(m: re.Match[str]) -> str:
+        target = m.group(2)
+        bare = target[1:-1] if target.startswith('<') else target
+        resolved = _doc_link(bare, page, files)
+        if resolved == bare:
+            return m.group(0)
+        return m.group(1) + utils.get_relative_url(resolved, page.url)
+
+    return _MD_LINK_RE.sub(sub, value)
 
 
 def _rebase(html: str, page_url: str, target: str, anchor: str | None, absolute: str | None = None) -> str:

@@ -158,6 +158,57 @@ def test_landing_links_to_markdown_files(tmp_path, caplog):
         assert '[Start](getting-started.md)' in (site / 'index.md').read_text()
 
 
+def test_landing_text_links_to_markdown_files(tmp_path):
+    """`[x](page.md)` inside front-matter text leads to the built page too."""
+    site = _site(tmp_path, {
+        'index.md': """
+            ---
+            template: landing.html
+            hero:
+              text: "Read [the guide](guide/README.md) first."
+            sections:
+              - type: features
+                text: "[All settings](guide/config.md#llmstxt)"
+                items:
+                  - title: Start
+                    text: >-
+                      [Begin](getting-started.md)<br>
+                      [Site](https://example.com/a.md) · [Here](#top)
+              - type: faq
+                items:
+                  - {q: Where?, a: "See [config](<guide/config.md>)."}
+              - type: split
+                code: {lang: md, content: "[keep](getting-started.md)"}
+            ---
+            """,
+        'getting-started.md': '# Start\n',
+        'guide/README.md': '# Guide\n',
+        'guide/config.md': '# Config\n',
+        'guide/landing.md': """
+            ---
+            template: landing.html
+            hero:
+              text: "[Config](config.md) and [start](getting-started.md)"
+            ---
+            """,
+    }, BASIC)
+    html = (site / 'index.html').read_text()
+    main = html.split('<main', 1)[1]
+    assert 'href="guide/"' in main
+    assert 'href="guide/config/#llmstxt"' in main
+    assert 'href="getting-started/"' in main
+    assert 'href="https://example.com/a.md"' in main
+    assert 'href="#top"' in main
+    assert 'keep' in main and 'getting-started.md' in main  # code is left alone
+    assert re.findall(r'href="([^"]*\.md[^"]*)"', main) == ['https://example.com/a.md']
+    if HAS_LLMS_TXT:
+        # The Markdown copy keeps .md links.
+        assert '](guide/README.md)' in (site / 'index.md').read_text()
+    sub = (site / 'guide' / 'landing' / 'index.html').read_text()
+    assert 'href="../config/"' in sub
+    assert 'href="../../getting-started/"' in sub
+
+
 def test_blog(site):
     post = site / 'blog' / '2026' / '01' / '02' / 'hello' / 'index.html'
     assert post.is_file()
