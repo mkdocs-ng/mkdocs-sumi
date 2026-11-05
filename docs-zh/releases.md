@@ -2,7 +2,10 @@
 template: releases.html
 title: 发布记录
 description: Sumi 的各个版本、发布说明和下载。
-releases: releases.yml
+releases:
+  github: mkdocs-ng/mkdocs-sumi
+  pypi: mkdocs-sumi
+  file: releases.yml
 hide: [toc]
 ---
 

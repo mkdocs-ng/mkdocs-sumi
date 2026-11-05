@@ -1,3 +1,37 @@
+# Extra text for the Releases page. The list of versions, their dates and the
+# notes come from GitHub Releases and the downloads from PyPI (see releases.md);
+# an entry here only adds to or replaces the fields of the same version. New
+# releases need nothing here: publishing the GitHub release is enough.
+- version: 0.3.0
+  summary: Ten more interface languages with right-to-left support, a bilingual view, comments and feedback, and new docs for running a site.
+  notes: |
+    - The interface now speaks Japanese, Korean, German, French, Spanish, Brazilian Portuguese, Russian, Italian, Arabic and Hebrew, on top of English and Chinese. Arabic and Hebrew sites lay out right to left.
+    - Bilingual view: on a multi-language site, readers can open a translation side by side with the page (press `b`). Turn it off with `theme.bilingual_view: false`.
+    - Comments with Giscus (`theme.comments`) and a "Was this page helpful?" widget (`theme.feedback`, or Material's `extra.analytics.feedback`). Plausible and Umami join Google Analytics.
+    - Wide tables get an `{.expand}` button that opens them full screen, and diagrams can be zoomed and panned.
+    - New "Run your site" docs: deploy, custom domains, analytics, comments, upgrading and troubleshooting. Every component page ends with a reference table.
+    - A [showcase](../showcase/) of sites built with Sumi.
+- version: 0.2.3
+  summary: Fixes from a test pass of 0.2.1.
+  notes: |
+    - A site with `theme: sumi` but without the `sumi` plugin now says to add the plugin, instead of stopping with "'t' is undefined".
+    - A blog post with `tags: release` no longer gets one tag per letter, and empty tags are dropped.
+    - Quotes and `<` in front matter, such as a description, no longer break the description, Open Graph and Twitter meta tags or blog tag attributes.
+    - Search keeps text such as `a < b && c > d` in results, and highlighting no longer shows `&quot;` or broken markup.
+    - A landing page with a wrongly typed `hero` or `sections`, or a release that isn't a mapping, is a clear error instead of a Python traceback. A post whose file name has an invalid date logs a warning and uses the file date.
+    - Field chips wrap on phones instead of making the page scroll sideways.
+- version: 0.2.2
+  summary: Markdown links in landing page text lead to the built pages, and the docs are fully in Chinese.
+  notes: |
+    - Markdown links inside landing page text fields, such as `text: "[Guide](guide.md)"`, now point at the built page, like `link:` fields do.
+    - Every docs page has a Chinese translation at `/zh/`.
+- version: 0.2.1
+  summary: A working mobile menu, and fixes from a full QA pass.
+  notes: |
+    - The navigation drawer on phones fills the screen below the header and scrolls, instead of shrinking to its links. It also lists the top-level tabs.
+    - The `print-site` plugin builds again with Sumi, and Material's `.grid.cards` and `.md-button` look right.
+    - Search no longer shows the page title twice or a `#` permalink in snippets.
+    - Accessibility: stronger contrast in light mode, focusable scroll regions, labelled charts, and section links in the sidebar are no longer nested inside the fold toggle.
 - version: 0.2.0
   date: 2026-11-03
   summary: Multi-language sites from one mkdocs.yml, new components, faster diagrams and help for sites moving from Material.
@@ -11,26 +45,13 @@
     - Plugins written for Material for MkDocs fit in: Material's common `--md-*` CSS variables and `data-md-color-scheme` map to Sumi, a `sumi:theme` event fires on palette changes, and a new guide for plugin authors explains the rest. `mkdocstrings` pages get type and parameter badges, backlinks and the source panel.
     - Code fences inside list items and callouts render as code blocks without `pymdownx.superfences`.
     - The docs moved to <https://sumi.mkdocs-ng.org/> and have a Chinese edition at `/zh/`.
-  assets:
-    - name: mkdocs_sumi-0.2.0-py3-none-any.whl
-      url: https://pypi.org/project/mkdocs-sumi/0.2.0/#files
-      size: 3.0 MB
-    - name: mkdocs_sumi-0.2.0.tar.gz
-      url: https://pypi.org/project/mkdocs-sumi/0.2.0/#files
-      size: 3.3 MB
 - version: 0.1.2
   date: 2026-11-02
   summary: Landing page links to Markdown files now lead to the built pages.
   notes: |
     - A landing page `link: guide.md` in front matter now points at the page built from `guide.md`, not at its Markdown copy. Like a Markdown link, it is relative to the landing page and keeps its `#anchor`, and the build warns when the file doesn't exist.
-  assets:
-    - name: mkdocs_sumi-0.1.2-py3-none-any.whl
-      url: https://pypi.org/project/mkdocs-sumi/0.1.2/#files
-      size: 2.5 MB
-    - name: mkdocs_sumi-0.1.2.tar.gz
-      url: https://pypi.org/project/mkdocs-sumi/0.1.2/#files
-      size: 2.5 MB
 - version: 0.1.1
+  status: stable
   date: 2026-11-01
   summary: API reference styling and layout fixes, found by moving the MkDocs-ng site to Sumi.
   notes: |
@@ -39,14 +60,8 @@
     - Drop the second rule when a page puts `---` right before a heading.
     - New `logo_dark` theme option: a second header logo for the dark palette.
     - `git_dates` no longer fails on Python 3.10 when Git writes a UTC commit date as `Z`.
-  assets:
-    - name: mkdocs_sumi-0.1.1-py3-none-any.whl
-      url: https://pypi.org/project/mkdocs-sumi/0.1.1/#files
-      size: 2.5 MB
-    - name: mkdocs_sumi-0.1.1.tar.gz
-      url: https://pypi.org/project/mkdocs-sumi/0.1.1/#files
-      size: 2.5 MB
 - version: 0.1.0
+  status: stable
   date: 2026-11-01
   summary: The first public release.
   notes: |
@@ -56,9 +71,3 @@
     - Landing, blog, releases and print page types.
     - Markdown copy of every page, `llms.txt` discovery links, Copy as Markdown.
     - English, Simplified Chinese and Traditional Chinese interface.
-  assets:
-    - name: mkdocs_sumi-0.1.0-py3-none-any.whl
-      url: https://pypi.org/project/mkdocs-sumi/0.1.0/#files
-      size: 2.5 MB
-    - name: mkdocs_sumi-0.1.0.tar.gz
-      url: https://pypi.org/project/mkdocs-sumi/0.1.0/#files
