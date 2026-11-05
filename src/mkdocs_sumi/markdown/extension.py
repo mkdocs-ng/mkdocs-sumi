@@ -420,6 +420,9 @@ class ComponentTreeprocessor(Treeprocessor):
         if classes:
             target.set('class', ' '.join(filter(None, [target.get('class', ''), *classes])))
         for key, value in values.items():
+            if key == 'style' and target.get('style'):
+                # Keep the --cols that `cols` set next to the author's own style.
+                value = target.get('style') + ';' + value
             target.set(key, value)
         return new
 

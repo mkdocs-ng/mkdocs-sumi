@@ -677,3 +677,8 @@ def test_expandable_table(tmp_path):
     out = _site(tmp_path, {'index.md': '# Home\n\n| a | b |\n| --- | --- |\n| 1 | 2 |\n{.expand .compact}\n'}, BASIC)
     html = (out / 'index.html').read_text(encoding='utf-8')
     assert 'class="sumi-table sumi-table--compact sumi-table--expand"' in html
+
+
+def test_gallery_columns_and_style_combine(tmp_path):
+    out = _site(tmp_path, {'index.md': '# Home\n\n- ![a](a.png)\n- ![b](b.png)\n{.gallery cols="2" style="--ratio: 16 / 10"}\n'}, BASIC)
+    assert 'style="--cols:2;--ratio: 16 / 10"' in (out / 'index.html').read_text(encoding='utf-8')
