@@ -37,6 +37,8 @@ jobs:
       - if: matrix.mkdocs == 'main'
         run: pip install "mkdocs-ng @ git+https://github.com/mkdocs-ng/mkdocs@main"
       - run: pytest tests --ignore=tests/test_browser.py
+        env:
+          GITHUB_TOKEN: ${{ github.token }}  # the docs-site test builds the Releases page, which reads GitHub Releases
 
   browser:
     runs-on: ubuntu-latest
