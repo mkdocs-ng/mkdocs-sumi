@@ -1,5 +1,24 @@
 {%- import "partials/macros.html" as m with context -%}
 <footer class="sumi-footer">
+  {%- if config.theme.footer_links %}
+  <div class="sumi-footer-links">
+    {%- for col in config.theme.footer_links %}
+    <div class="sumi-footer-col">
+      {%- if col.title %}<div class="sumi-footer-head">{{ col.title }}</div>{% endif %}
+      <ul>
+        {%- for l in col.links or [] %}
+        {%- if l is mapping and l.link %}
+        {%- set ext = l.link.startswith(('http://', 'https://')) %}
+        <li><a href="{{ l.link if ext or l.link.startswith(('mailto:', '#', '/')) else (l.link | url) }}"{% if ext %} rel="noopener"{% endif %}>{{ l.text }}</a></li>
+        {%- else %}
+        <li>{{ l.text if l is mapping else l }}</li>
+        {%- endif %}
+        {%- endfor %}
+      </ul>
+    </div>
+    {%- endfor %}
+  </div>
+  {%- endif %}
   <div class="sumi-footer-inner">
     <div class="sumi-footer-left">
       {%- if config.copyright %}<div class="sumi-copyright">{{ config.copyright }}</div>{% endif %}

@@ -297,6 +297,12 @@ class SumiPlugin(BasePlugin[SumiConfig]):
             page.markdown = landing_markdown(page.meta, body, getattr(page, 'content_title', None))
 
     def _on_page_content(self, html: str, *, page: Page, config: MkDocsConfig, files: Files) -> str:
+        subtitle = page.meta.get('subtitle')
+        if subtitle and page.meta.get('template') != 'landing.html':
+            # A line under the page title, like a standfirst: `subtitle:` in front matter.
+            lead = f'<p class="sumi-subtitle">{_inline_markdown(subtitle)}</p>'
+            m = re.search(r'</h1>', html)
+            html = html[: m.end()] + lead + html[m.end():] if m else lead + html
         feats = set()
         if 'class="mermaid"' in html:
             feats.add('mermaid')
@@ -352,6 +358,8 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         for s in page.meta.get('sections') or []:
             if isinstance(s, dict):
                 groups += [s.get('actions'), s.get('items')]
+                # Cards and price plans carry buttons of their own.
+                groups += [i.get('actions') for i in s.get('items') or [] if isinstance(i, dict)]
         for group in groups:
             for item in group if isinstance(group, list) else []:
                 if isinstance(item, dict) and isinstance(item.get('link'), str):
@@ -781,7 +789,8 @@ def _rebase(html: str, page_url: str, target: str, anchor: str | None, absolute:
 
     html = _URL_ATTR_RE.sub(sub, html)
     if anchor:
-        html = re.sub(r'\sid="([^"]+)"', lambda m: f' id="{anchor}--{m.group(1)}"', html)
+        html = re.sub(r'\s(id|for|aria-controls|aria-labelledby|aria-describedby)="([^"]+)"',
+                      lambda m: f' {m.group(1)}="' + ' '.join(f'{anchor}--{i}' for i in m.group(2).split()) + '"', html)
     return html
 
 

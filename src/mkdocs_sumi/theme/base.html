@@ -49,8 +49,7 @@
   {%- if sumi.feed_url %}<link rel="alternate" type="application/atom+xml" href="{{ sumi.feed_url | url }}" title="{{ config.site_name | e }}">{% endif %}
   <link rel="icon" href="{{ (theme.favicon or 'assets/images/favicon.svg') | url }}">
   <meta name="generator" content="mkdocs-{{ mkdocs_version }}, sumi">
-  <meta name="theme-color" content="#f8f7f4" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f8f7f4">
   {%- if page and page.title %}
   {%- set og_image = page.meta.image if page.meta and page.meta.image else theme.social_image -%}
   {%- if og_image and not (og_image.startswith('http://') or og_image.startswith('https://')) -%}
@@ -80,6 +79,7 @@
       var mode = s || p;
       if (mode === 'auto' || !mode) mode = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       d.dataset.theme = mode;
+      if (mode === 'dark') document.querySelector('meta[name="theme-color"]').content = '#141413';
       d.dataset.mdColorScheme = mode === 'dark' ? 'slate' : 'default';
       d.classList.replace('no-js', 'js');
       // A page opened inside the bilingual view shows its content only.

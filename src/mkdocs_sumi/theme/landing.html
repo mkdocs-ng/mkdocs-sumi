@@ -11,16 +11,23 @@
       install: pip install mkdocs-sumi
       code: {title: mkdocs.yml, lang: yaml, content: "..."}
       image: assets/hero.png
+      badges: [Free, {text: Stable, tone: tip}]
     sections:
       - {type: features, eyebrow, title, text, columns: 3, items: [{icon, title, text, link}]}
+        (items can also carry: mark, meta, badges, bullets, actions)
       - {type: split, title, text, code: {lang, title, content}, image, reverse: true}
       - {type: stats, items: [{value, label}]}
       - {type: steps, title, items: [{title, text}]}
       - {type: faq, title, items: [{q, a}]}
       - {type: cta, title, text, actions}
+      - {type: pricing, title, items: [{name, price, note, text, bullets, actions, featured}]}
+      - {type: posts, title, limit: 3}   # the latest blog posts
+      - {type: markdown, title, markdown: "..."}
       - {type: content}   # the page's Markdown body
       - {type: content, toc: true}   # the body as a docs page, with its table of contents
       - {type: include, template: partials/my-section.html}   # a template from custom_dir
+    Every section takes `id`, `class`, `tone: soft` or `tone: dark`, `markdown`
+    (shown below the section) and `actions` (below that; a cta shows them in the box).
 -#}
 {% extends "main.html" %}
 {%- macro actions(list) -%}
@@ -30,6 +37,16 @@
     {%- if a.icon %}{{ icon(a.icon) }}{% endif %}<span>{{ a.text }}</span>{% if a.primary %}{{ icon('arrow-right', 'sumi-btn-arrow') }}{% endif %}</a>
   {%- endfor %}
 </div>
+{%- endmacro -%}
+{%- macro badges(list) -%}
+{%- if list %}
+<div class="sumi-land-badges">
+  {%- for b in list %}
+  {%- set tone = b.tone if b is mapping else None %}
+  <span class="badge{% if tone %} {{ tone }}{% endif %}">{{ (b.text if b is mapping else b) | sumi_md }}</span>
+  {%- endfor %}
+</div>
+{%- endif %}
 {%- endmacro -%}
 {%- macro code_card(code) -%}
 <div class="sumi-land-code">
@@ -70,6 +87,7 @@
         {%- if hero.eyebrow %}<div class="sumi-eyebrow"><span class="sumi-eyebrow-dot"></span>{{ hero.eyebrow }}</div>{% endif %}
         <h1 class="sumi-hero-title">{{ (hero.title or page.title or config.site_name) | sumi_md }}</h1>
         {%- if hero.text or config.site_description %}<p class="sumi-hero-text">{{ (hero.text or config.site_description) | sumi_md }}</p>{% endif %}
+        {{ badges(hero.badges) }}
         {{ actions(hero.actions) }}
         {%- if hero.install %}
         <button class="sumi-install" type="button" data-copy="{{ hero.install }}" title="{{ t('copy') }}"><span class="sumi-install-prompt">$</span><code>{{ hero.install }}</code>{{ icon('copy') }}</button>
@@ -90,7 +108,7 @@
   {%- if type == 'content' and s.toc %}
   {#- The body as a docs page: the article beside its table of contents. -#}
   {%- set with_toc = toc_list | length > 0 and 'toc' not in hide %}
-  <section class="sumi-land-section sumi-land-docs{% if s.tone == 'soft' %} sumi-land--soft{% endif %}{% if s.class %} {{ s.class }}{% endif %}"{% if s.id %} id="{{ s.id }}"{% endif %}>
+  <section class="sumi-land-section sumi-land-docs{% if s.tone in ('soft', 'dark') %} sumi-land--{{ s.tone }}{% endif %}{% if s.class %} {{ s.class }}{% endif %}"{% if s.id %} id="{{ s.id }}"{% endif %}>
     <div class="sumi-shell sumi-shell--no-side{% if not with_toc %} sumi-shell--no-toc{% endif %}">
       <div class="sumi-main">
         <article class="sumi-article">
@@ -119,7 +137,7 @@
     </div>
   </section>
   {%- else %}
-  <section class="sumi-land-section sumi-land-{{ type }}{% if s.tone == 'soft' %} sumi-land--soft{% endif %}{% if s.class %} {{ s.class }}{% endif %}"{% if s.id %} id="{{ s.id }}"{% endif %}>
+  <section class="sumi-land-section sumi-land-{{ type }}{% if s.tone in ('soft', 'dark') %} sumi-land--{{ s.tone }}{% endif %}{% if s.class %} {{ s.class }}{% endif %}"{% if s.id %} id="{{ s.id }}"{% endif %}>
     <div class="sumi-land-inner">
       {%- if type == 'include' %}
       {{ section_head(s) }}
@@ -128,14 +146,27 @@
       <div class="sumi-prose sumi-land-prose">{{ page.content }}</div>
       {%- elif type == 'features' %}
       {{ section_head(s) }}
-      <div class="sumi-features" style="--cols: {{ s.columns or 3 }}">
+      <div class="sumi-features{% if s['items'] and (s['items'] | selectattr('actions') | list or s['items'] | selectattr('bullets') | list) %} sumi-features--cards{% endif %}" style="--cols: {{ s.columns or 3 }}">
         {%- for f in s['items'] or [] %}
-        {%- set tag = 'a' if f.link else 'div' %}
-        <{{ tag }} class="sumi-feature"{% if f.link %} href="{{ f.link | url }}"{% endif %}>
-          {%- if f.icon %}<span class="sumi-feature-icon">{{ icon(f.icon) }}</span>{% endif %}
-          <h3>{{ f.title }}</h3>
-          <p>{{ f.text | sumi_md }}</p>
-          {%- if f.link %}<span class="sumi-feature-more">{{ f.more or '' }}{{ icon('arrow-right') }}</span>{% endif %}
+        {#- A card with its own buttons is not a link itself: links can't nest. -#}
+        {%- set tag = 'a' if f.link and not f.actions else 'div' %}
+        <{{ tag }} class="sumi-feature"{% if tag == 'a' %} href="{{ f.link | url }}"{% endif %}>
+          {%- if f.meta %}
+          <div class="sumi-feature-head">
+            {%- if f.mark %}<span class="sumi-feature-icon sumi-feature-mark" aria-hidden="true">{{ f.mark }}</span>{% elif f.icon %}<span class="sumi-feature-icon">{{ icon(f.icon) }}</span>{% endif %}
+            <div><h3>{{ f.title | sumi_md }}</h3><div class="sumi-feature-meta">{{ f.meta | sumi_md }}</div></div>
+          </div>
+          {%- else %}
+          {%- if f.mark %}<span class="sumi-feature-icon sumi-feature-mark" aria-hidden="true">{{ f.mark }}</span>{% elif f.icon %}<span class="sumi-feature-icon">{{ icon(f.icon) }}</span>{% endif %}
+          <h3>{{ f.title | sumi_md }}</h3>
+          {%- endif %}
+          {{ badges(f.badges) }}
+          {%- if f.text %}<p>{{ f.text | sumi_md }}</p>{% endif %}
+          {%- if f.bullets %}
+          <ul class="sumi-check-list">{% for b in f.bullets %}<li>{{ icon('check') }}<span>{{ b | sumi_md }}</span></li>{% endfor %}</ul>
+          {%- endif %}
+          {%- if f.actions %}{{ actions(f.actions) }}{% endif %}
+          {%- if tag == 'a' %}<span class="sumi-feature-more">{{ f.more or '' }}{{ icon('arrow-right') }}</span>{% endif %}
         </{{ tag }}>
         {%- endfor %}
       </div>
@@ -155,7 +186,10 @@
       {%- elif type == 'stats' %}
       {{ section_head(s) }}
       <dl class="sumi-stats">
-        {%- for st in s['items'] or [] %}<div><dt>{{ st.label }}</dt><dd>{{ st.value }}</dd></div>{% endfor %}
+        {%- for st in s['items'] or [] %}
+        {%- if st.link %}<div class="sumi-stat-link"><dt><a href="{{ st.link | url }}">{{ st.label }}{{ icon('arrow-right') }}</a></dt><dd>{{ st.value }}</dd></div>
+        {%- else %}<div><dt>{{ st.label }}</dt><dd>{{ st.value }}</dd></div>{% endif %}
+        {%- endfor %}
       </dl>
       {%- elif type == 'steps' %}
       {{ section_head(s) }}
@@ -176,6 +210,43 @@
         {{ section_head(s) }}
         {{ actions(s.actions) }}
       </div>
+      {%- elif type == 'pricing' %}
+      {{ section_head(s) }}
+      <div class="sumi-pricing">
+        {%- for p in s['items'] or [] %}
+        <div class="sumi-price{% if p.featured %} sumi-price--featured{% endif %}">
+          <h3>{{ p.name }}</h3>
+          {%- if p.price %}<div class="sumi-price-amount">{{ p.price }}{% if p.note %} <small>{{ p.note | sumi_md }}</small>{% endif %}</div>{% endif %}
+          {%- if p.text %}<p>{{ p.text | sumi_md }}</p>{% endif %}
+          {%- if p.bullets %}
+          <ul class="sumi-check-list">{% for b in p.bullets %}<li>{{ icon('check') }}<span>{{ b | sumi_md }}</span></li>{% endfor %}</ul>
+          {%- endif %}
+          {%- if p.actions %}{{ actions(p.actions) }}{% endif %}
+        </div>
+        {%- endfor %}
+      </div>
+      {%- elif type == 'posts' %}
+      {{ section_head(s) }}
+      {%- set recent = (sumi.posts or [])[:(s.limit or 3)] %}
+      {%- if recent %}
+      <ul class="sumi-land-postlist">
+        {%- for p in recent %}
+        <li><a href="{{ p.url | url }}">
+          <span class="sumi-land-post-meta">{% for tag in p.tags[:1] %}<span class="badge accent">{{ tag }}</span>{% endfor %}<time datetime="{{ p.date.strftime('%Y-%m-%d') }}">{{ p.date.strftime('%Y-%m-%d') }}</time></span>
+          <span class="sumi-land-post-title">{{ p.title }}</span>
+        </a></li>
+        {%- endfor %}
+      </ul>
+      {%- endif %}
+      {%- elif type == 'markdown' %}
+      {{ section_head(s) }}
+      {%- if s.markdown %}<div class="sumi-prose sumi-land-md">{{ s.markdown | sumi_md(true) }}</div>{% endif %}
+      {%- endif %}
+      {%- if s.markdown and type not in ('split', 'markdown') %}
+      <div class="sumi-prose sumi-land-md sumi-land-after">{{ s.markdown | sumi_md(true) }}</div>
+      {%- endif %}
+      {%- if s.actions and type not in ('cta', 'split') %}
+      <div class="sumi-land-after">{{ actions(s.actions) }}</div>
       {%- endif %}
     </div>
   </section>

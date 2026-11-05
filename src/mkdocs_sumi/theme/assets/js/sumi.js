@@ -83,9 +83,17 @@
     // Material's attribute, for plugin CSS written against [data-md-color-scheme="slate"].
     root.dataset.mdColorScheme = mode === 'dark' ? 'slate' : 'default';
     if (persist) store.set('palette', mode);
+    syncThemeColor();
     listeners.forEach(function (fn) { fn(mode); });
     doc.dispatchEvent(new CustomEvent('sumi:theme', { detail: { theme: mode } }));
   }
+  // The browser chrome takes the page background, including a site's own --sumi-bg.
+  function syncThemeColor() {
+    var meta = $('meta[name="theme-color"]');
+    var bg = getComputedStyle(root).getPropertyValue('--sumi-bg').trim();
+    if (meta && bg) meta.content = bg;
+  }
+  window.addEventListener('load', syncThemeColor);
   function toggleTheme() { setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark', true); }
   $$('[data-sumi-theme]').forEach(function (b) { b.addEventListener('click', toggleTheme); });
   if (window.matchMedia) {
@@ -148,6 +156,7 @@
   }
   // Templates that replace the page layout (404, print) have no drawer.
   if (menuBtn && !side) { menuBtn.remove(); menuBtn = null; }
+  if (menuBtn) menuBtn.setAttribute('aria-controls', 'sumi-sidebar');
   if (menuBtn) menuBtn.addEventListener('click', function () { setDrawer(!side.classList.contains('is-open')); });
   if (side) {
     var current = $('.is-current', side);
@@ -360,7 +369,7 @@
       if (img.closest('a') || img.closest('.sumi-cards') || img.classList.contains('no-zoom')) return;
       img.classList.add('sumi-zoomable');
       img.addEventListener('click', function () {
-        var z = $('img', zoom);
+        var z = $('img', zoom) || zoom.appendChild(doc.createElement('img'));
         z.src = img.currentSrc || img.src; z.alt = img.alt;
         zoom.showModal();
       });

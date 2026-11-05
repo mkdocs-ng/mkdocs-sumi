@@ -25,6 +25,8 @@ social_image: null
 brand: null
 # Text or HTML for a dismissible bar above the header.
 announcement: null
+# Columns of links above the footer: [{title, links: [{text, link}]}]; a plain string is text.
+footer_links: []
 # Show the "Built with MkDocs NG and Sumi" credit in the footer.
 credit: true
 # Keyboard shortcuts (search, prev/next, theme...).
