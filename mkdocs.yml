@@ -79,6 +79,7 @@ languages:
           - 面向插件作者: docs/customize/plugin-authors.md
         - 面向 AI 与智能体: docs/ai.md
         - 设计原则: docs/design.md
+      - 案例: showcase.md
       - 发布记录: releases.md
       - 博客: blog/index.md
 
@@ -142,5 +143,6 @@ nav:
       - For plugin authors: docs/customize/plugin-authors.md
     - AI and agents: docs/ai.md
     - Design principles: docs/design.md
+  - Showcase: showcase.md
   - Releases: releases.md
   - Blog: blog/index.md
