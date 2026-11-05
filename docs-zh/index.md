@@ -86,7 +86,7 @@ sections:
       - {value: "0", label: "运行时服务或 CDN"}
       - {value: "16", label: "原生 Markdown 组件"}
       - {value: "11 KB", label: "核心脚本（gzip），不依赖框架"}
-      - {value: "2", label: "界面语言：English、中文"}
+      - {value: "15", label: "种界面语言，含从右到左"}
   - type: steps
     eyebrow: 三分钟
     title: 从空文件夹到上线的站点。
