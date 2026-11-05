@@ -19,6 +19,8 @@ hide: [toc]
   AgentBox
 - [![立陶宛生活指南](assets/showcase/lithuania-guide.jpg)](https://lt.shenxianpeng.dev/)
   立陶宛生活指南
+- [![Commit Check 网站](assets/showcase/commit-check.jpg)](https://commit-check.com/)
+  Commit Check
 {.gallery cols="2" style="--ratio: 16 / 10"}
 
 ## 站点列表 {#the-sites}
@@ -31,6 +33,7 @@ hide: [toc]
 | [Sumi 入门模板](https://mkdocs-ng.github.io/sumi-starter/zh/) | 可以直接复制的模板仓库 | 中英双语的首页、指南、参考、发布记录和博客，部署在 GitHub Pages |
 | [AgentBox](https://shenxianpeng.dev/agentbox/) | 一个开源智能体平台的文档 | 纯文档站点：侧边栏、页内目录、卡片、表格和代码 |
 | [立陶宛生活指南](https://lt.shenxianpeng.dev/) | 面向中文读者的立陶宛生活指南 | 中文界面和排版、带数据的首页、中文搜索、一本很长的参考书 |
+| [Commit Check](https://commit-check.com/) | 一个提交规范检查工具的产品网站和文档 | 套在 Sumi 页眉页脚里的自定义首页、带侧边栏和页内目录的文档、支持标签筛选和 RSS 的博客、打印版 |
 {.compact}
 
 ## 提交你的站点 {#add-your-site}
