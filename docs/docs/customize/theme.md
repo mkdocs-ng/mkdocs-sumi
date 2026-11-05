@@ -37,7 +37,7 @@ theme:
 | `feedback` | boolean or mapping | | A "Was this page helpful?" widget. Material's `extra.analytics.feedback` works too. See [Analytics and feedback](../run/analytics.md). |
 | `repo_icon` | string | | Override the repository icon, e.g. `brand-gitlab`. Detected from `repo_url` by default. |
 | `keyboard` | boolean | `true` | Enable single-key shortcuts. <kbd>⌘</kbd> <kbd>K</kbd> always works. |
-| `credit` | boolean | `true` | Show "Built with MkDocs and Sumi" in the footer. |
+| `credit` | boolean | `true` | Show "Built with MkDocs NG and Sumi" in the footer. |
 {.fields}
 
 ## Accent colours
