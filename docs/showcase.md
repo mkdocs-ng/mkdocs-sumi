@@ -19,6 +19,8 @@ Sites built with Sumi, each with a note on the parts of Sumi it uses. Click a sc
   AgentBox
 - [![The Lithuania living guide](assets/showcase/lithuania-guide.jpg)](https://lt.shenxianpeng.dev/)
   立陶宛生活指南
+- [![The Commit Check website](assets/showcase/commit-check.jpg)](https://commit-check.com/)
+  Commit Check
 {.gallery cols="2" style="--ratio: 16 / 10"}
 
 ## The sites
@@ -31,6 +33,7 @@ Sites built with Sumi, each with a note on the parts of Sumi it uses. Click a sc
 | [Sumi starter](https://mkdocs-ng.github.io/sumi-starter/) | A template repository to copy | Landing page, guide, reference, releases and blog in English and Chinese, deployed to GitHub Pages |
 | [AgentBox](https://shenxianpeng.dev/agentbox/) | Docs for an open-source agent platform | A docs-only site: sidebar, table of contents, cards, tables and code |
 | [立陶宛生活指南](https://lt.shenxianpeng.dev/) | A Chinese guide to living in Lithuania | Chinese interface and typography, landing page with figures, CJK search, a long reference book |
+| [Commit Check](https://commit-check.com/) | A product site and docs for a commit policy checker | A custom landing page in Sumi's header and footer, docs with sidebar and table of contents, a blog with tag filters and an RSS feed, print edition |
 {.compact}
 
 ## Add your site

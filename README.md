@@ -69,6 +69,9 @@ mkdocs serve
     <td width="33%"><a href="https://shenxianpeng.dev/agentbox/"><img src="https://raw.githubusercontent.com/mkdocs-ng/mkdocs-sumi/main/docs/assets/showcase/agentbox.jpg" alt="AgentBox"></a><br><sub>AgentBox</sub></td>
     <td width="33%"><a href="https://lt.shenxianpeng.dev/"><img src="https://raw.githubusercontent.com/mkdocs-ng/mkdocs-sumi/main/docs/assets/showcase/lithuania-guide.jpg" alt="立陶宛生活指南"></a><br><sub>立陶宛生活指南</sub></td>
   </tr>
+  <tr>
+    <td width="33%"><a href="https://commit-check.com/"><img src="https://raw.githubusercontent.com/mkdocs-ng/mkdocs-sumi/main/docs/assets/showcase/commit-check.jpg" alt="Commit Check"></a><br><sub>Commit Check</sub></td>
+  </tr>
 </table>
 
 More on the [showcase page](https://sumi.mkdocs-ng.org/showcase/). Built something with Sumi? [Tell us](https://github.com/mkdocs-ng/mkdocs-sumi/issues/new?title=Showcase:+).
