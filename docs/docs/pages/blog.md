@@ -132,6 +132,8 @@ The format is the same as the Material blog plugin's, so an existing file can be
 
 Without `docs/blog/index.md`, Sumi creates one titled "Blog". To add an introduction, create the file; any Markdown in it is shown above the list of posts. Tag filters appear when posts have tags, and a filter can be linked to as `blog/#tag=release`.
 
+Any page can list a selection of posts: give it `template: blog.html` and `blog_tag: release` for the posts with that tag, or `blog_series: Getting started` for the posts of a series.
+
 ## List and card views
 
 The index shows posts as a list, or as a grid of cards with cover images. Readers can switch with the buttons next to the tag filters; their choice is remembered. Pick the default with `blog.layout`:

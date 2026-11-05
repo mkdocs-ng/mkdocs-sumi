@@ -502,8 +502,11 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         blog = current.blog if current else next(
             (d for d, uri in self.blog_indexes.items() if uri == page.file.src_uri), None)
         tag = page.meta.get('blog_tag')
+        series = page.meta.get('blog_series')
         if tag is not None:
             posts = [p for p in all_posts if str(tag) in p.tags]
+        elif series is not None:
+            posts = [p for p in all_posts if str(series) in p.series]
         elif blog is not None:
             posts = [p for p in all_posts if p.blog == blog]
         else:
@@ -910,11 +913,10 @@ _REDIRECT_MARK = '<meta name="generator" content="sumi-redirect">'
 
 
 def _slugify_tag(tag: str) -> str:
-    """A tag's URL path, as Hugo makes it: `Open Source` -> `open-source`, `CI/CD` -> `ci/cd`."""
-    slug = re.sub(r'\s+', '-', tag.strip().lower())
-    slug = re.sub(r'[^\w/.+#-]', '', slug)
-    slug = '/'.join(part for part in slug.split('/') if part not in ('', '.', '..'))
-    return slug
+    """A tag's URL path, as Hugo makes it: `Open Source` -> `open-source`, `CI/CD` -> `ci-cd`."""
+    slug = re.sub(r'[\s/\\]+', '-', tag.strip().lower())
+    slug = re.sub(r'[^\w.+#~-]', '', slug)
+    return slug.strip('.')
 
 
 def _series_order(post: Post) -> float:

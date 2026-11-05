@@ -884,7 +884,7 @@ def test_hugo_style_blog(hugo_blog):
     assert 'href="../../../tags/open-source/"' in hello
     tag = _post_list((out / 'tags' / 'open-source' / 'index.html').read_text(encoding='utf-8'))
     assert 'Hello' in tag and 'Second' in tag and 'Old' not in tag
-    assert (out / 'tags' / 'ci' / 'cd' / 'index.html').is_file()
+    assert (out / 'tags' / 'ci-cd' / 'index.html').is_file()
     tags = (out / 'tags' / 'index.html').read_text(encoding='utf-8')
     assert 'href="open-source/"' in tags and 'href="life/"' in tags
     # Series.

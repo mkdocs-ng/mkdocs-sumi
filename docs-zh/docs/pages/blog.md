@@ -132,6 +132,8 @@ authors:
 
 没有 `docs/blog/index.md` 时，Sumi 会创建一个标题为“博客”的首页。要加一段介绍，就创建这个文件，其中的 Markdown 会显示在文章列表上方。文章带标签时会出现标签筛选，筛选可以用 `blog/#tag=release` 这样的地址直接链接。
 
+任何页面都可以列出一部分文章：设置 `template: blog.html`，再用 `blog_tag: release` 列出带这个标签的文章，或用 `blog_series: 入门` 列出一个系列的文章。
+
 ## 列表视图与卡片视图 {#list-and-card-views}
 
 博客首页可以把文章显示为列表，或者显示为带封面图的卡片网格。读者可以用标签筛选旁边的按钮切换，选择会被记住。用 `blog.layout` 设置默认视图：
