@@ -55,3 +55,13 @@ extra:
     - icon: brand-github
       link: https://github.com/mkdocs-ng/mkdocs-sumi
 ```
+
+## 参考 {#reference}
+
+| 项目 | 说明 |
+| --- | --- |
+| 输出 | `<span class="sumi-keys">` 中的 `<kbd>` 元素，图标是内联的 `<svg class="sumi-icon">`。 |
+| 没有 Sumi 时 | 原样的文字：`++Ctrl+K++` 和 `:lucide-rocket:`。 |
+| JavaScript | 不需要：图标在构建时内联。 |
+| 限制 | 只有 Lucide 和上面列出的品牌图标。未知的名称保持为文字。 |
+{.compact}

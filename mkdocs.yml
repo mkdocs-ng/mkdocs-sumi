@@ -62,6 +62,13 @@ languages:
           - 博客: docs/pages/blog.md
           - 发布与下载: docs/pages/releases.md
           - 打印版: docs/pages/print.md
+        - 运营站点:
+          - 部署: docs/run/deploy.md
+          - 域名与预览: docs/run/domains.md
+          - 升级: docs/run/upgrade.md
+          - 常见问题: docs/run/troubleshooting.md
+          - 访问统计与反馈: docs/run/analytics.md
+          - 评论: docs/run/comments.md
         - 自定义:
           - 主题选项: docs/customize/theme.md
           - 插件选项: docs/customize/plugin.md
@@ -72,6 +79,7 @@ languages:
           - 面向插件作者: docs/customize/plugin-authors.md
         - 面向 AI 与智能体: docs/ai.md
         - 设计原则: docs/design.md
+      - 案例: showcase.md
       - 发布记录: releases.md
       - 博客: blog/index.md
 
@@ -118,6 +126,13 @@ nav:
       - Blog: docs/pages/blog.md
       - Releases and downloads: docs/pages/releases.md
       - Print edition: docs/pages/print.md
+    - Run your site:
+      - Deploy: docs/run/deploy.md
+      - Domains and previews: docs/run/domains.md
+      - Upgrade: docs/run/upgrade.md
+      - Troubleshooting: docs/run/troubleshooting.md
+      - Analytics and feedback: docs/run/analytics.md
+      - Comments: docs/run/comments.md
     - Customize:
       - Theme options: docs/customize/theme.md
       - Plugin options: docs/customize/plugin.md
@@ -128,5 +143,6 @@ nav:
       - For plugin authors: docs/customize/plugin-authors.md
     - AI and agents: docs/ai.md
     - Design principles: docs/design.md
+  - Showcase: showcase.md
   - Releases: releases.md
   - Blog: blog/index.md

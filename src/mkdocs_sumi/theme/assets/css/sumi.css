@@ -214,8 +214,8 @@ button { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--sumi-accent); outline-offset: 2px; border-radius: 4px; }
 .sumi-icon { width: 1.1em; height: 1.1em; flex: none; vertical-align: -0.18em; }
 .sumi-icon-inline { width: 1.05em; height: 1.05em; vertical-align: -0.16em; color: var(--sumi-accent); }
-.sumi-skip { position: absolute; left: -999px; top: 8px; z-index: 100; background: var(--sumi-bg-elev); padding: 8px 14px; border-radius: 8px; box-shadow: var(--sumi-shadow-md); }
-.sumi-skip:focus { left: 12px; }
+.sumi-skip { position: absolute; inset-inline-start: -999px; top: 8px; z-index: 100; background: var(--sumi-bg-elev); padding: 8px 14px; border-radius: 8px; box-shadow: var(--sumi-shadow-md); }
+.sumi-skip:focus { inset-inline-start: 12px; }
 [hidden] { display: none !important; }
 
 /* ── Buttons & menus ───────────────────────────────────────────────────── */
@@ -235,15 +235,15 @@ button { font: inherit; color: inherit; }
 .sumi-chip-btn.is-done { color: var(--c-tip); border-color: color-mix(in srgb, var(--c-tip) 45%, transparent); }
 .sumi-menu { position: relative; }
 .sumi-menu-list {
-  position: absolute; top: calc(100% + 6px); left: 0; z-index: 60; min-width: 200px; margin: 0; padding: 6px; list-style: none;
+  position: absolute; top: calc(100% + 6px); inset-inline-start: 0; z-index: 60; min-width: 200px; margin: 0; padding: 6px; list-style: none;
   background: var(--sumi-bg-elev); border: 1px solid var(--sumi-line); border-radius: 12px; box-shadow: var(--sumi-shadow-md);
   opacity: 0; transform: translateY(-4px); pointer-events: none; transition: opacity .14s, transform .14s var(--sumi-ease);
 }
-.sumi-menu-right, .sumi-header-tools .sumi-menu-list { left: auto; right: 0; }
+.sumi-menu-right, .sumi-header-tools .sumi-menu-list { inset-inline-start: auto; inset-inline-end: 0; }
 .sumi-menu.is-open > .sumi-menu-list { opacity: 1; transform: none; pointer-events: auto; }
 .sumi-menu-list a, .sumi-menu-list button {
   display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 10px; border: 0; border-radius: 7px; background: none;
-  color: var(--sumi-fg-2); font-size: 14px; text-align: left; cursor: pointer; white-space: nowrap;
+  color: var(--sumi-fg-2); font-size: 14px; text-align: start; cursor: pointer; white-space: nowrap;
 }
 .sumi-menu-list a:hover, .sumi-menu-list button:hover { background: var(--sumi-bg-soft); color: var(--sumi-fg); }
 .sumi-menu-list .sumi-icon { width: 16px; height: 16px; color: var(--sumi-fg-3); }
@@ -253,7 +253,7 @@ button { font: inherit; color: inherit; }
 .sumi-announce { position: relative; background: var(--sumi-fg); color: var(--sumi-bg); font-size: 14px; }
 .sumi-announce-inner { max-width: 1480px; margin: 0 auto; padding: 8px 56px; text-align: center; }
 .sumi-announce a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
-.sumi-announce-close { position: absolute; right: 10px; top: 50%; translate: 0 -50%; color: inherit; width: 30px; height: 30px; }
+.sumi-announce-close { position: absolute; inset-inline-end: 10px; top: 50%; translate: 0 -50%; color: inherit; width: 30px; height: 30px; }
 .sumi-announce-close:hover { background: rgba(127, 127, 127, .25); color: inherit; }
 
 /* ── Header ─────────────────────────────────────────────────────────────── */
@@ -263,7 +263,7 @@ button { font: inherit; color: inherit; }
   border-bottom: 1px solid var(--sumi-line);
 }
 .sumi-header-inner { display: flex; align-items: center; gap: 8px; height: 100%; max-width: 1480px; margin: 0 auto; padding: 0 20px; }
-.sumi-brand { display: inline-flex; min-width: 0; align-items: center; gap: 10px; margin-right: 18px; color: var(--sumi-fg); font-weight: 650; font-size: 16.5px; letter-spacing: -0.01em; white-space: nowrap; }
+.sumi-brand { display: inline-flex; min-width: 0; align-items: center; gap: 10px; margin-inline-end: 18px; color: var(--sumi-fg); font-weight: 650; font-size: 16.5px; letter-spacing: -0.01em; white-space: nowrap; }
 .sumi-brand-name { overflow: hidden; text-overflow: ellipsis; }
 .sumi-brand:hover { color: var(--sumi-fg); }
 .sumi-mark, .sumi-logo { width: 28px; height: 28px; flex: none; }
@@ -278,17 +278,17 @@ button { font: inherit; color: inherit; }
 .sumi-tab-link:hover { color: var(--sumi-fg); background: var(--sumi-bg-soft); }
 .sumi-tab-link.is-active { color: var(--sumi-fg); }
 .sumi-tab-link.is-active::after {
-  content: ""; position: absolute; left: 12px; right: 12px; bottom: -12px; height: 2px; border-radius: 2px; background: var(--sumi-accent);
+  content: ""; position: absolute; inset-inline-start: 12px; inset-inline-end: 12px; bottom: -12px; height: 2px; border-radius: 2px; background: var(--sumi-accent);
 }
-.sumi-header-tools { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.sumi-header-tools { display: flex; align-items: center; gap: 4px; margin-inline-start: auto; }
 .sumi-search-btn {
-  display: inline-flex; align-items: center; gap: 8px; width: 240px; height: 36px; margin-right: 6px; padding: 0 8px 0 11px;
+  display: inline-flex; align-items: center; gap: 8px; width: 240px; height: 36px; margin-inline-end: 6px; padding-block: 0; padding-inline: 11px 8px;
   border: 1px solid var(--sumi-line-2); border-radius: 9px; background: var(--sumi-bg-elev); color: var(--sumi-fg-3);
   font-size: 14px; cursor: pointer; transition: border-color .15s, box-shadow .15s;
 }
 .sumi-search-btn:hover { border-color: color-mix(in srgb, var(--sumi-fg) 28%, transparent); box-shadow: var(--sumi-shadow-sm); }
 .sumi-search-btn .sumi-icon { width: 16px; height: 16px; }
-.sumi-search-label { flex: 1; text-align: left; }
+.sumi-search-label { flex: 1; text-align: start; }
 .sumi-search-kbd, .sumi-palette kbd, .sumi-help kbd {
   display: inline-flex; align-items: center; height: 21px; padding: 0 6px; border: 1px solid var(--sumi-line-2); border-bottom-width: 2px;
   border-radius: 5px; background: var(--sumi-bg-soft); color: var(--sumi-fg-3); font: 500 11.5px/1 var(--sumi-font);
@@ -297,7 +297,7 @@ button { font: inherit; color: inherit; }
 [data-theme="dark"] .sumi-when-dark { display: block; }
 [data-theme="dark"] .sumi-when-light { display: none; }
 .sumi-version-current { font-variant-numeric: tabular-nums; }
-.sumi-menu-btn { display: none; margin-left: -6px; }
+.sumi-menu-btn { display: none; margin-inline-start: -6px; }
 
 /* ── Shell ──────────────────────────────────────────────────────────────── */
 .sumi-shell {
@@ -308,8 +308,8 @@ button { font: inherit; color: inherit; }
 .sumi-shell--no-toc { grid-template-columns: var(--sumi-side-w) minmax(0, 1fr); }
 .sumi-shell--no-side.sumi-shell--no-toc { grid-template-columns: minmax(0, 1fr); }
 /* Centre the article on the page, but never push it under the table of contents. */
-.sumi-shell--no-side .sumi-main { padding-left: clamp(0px, calc((100% + var(--sumi-rail-w) + 48px - var(--sumi-content-w)) / 2), calc(100% - var(--sumi-content-w))); }
-.sumi-shell--no-side.sumi-shell--no-toc .sumi-main { padding-left: 0; }
+.sumi-shell--no-side .sumi-main { padding-inline-start: clamp(0px, calc((100% + var(--sumi-rail-w) + 48px - var(--sumi-content-w)) / 2), calc(100% - var(--sumi-content-w))); }
+.sumi-shell--no-side.sumi-shell--no-toc .sumi-main { padding-inline-start: 0; }
 .sumi-shell--no-side.sumi-shell--no-toc .sumi-article { margin: 0 auto; }
 .sumi-main { min-width: 0; padding: 28px 0 64px; }
 .sumi-article { max-width: var(--sumi-content-w); }
@@ -318,14 +318,14 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 /* Sidebar */
 .sumi-sidebar { position: sticky; top: var(--sumi-header-h); align-self: start; height: calc(100vh - var(--sumi-header-h)); }
 .sumi-sidebar-inner {
-  height: 100%; overflow-y: auto; overscroll-behavior: contain; padding: 26px 10px 40px 0; margin-right: -10px;
+  height: 100%; overflow-y: auto; overscroll-behavior: contain; padding-block: 26px 40px; padding-inline: 0 10px; margin-inline-end: -10px;
   scrollbar-width: thin; scrollbar-color: var(--sumi-line-2) transparent;
 }
 /* Only the small-screen drawer shows the top-level tabs. */
 .sumi-sidebar-tabs, .sumi-sidebar--tabs-only { display: none; }
 .sumi-sidebar-title { padding: 0 10px 10px; color: var(--sumi-fg); font-weight: 650; font-size: 15px; letter-spacing: -0.005em; }
 .sumi-nav-list { list-style: none; margin: 0; padding: 0; }
-.sumi-nav-list .sumi-nav-list { margin: 2px 0 6px 10px; padding-left: 10px; border-left: 1px solid var(--sumi-line); }
+.sumi-nav-list .sumi-nav-list { margin-block: 2px 6px; margin-inline: 10px 0; padding-inline-start: 10px; border-inline-start: 1px solid var(--sumi-line); }
 .sumi-nav-page a, .sumi-nav-link a, .sumi-nav-section summary, .sumi-nav-head {
   display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 7px; color: var(--sumi-fg-2);
   font-size: 14.5px; line-height: 1.45; transition: color .12s, background .12s;
@@ -334,15 +334,15 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 .sumi-nav-page a.is-current, .sumi-nav-head.is-current {
   color: var(--sumi-accent-ink); font-weight: 600; background: color-mix(in srgb, var(--sumi-accent) 8%, transparent);
 }
-.sumi-nav-list .sumi-nav-list .sumi-nav-page a.is-current { box-shadow: -11px 0 0 -9.5px var(--sumi-accent); border-radius: 0 7px 7px 0; }
+.sumi-nav-list .sumi-nav-list .sumi-nav-page a.is-current { box-shadow: -11px 0 0 -9.5px var(--sumi-accent); border-start-start-radius: 0; border-end-start-radius: 0; border-start-end-radius: 7px; border-end-end-radius: 7px; }
 .sumi-nav-section summary { list-style: none; cursor: pointer; font-weight: 550; color: var(--sumi-fg); }
 .sumi-nav-section summary::-webkit-details-marker { display: none; }
 /* A section with an index page: the title is a link and the chevron is a
    separate toggle laid over the right end of the same row. */
 .sumi-nav-section--index { position: relative; }
-.sumi-nav-head { padding-right: 36px; font-weight: 550; color: var(--sumi-fg); }
+.sumi-nav-head { padding-inline-end: 36px; font-weight: 550; color: var(--sumi-fg); }
 .sumi-nav-section .sumi-nav-toggle {
-  position: absolute; top: 0; right: 0; justify-content: center; width: 32px; height: calc(14.5px * 1.45 + 10px); padding: 0;
+  position: absolute; top: 0; inset-inline-end: 0; justify-content: center; width: 32px; height: calc(14.5px * 1.45 + 10px); padding: 0;
 }
 .sumi-nav-section summary > span { flex: 1; }
 .sumi-nav-list[data-depth="1"] > .sumi-nav-section { margin-top: 10px; }
@@ -356,17 +356,17 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 .sumi-rail-inner { padding: 30px 0 40px; }
 .sumi-rail-title { margin-bottom: 10px; color: var(--sumi-fg); font-size: 13px; font-weight: 650; letter-spacing: .02em; }
 .sumi-toc ul { list-style: none; margin: 0; padding: 0; }
-.sumi-toc ul ul { padding-left: 12px; }
+.sumi-toc ul ul { padding-inline-start: 12px; }
 .sumi-toc a {
-  display: block; padding: 4px 0 4px 12px; margin-left: -1px; border-left: 1px solid var(--sumi-line); color: var(--sumi-fg-3);
+  display: block; padding-block: 4px; padding-inline: 12px 0; margin-inline-start: -1px; border-inline-start: 1px solid var(--sumi-line); color: var(--sumi-fg-3);
   font-size: 13.5px; line-height: 1.45; transition: color .12s, border-color .12s;
 }
 .sumi-toc ul ul a { font-size: 13px; }
 .sumi-toc a:hover { color: var(--sumi-fg); }
-.sumi-toc a.is-active { color: var(--sumi-accent); border-left-color: var(--sumi-accent); }
-.sumi-rail .sumi-toc > ul { border-left: 1px solid var(--sumi-line); }
-.sumi-rail .sumi-toc a { border-left-color: transparent; }
-.sumi-rail .sumi-toc a.is-active { border-left-color: var(--sumi-accent); }
+.sumi-toc a.is-active { color: var(--sumi-accent); border-inline-start-color: var(--sumi-accent); }
+.sumi-rail .sumi-toc > ul { border-inline-start: 1px solid var(--sumi-line); }
+.sumi-rail .sumi-toc a { border-inline-start-color: transparent; }
+.sumi-rail .sumi-toc a.is-active { border-inline-start-color: var(--sumi-accent); }
 .sumi-rail-top { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; color: var(--sumi-fg-3); font-size: 13px; }
 .sumi-rail-top .sumi-icon { width: 14px; height: 14px; }
 .sumi-rail-top:hover { color: var(--sumi-fg); }
@@ -386,9 +386,9 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 .sumi-breadcrumbs [aria-current] span { color: var(--sumi-fg-2); }
 .sumi-crumb-sep { width: 13px; height: 13px; opacity: .6; }
 .sumi-actions { display: inline-flex; align-items: center; flex: none; }
-.sumi-actions .sumi-copy-page { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.sumi-actions .sumi-copy-page { border-start-end-radius: 0; border-end-end-radius: 0; }
 .sumi-actions .sumi-chip-icon { width: 30px; height: 32px; border: 1px solid var(--sumi-line-2); border-radius: 8px; background: var(--sumi-bg-elev); }
-.sumi-actions .sumi-copy-page + .sumi-menu .sumi-chip-icon { border-left: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.sumi-actions .sumi-copy-page + .sumi-menu .sumi-chip-icon { border-inline-start: 0; border-start-start-radius: 0; border-end-start-radius: 0; }
 .sumi-actions .sumi-chip-icon .sumi-icon { width: 15px; height: 15px; }
 
 /* ── Prose ──────────────────────────────────────────────────────────────── */
@@ -408,7 +408,7 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 .sumi-prose h5, .sumi-prose h6 { margin: 1.6em 0 .5em; font-size: .95rem; color: var(--sumi-fg-2); }
 .sumi-prose h1 + p { font-size: 1.12rem; color: var(--sumi-fg-2); line-height: 1.7; }
 .sumi-prose .headerlink {
-  margin-left: .35em; padding: 0 .2em; color: var(--sumi-fg-3); font-weight: 400; text-decoration: none; opacity: 0; transition: opacity .15s;
+  margin-inline-start: .35em; padding: 0 .2em; color: var(--sumi-fg-3); font-weight: 400; text-decoration: none; opacity: 0; transition: opacity .15s;
 }
 .sumi-prose :is(h1, h2, h3, h4, h5, h6):hover .headerlink, .sumi-prose .headerlink:focus { opacity: 1; }
 .sumi-prose .headerlink:hover { color: var(--sumi-accent); }
@@ -417,7 +417,7 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 .sumi-prose a:hover { text-decoration-color: currentColor; }
 .sumi-prose :is(h1, h2, h3, h4, h5, h6) a:not(.headerlink) { color: inherit; text-decoration: none; }
 .sumi-prose strong { font-weight: 650; color: var(--sumi-fg); }
-.sumi-prose ul, .sumi-prose ol { padding-left: 1.5em; }
+.sumi-prose ul, .sumi-prose ol { padding-inline-start: 1.5em; }
 .sumi-prose li { margin: .3em 0; }
 .sumi-prose li > p { margin: .4em 0; }
 .sumi-prose li::marker { color: var(--sumi-fg-3); }
@@ -428,9 +428,9 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 .sumi-prose img.right { float: right; margin: 0 0 1em 1.2em; }
 [data-theme="dark"] img[src$="#only-light"], [data-theme="light"] img[src$="#only-dark"],
 :root:not([data-theme="dark"]) img[src$="#only-dark"] { display: none; }
-.sumi-prose blockquote { margin-left: 0; padding: .1em 0 .1em 1.1em; border-left: 3px solid var(--sumi-line-2); color: var(--sumi-fg-2); }
+.sumi-prose blockquote { margin-inline-start: 0; padding-block: .1em; padding-inline: 1.1em 0; border-inline-start: 3px solid var(--sumi-line-2); color: var(--sumi-fg-2); }
 .sumi-prose dt { font-weight: 600; }
-.sumi-prose dd { margin: .25em 0 .9em 1.4em; color: var(--sumi-fg-2); }
+.sumi-prose dd { margin-block: .25em .9em; margin-inline: 1.4em 0; color: var(--sumi-fg-2); }
 .sumi-prose kbd { display: inline-block; min-width: 1.6em; padding: .05em .45em; border: 1px solid var(--sumi-line-2); border-bottom-width: 2px; border-radius: 5px; background: var(--sumi-bg-elev); font: 500 .8em/1.5 var(--sumi-font-mono); text-align: center; color: var(--sumi-fg); }
 .sumi-keys { white-space: nowrap; }
 .sumi-keys-sep { margin: 0 .2em; color: var(--sumi-fg-3); font-size: .85em; }
@@ -441,7 +441,7 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 .sumi-prose .footnote hr { margin: 0 0 1.2em; }
 .sumi-prose .footnote-ref a, .sumi-prose a.footnote-ref { text-decoration: none; }
 .sumi-prose .task-list-item { list-style: none; }
-.sumi-prose .task-list-item input { margin: 0 .5em 0 -1.4em; }
+.sumi-prose .task-list-item input { margin-block: 0; margin-inline: -1.4em .5em; }
 
 /* Inline code */
 .sumi-prose :not(pre) > code {
@@ -469,7 +469,7 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 /* pymdownx.highlight `anchor_linenums` turns line numbers into links. */
 .sumi-prose .linenos a, .sumi-prose .linenodiv a { color: inherit; text-decoration: none; }
 .sumi-copy {
-  position: absolute; top: 8px; right: 8px; z-index: 2; display: grid; place-items: center; width: 30px; height: 30px; padding: 0;
+  position: absolute; top: 8px; inset-inline-end: 8px; z-index: 2; display: grid; place-items: center; width: 30px; height: 30px; padding: 0;
   border: 1px solid var(--sumi-line); border-radius: 7px; background: var(--sumi-bg-elev); color: var(--sumi-fg-3); cursor: pointer;
   opacity: 0; transition: opacity .15s, color .15s;
 }
@@ -478,7 +478,7 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 .sumi-copy:hover { color: var(--sumi-fg); }
 .sumi-copy.is-done { color: var(--c-tip); }
 .sumi-code-lang {
-  position: absolute; top: 9px; right: 46px; z-index: 1; color: var(--sumi-fg-3); font: 500 11px/1 var(--sumi-font-mono);
+  position: absolute; top: 9px; inset-inline-end: 46px; z-index: 1; color: var(--sumi-fg-3); font: 500 11px/1 var(--sumi-font-mono);
   text-transform: lowercase; letter-spacing: .02em; pointer-events: none; opacity: .8; transition: opacity .15s;
 }
 :is(.highlight, .codehilite):hover > .sumi-code-lang { opacity: 0; }
@@ -527,14 +527,31 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 .sumi-table { margin: 0 0 1.4em; overflow-x: auto; border: 1px solid var(--sumi-line); border-radius: var(--sumi-radius); background: var(--sumi-bg-elev); scrollbar-width: thin; }
 .sumi-prose table { width: 100%; border-collapse: collapse; font-size: 14.5px; line-height: 1.55; font-variant-numeric: tabular-nums; }
 .sumi-prose :not(.sumi-table) > table:not(.highlighttable) { margin: 0 0 1.4em; }
-.sumi-prose th { padding: 10px 14px; background: var(--sumi-bg-soft); color: var(--sumi-fg); font-weight: 600; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--sumi-line-2); }
+.sumi-prose th { padding: 10px 14px; background: var(--sumi-bg-soft); color: var(--sumi-fg); font-weight: 600; text-align: start; white-space: nowrap; border-bottom: 1px solid var(--sumi-line-2); }
 .sumi-prose td { padding: 10px 14px; border-top: 1px solid var(--sumi-line); vertical-align: top; }
 .sumi-prose tbody tr:first-child td { border-top: 0; }
 .sumi-prose tbody tr:hover td { background: color-mix(in srgb, var(--sumi-bg-soft) 55%, transparent); }
-.sumi-prose caption { caption-side: top; padding: 10px 14px; color: var(--sumi-fg-2); font-size: 13.5px; font-weight: 500; text-align: left; border-bottom: 1px solid var(--sumi-line); }
+.sumi-prose caption { caption-side: top; padding: 10px 14px; color: var(--sumi-fg-2); font-size: 13.5px; font-weight: 500; text-align: start; border-bottom: 1px solid var(--sumi-line); }
 .sumi-table--compact :is(th, td) { padding: 6px 10px; font-size: 13.5px; }
 .sumi-table--striped tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--sumi-bg-soft) 60%, transparent); }
 .sumi-table--center :is(th, td) { text-align: center; }
+.sumi-table-tools { display: flex; justify-content: flex-end; margin: -1.1em 0 1.4em; }
+.sumi-table-expand {
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border: 0; border-radius: 6px;
+  background: none; color: var(--sumi-fg-3); font: inherit; font-size: 12.5px; cursor: pointer;
+}
+.sumi-table-expand:hover { color: var(--sumi-accent); background: var(--sumi-bg-soft); }
+.sumi-table-expand .sumi-icon { width: 14px; height: 14px; }
+.sumi-table-view {
+  width: 96vw; max-width: 96vw; height: 92vh; max-height: 92vh; padding: 0; border: 1px solid var(--sumi-line);
+  border-radius: 12px; background: var(--sumi-bg); color: var(--sumi-fg); box-shadow: var(--sumi-shadow-lg);
+}
+.sumi-table-view::backdrop { background: rgba(15, 14, 12, .42); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+.sumi-table-view-body { height: 100%; padding: 52px 20px 20px; overflow: auto; }
+.sumi-table-view-body .sumi-table { width: max-content; min-width: 100%; max-width: none; margin: 0; overflow: visible; }
+.sumi-table-view-body .sumi-table th { position: sticky; top: -52px; z-index: 1; }
+.sumi-table-view-close { position: absolute; top: 10px; inset-inline-end: 10px; z-index: 2; }
+@media print { .sumi-table-tools { display: none; } }
 /* Wide tables reach into the table-of-contents column, never past it. */
 .sumi-table--wide { width: min(100vw - 40px, calc(var(--sumi-content-w) + var(--sumi-rail-w) + 48px), calc(100% + var(--sumi-rail-w) + 48px)); }
 .sumi-shell--no-toc .sumi-table--wide { width: auto; }
@@ -543,7 +560,7 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 .sumi-callout, .sumi-prose .admonition, .sumi-prose details:where(:not(.sumi-filetree *, .sumi-faq *, .sumi-toc-inline)) {
   --c: var(--c-note);
   margin: 0 0 1.25em; padding: 12px 16px; border: 1px solid color-mix(in srgb, var(--c) 22%, var(--sumi-line));
-  border-left: 3px solid var(--c); border-radius: var(--sumi-radius-sm) var(--sumi-radius) var(--sumi-radius) var(--sumi-radius-sm);
+  border-inline-start: 3px solid var(--c); border-radius: var(--sumi-radius); border-start-start-radius: var(--sumi-radius-sm); border-end-start-radius: var(--sumi-radius-sm);
   background: color-mix(in srgb, var(--c) 5%, var(--sumi-bg-elev)); font-size: 15px; line-height: 1.65;
 }
 .sumi-prose .sumi-callout-title, .sumi-prose .admonition-title, .sumi-prose details:where(:not(.sumi-filetree *, .sumi-faq *, .sumi-toc-inline)) > summary {
@@ -556,7 +573,7 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 details.sumi-callout > summary, .sumi-prose details:where(:not(.sumi-filetree *, .sumi-faq *, .sumi-toc-inline)) > summary { margin: -12px -16px; padding: 12px 16px; cursor: pointer; list-style: none; }
 details.sumi-callout > summary::-webkit-details-marker, .sumi-prose details:where(:not(.sumi-filetree *, .sumi-faq *, .sumi-toc-inline)) > summary::-webkit-details-marker { display: none; }
 details.sumi-callout > summary::after, .sumi-prose details:where(:not(.sumi-filetree *, .sumi-faq *, .sumi-toc-inline)) > summary::after {
-  content: ""; width: 8px; height: 8px; margin-left: auto; border: solid currentColor; border-width: 0 1.6px 1.6px 0; transform: rotate(-45deg);
+  content: ""; width: 8px; height: 8px; margin-inline-start: auto; border: solid currentColor; border-width: 0 1.6px 1.6px 0; transform: rotate(-45deg);
   transition: transform .18s var(--sumi-ease); opacity: .7;
 }
 details.sumi-callout[open] > summary, .sumi-prose details[open]:where(:not(.sumi-filetree *, .sumi-faq *, .sumi-toc-inline)) > summary { margin-bottom: 4px; }
@@ -579,14 +596,14 @@ details.sumi-callout[open] > summary::after, .sumi-prose details[open]:where(:no
 .sumi-prose :is(.admonition, details):is(.quote, .cite) { --sumi-admon-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/></svg>'); }
 
 /* ── Steps ──────────────────────────────────────────────────────────────── */
-.sumi-prose ol.sumi-steps { --gap: 1.6em; list-style: none; counter-reset: sumi-step; padding-left: 0; margin: 1.6em 0; }
-.sumi-steps > li { position: relative; counter-increment: sumi-step; margin: 0; padding: 0 0 var(--gap) 3.1em; }
+.sumi-prose ol.sumi-steps { --gap: 1.6em; list-style: none; counter-reset: sumi-step; padding-inline-start: 0; margin: 1.6em 0; }
+.sumi-steps > li { position: relative; counter-increment: sumi-step; margin: 0; padding-block: 0 var(--gap); padding-inline: 3.1em 0; }
 .sumi-steps > li::before {
-  content: counter(sumi-step); position: absolute; left: 0; top: .05em; display: grid; place-items: center; width: 2em; height: 2em;
+  content: counter(sumi-step); position: absolute; inset-inline-start: 0; top: .05em; display: grid; place-items: center; width: 2em; height: 2em;
   border: 1px solid var(--sumi-line-2); border-radius: 50%; background: var(--sumi-bg-elev); color: var(--sumi-fg); font-size: .85em; font-weight: 650;
   box-shadow: 0 0 0 4px var(--sumi-bg);
 }
-.sumi-steps > li::after { content: ""; position: absolute; left: calc(1em * .85 - .5px); top: 2.1em; bottom: .3em; width: 1px; background: var(--sumi-line-2); }
+.sumi-steps > li::after { content: ""; position: absolute; inset-inline-start: calc(1em * .85 - .5px); top: 2.1em; bottom: .3em; width: 1px; background: var(--sumi-line-2); }
 .sumi-steps > li:last-child { padding-bottom: 0; }
 .sumi-steps > li:last-child::after { display: none; }
 .sumi-steps > li > p:first-child { margin-top: 0; font-weight: 600; color: var(--sumi-fg); }
@@ -628,7 +645,7 @@ details.sumi-callout[open] > summary::after, .sumi-prose details[open]:where(:no
 
 /* Material's `{ .md-button }` links, drawn as Sumi buttons. */
 .sumi-prose .md-button {
-  display: inline-flex; align-items: center; gap: 8px; min-height: 40px; margin: 4px 4px 4px 0; padding: 0 16px; border: 1px solid var(--sumi-line-2); border-radius: 10px;
+  display: inline-flex; align-items: center; gap: 8px; min-height: 40px; margin-block: 4px; margin-inline: 0 4px; padding: 0 16px; border: 1px solid var(--sumi-line-2); border-radius: 10px;
   background: var(--sumi-bg-elev); color: var(--sumi-fg); font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: var(--sumi-shadow-sm);
   transition: box-shadow .15s, border-color .15s, background .15s;
 }
@@ -661,12 +678,12 @@ details.sumi-callout[open] > summary::after, .sumi-prose details[open]:where(:no
 }
 .sumi-prose .doc-heading > code .n, .sumi-prose .doc-heading > code .nb { color: var(--sumi-fg); }
 .sumi-prose .doc-heading > code .fm, .sumi-prose .doc-heading > code .nf { color: var(--hl-fn); }
-.sumi-prose .doc-heading > code.doc-symbol { margin-right: 6px; vertical-align: .15em; }
-.sumi-prose .doc-heading .doc-labels { margin-left: 6px; vertical-align: .15em; }
+.sumi-prose .doc-heading > code.doc-symbol { margin-inline-end: 6px; vertical-align: .15em; }
+.sumi-prose .doc-heading .doc-labels { margin-inline-start: 6px; vertical-align: .15em; }
 .sumi-prose .doc-object .doc-object { margin-top: 1.6em; }
 .sumi-prose .doc-object .doc-object > .doc-heading { margin: 0 0 .5em; padding-top: 1.1em; border-top: 1px dashed var(--sumi-line); font-size: 1rem; }
-.sumi-prose .doc-contents { padding-left: 16px; border-left: 2px solid var(--sumi-line); }
-.sumi-prose .doc-contents.first { padding-left: 0; border-left: 0; }
+.sumi-prose .doc-contents { padding-inline-start: 16px; border-inline-start: 2px solid var(--sumi-line); }
+.sumi-prose .doc-contents.first { padding-inline-start: 0; border-inline-start: 0; }
 .sumi-prose .doc-children { margin-top: 1em; }
 .sumi-prose .doc-labels { display: inline-flex; flex-wrap: wrap; gap: 4px; line-height: 1; }
 .sumi-prose .doc-label {
@@ -695,7 +712,7 @@ code.doc-symbol.doc-symbol-type_alias::after { content: "type"; }
 code.doc-symbol.doc-symbol-parameter, code.doc-symbol.doc-symbol-type_parameter { background: color-mix(in srgb, var(--hl-var) 13%, transparent); color: var(--hl-var); }
 code.doc-symbol.doc-symbol-parameter::after { content: "param"; }
 code.doc-symbol.doc-symbol-type_parameter::after { content: "tparam"; }
-.sumi-toc code.doc-symbol.doc-symbol { margin-right: 4px; font-size: .68em; }
+.sumi-toc code.doc-symbol.doc-symbol { margin-inline-end: 4px; font-size: .68em; }
 .sumi-prose a:has(> code.doc-symbol) { text-decoration: none; }
 /* Parameter headings (parameter_headings: true) stay inline in their section. */
 .sumi-prose .doc-heading-parameter, .sumi-prose .doc-heading-type_parameter { display: inline; margin: 0; font-size: inherit; }
@@ -714,8 +731,8 @@ code.doc-symbol.doc-symbol-type_parameter::after { content: "tparam"; }
 /* Backlinks ("Used by", "Returned by"…): small titles, breadcrumb rows. */
 .sumi-prose .doc-backlinks { margin: 0 0 1.15em; font-size: 14px; }
 .sumi-prose .doc-backlink-type { display: block; margin-top: .8em; color: var(--sumi-fg-2); font-weight: 650; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; }
-.sumi-prose ul.doc-backlink-list { margin: .3em 0 0; padding-left: 0; list-style: none; }
-.sumi-prose ul.doc-backlink-list ul.doc-backlink-list { margin: 0; padding-left: 1.2em; }
+.sumi-prose ul.doc-backlink-list { margin: .3em 0 0; padding-inline-start: 0; list-style: none; }
+.sumi-prose ul.doc-backlink-list ul.doc-backlink-list { margin: 0; padding-inline-start: 1.2em; }
 .sumi-prose .doc-backlink { margin: 0; }
 .sumi-prose .doc-backlink-crumb a { text-decoration: none; }
 .sumi-prose .doc-backlink-crumb:not(:first-child)::before { background-color: var(--sumi-fg-3); }
@@ -733,7 +750,7 @@ code.doc-symbol.doc-symbol-type_parameter::after { content: "tparam"; }
 .sumi-diagram pre.mermaid svg { max-width: 100%; height: auto; }
 .sumi-diagram { position: relative; }
 .sumi-diagram-tools {
-  position: absolute; top: 8px; right: 8px; display: flex; gap: 2px; padding: 2px; border: 1px solid var(--sumi-line); border-radius: 8px;
+  position: absolute; top: 8px; inset-inline-end: 8px; display: flex; gap: 2px; padding: 2px; border: 1px solid var(--sumi-line); border-radius: 8px;
   background: var(--sumi-bg-elev); opacity: 0; transition: opacity .15s;
 }
 .sumi-diagram:hover .sumi-diagram-tools, .sumi-diagram:focus-within .sumi-diagram-tools { opacity: 1; }
@@ -745,9 +762,16 @@ code.doc-symbol.doc-symbol-type_parameter::after { content: "tparam"; }
   border-radius: 12px; background: var(--sumi-bg-elev); color: var(--sumi-fg); box-shadow: var(--sumi-shadow-lg);
 }
 .sumi-diagram-view::backdrop { background: rgba(15, 14, 12, .42); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
-.sumi-diagram-view-body { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 48px 24px 24px; overflow: auto; }
-.sumi-diagram-view-body svg { width: 100%; height: 100%; max-width: none; }
-.sumi-diagram-view-close { position: absolute; top: 10px; right: 10px; z-index: 1; }
+.sumi-diagram-view-body { position: relative; width: 100%; height: 100%; overflow: hidden; touch-action: none; cursor: grab; }
+.sumi-diagram-view-body.is-dragging { cursor: grabbing; }
+.sumi-diagram-view-canvas { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 48px 24px 64px; transform-origin: 0 0; }
+.sumi-diagram-view-canvas svg { width: 100%; height: 100%; max-width: none; }
+.sumi-diagram-view-zoom {
+  position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; padding: 3px;
+  border: 1px solid var(--sumi-line); border-radius: 999px; background: var(--sumi-bg-elev); box-shadow: var(--sumi-shadow-md);
+}
+.sumi-diagram-view-zoom .sumi-icon-btn { border-radius: 999px; }
+.sumi-diagram-view-close { position: absolute; top: 10px; inset-inline-end: 10px; z-index: 1; }
 @media print { .sumi-diagram-tools { display: none; } }
 .sumi-math.math-display { margin: 1.4em 0; overflow-x: auto; overflow-y: hidden; text-align: center; font-family: var(--sumi-font-mono); color: var(--sumi-fg-2); }
 .sumi-math.math-display .katex-display { margin: 0; }
@@ -784,14 +808,14 @@ code.doc-symbol.doc-symbol-type_parameter::after { content: "tparam"; }
 .sumi-chart-canvas, .sumi-markmap-svg, .sumi-markmap-outline {
   width: 100%; border: 1px solid var(--sumi-line); border-radius: var(--sumi-radius); background: var(--sumi-bg-elev);
 }
-.sumi-chart-source { display: none; margin: 0; text-align: left; }
+.sumi-chart-source { display: none; margin: 0; text-align: start; }
 .no-js .sumi-chart-canvas { display: none; }
 .no-js .sumi-chart-source { display: block; }
 .sumi-chart figcaption, .sumi-markmap figcaption { margin-top: 10px; color: var(--sumi-fg-3); font-size: 13.5px; }
 .sumi-markmap-svg { display: block; height: var(--h, 420px); }
-.sumi-markmap-outline { padding: 14px 20px; text-align: left; font-size: 14.5px; }
+.sumi-markmap-outline { padding: 14px 20px; text-align: start; font-size: 14.5px; }
 .sumi-markmap-outline > p { margin: 0 0 6px; font-weight: 650; }
-.sumi-markmap-outline ul { margin: 0; padding-left: 1.2em; }
+.sumi-markmap-outline ul { margin: 0; padding-inline-start: 1.2em; }
 .sumi-markmap[data-rendered] .sumi-markmap-outline { display: none; }
 .sumi-markmap .markmap {
   --markmap-font: 400 14px/20px var(--sumi-font); --markmap-text-color: var(--sumi-fg);
@@ -811,7 +835,7 @@ code.doc-symbol.doc-symbol-type_parameter::after { content: "tparam"; }
 }
 .sumi-tablist button:hover { color: var(--sumi-fg); }
 .sumi-tablist button[aria-selected="true"] { color: var(--sumi-fg); }
-.sumi-tablist button[aria-selected="true"]::after { content: ""; position: absolute; left: 8px; right: 8px; bottom: -1px; height: 2px; border-radius: 2px; background: var(--sumi-accent); }
+.sumi-tablist button[aria-selected="true"]::after { content: ""; position: absolute; inset-inline-start: 8px; inset-inline-end: 8px; bottom: -1px; height: 2px; border-radius: 2px; background: var(--sumi-accent); }
 .sumi-tab > :is(.highlight, .codehilite, pre, .sumi-code) { margin: 0; }
 .sumi-tab :is(pre, .sumi-code) { border: 0; border-radius: 0; }
 .js .sumi-tabs[data-ready] .sumi-tab:not(.is-active) { display: none; }
@@ -826,10 +850,10 @@ code.doc-symbol.doc-symbol-type_parameter::after { content: "tparam"; }
 .sumi-prose .tabbed-labels > label { position: relative; padding: 9px 10px; color: var(--sumi-fg-3); font-size: 13px; font-weight: 550; white-space: nowrap; cursor: pointer; }
 .sumi-prose .tabbed-content { width: 100%; }
 .sumi-prose .tabbed-block { display: none; padding: 14px 16px 2px; }
-.sumi-prose .tabbed-block > :is(.highlight, pre) { margin-left: -16px; margin-right: -16px; }
+.sumi-prose .tabbed-block > :is(.highlight, pre) { margin-inline-start: -16px; margin-inline-end: -16px; }
 .sumi-prose .tabbed-block > :first-child:is(.highlight, pre) { margin-top: -14px; }
 .sumi-prose .tabbed-block > :last-child:is(.highlight, pre) { margin-bottom: -2px; }
-.sumi-prose .tabbed-block pre { border-left: 0; border-right: 0; border-radius: 0; }
+.sumi-prose .tabbed-block pre { border-inline-start: 0; border-inline-end: 0; border-radius: 0; }
 .sumi-prose .tabbed-set > input:nth-child(1):checked ~ .tabbed-content > :nth-child(1),
 .sumi-prose .tabbed-set > input:nth-child(2):checked ~ .tabbed-content > :nth-child(2),
 .sumi-prose .tabbed-set > input:nth-child(3):checked ~ .tabbed-content > :nth-child(3),
@@ -854,7 +878,7 @@ code.doc-symbol.doc-symbol-type_parameter::after { content: "tparam"; }
 }
 .sumi-ft-title { margin: -12px -6px 8px; padding: 8px 14px; border-bottom: 1px solid var(--sumi-line); background: var(--sumi-code-head); color: var(--sumi-fg-2); font-size: 12.5px; }
 .sumi-filetree ul { margin: 0; padding: 0; list-style: none; }
-.sumi-filetree ul ul { margin-left: 15px; padding-left: 10px; border-left: 1px dashed var(--sumi-line-2); }
+.sumi-filetree ul ul { margin-inline-start: 15px; padding-inline-start: 10px; border-inline-start: 1px dashed var(--sumi-line-2); }
 .sumi-filetree li { margin: 0; }
 .sumi-filetree details > summary { list-style: none; cursor: pointer; }
 .sumi-filetree details > summary::-webkit-details-marker { display: none; }
@@ -886,7 +910,7 @@ a.sumi-meta:hover { color: var(--sumi-fg); }
   transition: border-color .15s, box-shadow .15s;
 }
 .sumi-pager a:hover { border-color: color-mix(in srgb, var(--sumi-accent) 45%, var(--sumi-line)); box-shadow: var(--sumi-shadow-sm); }
-.sumi-pager-next { text-align: right; align-items: flex-end; grid-column: 2; }
+.sumi-pager-next { text-align: end; align-items: flex-end; grid-column: 2; }
 .sumi-pager-label { display: inline-flex; align-items: center; gap: 6px; color: var(--sumi-fg-3); font-size: 13px; }
 .sumi-pager-label .sumi-icon { width: 14px; height: 14px; }
 .sumi-pager-title { color: var(--sumi-fg); font-weight: 600; font-size: 15.5px; }
@@ -964,7 +988,7 @@ dialog { color: inherit; }
 @media (max-width: 1240px) {
   .sumi-shell { grid-template-columns: var(--sumi-side-w) minmax(0, 1fr); }
   .sumi-shell--no-side { grid-template-columns: minmax(0, 1fr); }
-  .sumi-shell--no-side .sumi-main { padding-left: 0; }
+  .sumi-shell--no-side .sumi-main { padding-inline-start: 0; }
   .sumi-shell--no-side .sumi-article { margin: 0 auto; }
   .sumi-rail { display: none; }
   .sumi-toc-inline { display: block; }
@@ -976,11 +1000,11 @@ dialog { color: inherit; }
   .sumi-menu-btn { display: inline-grid; }
   .sumi-tabs-nav { display: none; }
   .sumi-sidebar {
-    position: fixed; inset: var(--sumi-header-h) auto 0 0; z-index: 35; width: min(320px, 86vw); height: auto; padding-left: 12px;
+    position: fixed; inset: var(--sumi-header-h) auto 0 0; z-index: 35; width: min(320px, 86vw); height: auto; padding-inline-start: 12px;
     /* The desktop rule's align-self: start would size the drawer to its
        content, so a long nav ran under the header and off the screen. */
     align-self: stretch;
-    background: var(--sumi-bg); border-right: 1px solid var(--sumi-line); box-shadow: var(--sumi-shadow-lg);
+    background: var(--sumi-bg); border-inline-end: 1px solid var(--sumi-line); box-shadow: var(--sumi-shadow-lg);
     transform: translateX(-102%); transition: transform .22s var(--sumi-ease); visibility: hidden;
   }
   .sumi-sidebar.is-open { transform: none; visibility: visible; }
@@ -1004,7 +1028,7 @@ dialog { color: inherit; }
   .sumi-table--wide { width: auto; }
 }
 @media (max-width: 520px) {
-  .sumi-brand { margin-right: 4px; gap: 8px; }
+  .sumi-brand { margin-inline-end: 4px; gap: 8px; }
   .sumi-brand-name { font-size: 15.5px; }
   .sumi-header-inner { padding: 0 12px; gap: 2px; }
   .sumi-article-top { flex-wrap: wrap; }
@@ -1093,7 +1117,7 @@ dialog { color: inherit; }
 .sumi-land-code-bar { display: flex; align-items: center; gap: 7px; height: 40px; padding: 0 14px; border-bottom: 1px solid var(--sumi-line); background: var(--sumi-code-head); }
 .sumi-land-code-bar span { width: 11px; height: 11px; border-radius: 50%; background: var(--sumi-line-2); }
 .sumi-land-code-bar span:first-child { background: color-mix(in srgb, var(--sumi-accent) 75%, transparent); }
-.sumi-land-code-bar em { margin-left: 8px; color: var(--sumi-fg-3); font: 500 12.5px var(--sumi-font-mono); font-style: normal; }
+.sumi-land-code-bar em { margin-inline-start: 8px; color: var(--sumi-fg-3); font: 500 12.5px var(--sumi-font-mono); font-style: normal; }
 .sumi-land-code :is(.highlight, .codehilite) { margin: 0; }
 .sumi-land-code pre { margin: 0; padding: 18px 20px; border: 0; border-radius: 0; background: transparent; font: 400 13.5px/1.7 var(--sumi-font-mono); overflow-x: auto; }
 .sumi-land-code .sumi-copy { display: none; }
@@ -1169,7 +1193,7 @@ a.sumi-feature:hover .sumi-feature-more .sumi-icon { transform: translateX(3px);
 a.sumi-tag--static { cursor: pointer; }
 .sumi-blog-bar { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 28px; }
 .sumi-blog-bar .sumi-tag-filter { margin-bottom: 0; }
-.sumi-view-toggle { display: flex; flex: none; gap: 2px; margin-left: auto; padding: 2px; border: 1px solid var(--sumi-line); border-radius: 9px; background: var(--sumi-bg-elev); }
+.sumi-view-toggle { display: flex; flex: none; gap: 2px; margin-inline-start: auto; padding: 2px; border: 1px solid var(--sumi-line); border-radius: 9px; background: var(--sumi-bg-elev); }
 .sumi-view-toggle .sumi-icon-btn { width: 30px; height: 30px; }
 .sumi-view-toggle .sumi-icon-btn .sumi-icon { width: 16px; height: 16px; }
 .sumi-view-toggle [aria-pressed="true"] { background: var(--sumi-bg-soft); color: var(--sumi-fg); }
@@ -1207,9 +1231,9 @@ a.sumi-tag--static { cursor: pointer; }
 .sumi-post-title { margin: 8px 0 8px; color: var(--sumi-fg); font-size: 1.45rem; font-weight: 680; line-height: 1.3; letter-spacing: -0.02em; transition: color .15s; }
 .sumi-post-excerpt { margin: 0 0 12px; font-size: 15.5px; line-height: 1.7; }
 .sumi-post-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.sumi-authors { display: inline-flex; align-items: center; gap: 6px; margin-right: 6px; color: var(--sumi-fg-2); font-size: 13.5px; }
-.sumi-authors img { width: 22px; height: 22px; border-radius: 50%; margin-right: -10px; border: 2px solid var(--sumi-bg); }
-.sumi-authors img:last-of-type { margin-right: 2px; }
+.sumi-authors { display: inline-flex; align-items: center; gap: 6px; margin-inline-end: 6px; color: var(--sumi-fg-2); font-size: 13.5px; }
+.sumi-authors img { width: 22px; height: 22px; border-radius: 50%; margin-inline-end: -10px; border: 2px solid var(--sumi-bg); }
+.sumi-authors img:last-of-type { margin-inline-end: 2px; }
 .sumi-back { display: inline-flex; align-items: center; gap: 6px; color: var(--sumi-fg-3); font-size: 14px; }
 .sumi-back .sumi-icon { width: 15px; height: 15px; }
 .sumi-back:hover { color: var(--sumi-fg); }
@@ -1230,7 +1254,7 @@ a.sumi-tag--static { cursor: pointer; }
 .sumi-release--archived { opacity: .82; }
 .sumi-release-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 10px; }
 .sumi-prose .sumi-release-version { margin: 0; padding: 0; border: 0; font-size: 1.35rem; font-variant-numeric: tabular-nums; }
-.sumi-release-date { margin-left: auto; color: var(--sumi-fg-3); font-size: 13.5px; }
+.sumi-release-date { margin-inline-start: auto; color: var(--sumi-fg-3); font-size: 13.5px; }
 .sumi-release-summary { color: var(--sumi-fg-2); }
 .sumi-badge { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; background: var(--sumi-bg-soft); color: var(--sumi-fg-2); font-size: 12px; font-weight: 600; }
 .sumi-badge--latest { background: color-mix(in srgb, var(--sumi-accent) 13%, transparent); color: var(--sumi-accent-ink); }
@@ -1247,8 +1271,8 @@ a.sumi-tag--static { cursor: pointer; }
 .sumi-print-cover h1 { margin: 0 0 10px; font-size: 3rem; letter-spacing: -0.04em; line-height: 1.1; }
 .sumi-print-lead { margin: 0 0 6px; color: var(--sumi-fg-2); font-size: 1.15rem; }
 .sumi-print-date { color: var(--sumi-fg-3); font-size: 14px; }
-.sumi-print-actions { float: right; }
-.sumi-print-toc ol { columns: 2; column-gap: 32px; padding-left: 1.4em; }
+.sumi-print-actions { float: inline-end; }
+.sumi-print-toc ol { columns: 2; column-gap: 32px; padding-inline-start: 1.4em; }
 .sumi-print-toc li { break-inside: avoid; margin: 4px 0; }
 .sumi-print-toc h2 { font-size: 1.2rem; }
 .sumi-print-section { margin-top: 56px; padding-top: 32px; border-top: 2px solid var(--sumi-fg); }
@@ -1281,3 +1305,89 @@ a.sumi-sidebar-title.is-current { color: var(--sumi-accent-ink); }
 
 /* ── Untranslated page note (multi-language sites) ─────────────────────── */
 .sumi-prose .sumi-untranslated { --c: var(--c-quote); font-size: 14px; }
+
+/* ── Right-to-left languages ────────────────────────────────────────────
+   Layout uses logical properties, so most of the page mirrors by itself.
+   What is left: arrows and chevrons that point a direction, the mobile
+   drawer, and code, which stays left-to-right. */
+[dir="rtl"] .sumi-pager .sumi-icon, [dir="rtl"] .sumi-back .sumi-icon, [dir="rtl"] .sumi-crumb-sep,
+[dir="rtl"] .sumi-btn-arrow, [dir="rtl"] .sumi-feature-more .sumi-icon,
+[dir="rtl"] .sumi-nav-section summary .sumi-chevron { transform: scaleX(-1); }
+[dir="rtl"] .sumi-btn:hover .sumi-btn-arrow, [dir="rtl"] a.sumi-feature:hover .sumi-feature-more .sumi-icon { transform: scaleX(-1) translateX(3px); }
+[dir="rtl"] .sumi-nav-section details[open] > summary .sumi-chevron { transform: rotate(90deg); }
+[dir="rtl"] .sumi-nav-list .sumi-nav-list .sumi-nav-page a.is-current { box-shadow: 11px 0 0 -9.5px var(--sumi-accent); }
+[dir="rtl"] :is(details.sumi-callout, .sumi-prose details:where(:not(.sumi-filetree *, .sumi-faq *, .sumi-toc-inline))) > summary::after { transform: rotate(135deg); }
+[dir="rtl"] :is(details.sumi-callout[open], .sumi-prose details[open]:where(:not(.sumi-filetree *, .sumi-faq *, .sumi-toc-inline))) > summary::after { transform: rotate(45deg); }
+[dir="rtl"] .sumi-prose :is(pre, code, kbd, .highlight, .highlighttable, .sumi-filetree), [dir="rtl"] .sumi-land-code { direction: ltr; text-align: left; }
+[dir="rtl"] .sumi-prose :is(p, li, td, th) > code { direction: ltr; unicode-bidi: isolate; }
+@media (max-width: 920px) {
+  [dir="rtl"] .sumi-sidebar { inset: var(--sumi-header-h) 0 0 auto; transform: translateX(102%); }
+  [dir="rtl"] .sumi-sidebar.is-open { transform: none; }
+}
+
+/* ── Bilingual view ─────────────────────────────────────────────────── */
+.sumi-compare-btn { margin-inline-end: 6px; border: 1px solid var(--sumi-line-2); }
+.sumi-compare {
+  width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0;
+  background: var(--sumi-bg); color: var(--sumi-fg);
+}
+.sumi-compare[open] { display: flex; flex-direction: column; }
+.sumi-compare::backdrop { background: var(--sumi-bg); }
+.sumi-compare-bar { display: flex; flex: none; align-items: center; gap: 10px; min-height: 52px; padding: 6px 10px 6px 18px; border-bottom: 1px solid var(--sumi-line); }
+.sumi-compare-title { display: inline-flex; align-items: center; gap: 8px; margin-inline-end: auto; font-size: 14.5px; font-weight: 600; }
+.sumi-compare-title .sumi-icon { width: 17px; height: 17px; color: var(--sumi-accent); }
+.sumi-compare-switch { display: none; padding: 2px; border: 1px solid var(--sumi-line); border-radius: 9px; background: var(--sumi-bg-elev); }
+.sumi-compare-switch button { padding: 5px 10px; border: 0; border-radius: 7px; background: none; color: var(--sumi-fg-2); font: inherit; font-size: 13.5px; cursor: pointer; }
+.sumi-compare-switch button[aria-pressed="true"] { background: var(--sumi-bg-soft); color: var(--sumi-fg); font-weight: 600; }
+.sumi-compare-lang { height: 32px; padding: 0 8px; border: 1px solid var(--sumi-line-2); border-radius: 8px; background: var(--sumi-bg-elev); color: var(--sumi-fg); font: inherit; font-size: 13.5px; }
+.sumi-compare-sync { display: inline-flex; align-items: center; gap: 6px; color: var(--sumi-fg-2); font-size: 13.5px; cursor: pointer; white-space: nowrap; }
+.sumi-compare-sync input { accent-color: var(--sumi-accent); }
+.sumi-compare-panes { position: relative; display: grid; flex: 1; grid-template-columns: 1fr 1fr; min-height: 0; }
+.sumi-compare-pane { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.sumi-compare-pane + .sumi-compare-pane { border-inline-start: 1px solid var(--sumi-line); }
+.sumi-compare-head { flex: none; padding: 7px 18px; border-bottom: 1px solid var(--sumi-line); background: var(--sumi-bg-soft); color: var(--sumi-fg-2); font-size: 12.5px; font-weight: 600; letter-spacing: .02em; }
+.sumi-compare-pane iframe { display: block; flex: 1; width: 100%; min-height: 0; border: 0; background: var(--sumi-bg); }
+.sumi-compare-error { position: absolute; inset: 40px 0 0; display: grid; place-items: center; padding: 24px; color: var(--sumi-fg-2); text-align: center; }
+@media (max-width: 899px) {
+  .sumi-compare-bar { padding-inline-start: 12px; }
+  .sumi-compare-title span, .sumi-compare-sync span { display: none; }
+  .sumi-compare-switch { display: flex; margin-inline-end: auto; }
+  .sumi-compare-title { margin-inline-end: 0; }
+  .sumi-compare-panes { grid-template-columns: minmax(0, 1fr); }
+  .sumi-compare-pane { grid-area: 1 / 1; }
+  .sumi-compare-pane + .sumi-compare-pane { border: 0; }
+  .sumi-compare-head { display: none; }
+  /* The hidden pane keeps its layout, so it can follow the visible one. */
+  .sumi-compare[data-show="0"] .sumi-compare-pane:nth-child(2), .sumi-compare[data-show="1"] .sumi-compare-pane:nth-child(1) { visibility: hidden; }
+}
+@media (forced-colors: active) {
+  .sumi-compare-switch button[aria-pressed="true"] { outline: 2px solid CanvasText; }
+}
+/* A page inside the bilingual view: its content only. */
+.sumi-pane { --sumi-header-h: 0px; }
+.sumi-pane :is(.sumi-skip, .sumi-announce, .sumi-header, .sumi-version-banner, .sumi-sidebar, .sumi-scrim, .sumi-rail,
+  .sumi-article-top, .sumi-toc-inline, .sumi-article-footer, .sumi-footer, .sumi-comments, .sumi-feedback) { display: none !important; }
+.sumi-pane .sumi-shell { display: block; max-width: none; padding: 28px clamp(16px, 4vw, 40px) 50vh; }
+.sumi-pane .sumi-main, .sumi-pane .sumi-article { max-width: var(--sumi-content-w); margin: 0 auto; padding: 0; }
+
+/* ── Page feedback and comments ───────────────────────────────────────── */
+.sumi-feedback { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 48px 0 0; padding: 16px 18px; border: 1px solid var(--sumi-line); border-radius: var(--sumi-radius); background: var(--sumi-bg-soft); }
+.sumi-feedback[hidden] { display: none; }
+.sumi-feedback-title { margin: 0; font-weight: 600; color: var(--sumi-fg); }
+.sumi-feedback-buttons { display: flex; gap: 8px; }
+.sumi-feedback-btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border: 1px solid var(--sumi-line); border-radius: 999px;
+  background: var(--sumi-bg-elev); color: var(--sumi-fg-2); font: inherit; font-size: 13.5px; cursor: pointer;
+}
+.sumi-feedback-btn:hover:not(:disabled) { border-color: var(--sumi-accent); color: var(--sumi-accent); }
+.sumi-feedback-btn:disabled { cursor: default; opacity: .55; }
+.sumi-feedback-btn[aria-pressed="true"] { opacity: 1; border-color: var(--sumi-accent); color: var(--sumi-accent); }
+.sumi-feedback-btn .sumi-icon { width: 15px; height: 15px; }
+.sumi-feedback-note { flex-basis: 100%; margin: 0; color: var(--sumi-fg-2); font-size: 14px; }
+.sumi-feedback-note:empty { display: none; }
+.sumi-feedback + .sumi-article-footer { margin-top: 24px; }
+.sumi-comments { margin: 32px 0 8px; }
+.sumi-comments-title { display: flex; align-items: center; gap: 8px; margin: 0 0 16px; font-size: 18px; }
+.sumi-comments-title .sumi-icon { width: 18px; height: 18px; color: var(--sumi-fg-3); }
+.sumi-giscus { min-height: 150px; }
+@media print { .sumi-feedback, .sumi-comments { display: none; } }

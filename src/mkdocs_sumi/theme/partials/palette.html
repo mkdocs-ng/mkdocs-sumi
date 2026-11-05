@@ -21,6 +21,9 @@
       <dt><kbd>t</kbd></dt><dd>{{ t('shortcut_theme') }}</dd>
       <dt><kbd>[</kbd> <kbd>]</kbd></dt><dd>{{ t('shortcut_prev_next') }}</dd>
       <dt><kbd>j</kbd> <kbd>k</kbd></dt><dd>{{ t('shortcut_toc') }}</dd>
+      {%- if sumi.translations %}
+      <dt><kbd>b</kbd></dt><dd>{{ t('compare') }}</dd>
+      {%- endif %}
       <dt><kbd>?</kbd></dt><dd>{{ t('shortcut_help') }}</dd>
     </dl>
   </div>
@@ -30,6 +33,34 @@
 <dialog class="sumi-diagram-view" aria-label="{{ t('diagram_expand') }}">
   <button type="button" class="sumi-icon-btn sumi-diagram-view-close" data-close aria-label="{{ t('close') }}" title="{{ t('close') }}"><svg class="sumi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
   <div class="sumi-diagram-view-body"></div>
+  <div class="sumi-diagram-view-zoom" role="group" aria-label="{{ t('zoom_reset') }}">
+    <button type="button" class="sumi-icon-btn" data-zoom="out" aria-label="{{ t('zoom_out') }}" title="{{ t('zoom_out') }} (−)">{{ icon('zoom-out') }}</button>
+    <button type="button" class="sumi-icon-btn" data-zoom="reset" aria-label="{{ t('zoom_reset') }}" title="{{ t('zoom_reset') }} (0)">{{ icon('scan') }}</button>
+    <button type="button" class="sumi-icon-btn" data-zoom="in" aria-label="{{ t('zoom_in') }}" title="{{ t('zoom_in') }} (+)">{{ icon('zoom-in') }}</button>
+  </div>
+</dialog>
+{%- endif %}
+{%- if sumi.translations %}
+{%- set own = (i18n.language.name if i18n and i18n.language else sumi_language) %}
+<dialog class="sumi-compare" aria-label="{{ t('compare') }}" data-show="0">
+  <div class="sumi-compare-bar">
+    <strong class="sumi-compare-title">{{ icon('columns-2') }}<span>{{ t('compare') }}</span></strong>
+    <div class="sumi-compare-switch" role="group" aria-label="{{ t('language') }}">
+      <button type="button" data-pane="0" aria-pressed="true">{{ own }}</button>
+      <button type="button" data-pane="1" aria-pressed="false" class="sumi-compare-target-name">{{ sumi.translations[0].name }}</button>
+    </div>
+    {%- if sumi.translations | length > 1 %}
+    <select class="sumi-compare-lang" aria-label="{{ t('language') }}">
+      {%- for tr in sumi.translations %}<option value="{{ loop.index0 }}" lang="{{ tr.lang }}">{{ tr.name }}</option>{% endfor %}
+    </select>
+    {%- endif %}
+    <label class="sumi-compare-sync" title="{{ t('compare_sync') }}"><input type="checkbox" checked aria-label="{{ t('compare_sync') }}"><span>{{ t('compare_sync') }}</span></label>
+    <button type="button" class="sumi-icon-btn" data-close aria-label="{{ t('close') }}" title="{{ t('close') }}">{{ icon('x') }}</button>
+  </div>
+  <div class="sumi-compare-panes">
+    <div class="sumi-compare-pane"><div class="sumi-compare-head">{{ own }}</div><iframe name="sumi-pane" title="{{ own }}" lang="{{ sumi_language | replace('_', '-') }}"></iframe></div>
+    <div class="sumi-compare-pane"><div class="sumi-compare-head sumi-compare-target-name">{{ sumi.translations[0].name }}</div><iframe name="sumi-pane" title="{{ sumi.translations[0].name }}"></iframe></div>
+  </div>
 </dialog>
 {%- endif %}
 <div class="sumi-toast" role="status" aria-live="polite"></div>

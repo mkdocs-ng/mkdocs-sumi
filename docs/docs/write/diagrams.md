@@ -26,7 +26,7 @@ flowchart LR
 
 Diagrams follow the colour scheme: switch to dark mode and they are redrawn.
 
-Hover a diagram (or tap it on a phone) for three buttons: open it full screen, copy its Mermaid source, and download it as an SVG file. Until a diagram is drawn, and in a browser without JavaScript, readers see its source text.
+Hover a diagram (or tap it on a phone) for three buttons: open it full screen, copy its Mermaid source, and download it as an SVG file. Full screen, a large diagram can be explored: drag to pan, scroll or pinch to zoom, double-click to zoom in, and press <kbd>+</kbd>, <kbd>-</kbd> or <kbd>0</kbd> to zoom in, out or back to fit. Until a diagram is drawn, and in a browser without JavaScript, readers see its source text.
 
 ## Sequence diagrams
 
@@ -67,3 +67,13 @@ stateDiagram-v2
 
 > [!NOTE]
 > If you use `pymdownx.superfences` with a custom fence for Mermaid, remove it: Sumi handles `mermaid` fences itself. To turn Sumi's handling off, set `mermaid: false` on the [plugin](../customize/plugin.md).
+
+## Reference
+
+| What | Details |
+| --- | --- |
+| Output | `<figure class="sumi-diagram">` holding the Mermaid source in `<pre class="mermaid">`, drawn as inline SVG. |
+| Without Sumi | A code block with the Mermaid source. GitHub draws it as a diagram too. |
+| JavaScript | Mermaid, bundled, loaded when a diagram nears the screen, split by diagram type. |
+| Limits | Readers without JavaScript see the source. Diagrams are drawn in the browser, so they are not in the search index. |
+{.compact}

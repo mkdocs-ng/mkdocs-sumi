@@ -491,3 +491,194 @@ def test_malformed_front_matter_is_a_clear_error(tmp_path, caplog, meta, message
         _site(tmp_path, {'index.md': f'---\n{meta}\n---\n# Home\n'}, BASIC)
     assert message in caplog.text
     assert 'Traceback' not in caplog.text
+
+
+def test_every_language_has_every_string():
+    """Each interface language translates every key, with the same placeholders as English."""
+    import string
+
+    from mkdocs_sumi.i18n import STRINGS
+
+    def fields(text):
+        return {f for _, f, _, _ in string.Formatter().parse(text) if f}
+
+    for code, table in STRINGS.items():
+        assert set(table) == set(STRINGS['en']), code
+        for key, text in table.items():
+            assert fields(text) == fields(STRINGS['en'][key]), (code, key)
+
+
+@pytest.mark.parametrize(('locale', 'lang', 'text'), [
+    ('de', 'de', 'Auf dieser Seite'),
+    ('ja', 'ja', 'このページの内容'),
+    ('pt_BR', 'pt-BR', 'Nesta página'),
+])
+def test_interface_language(tmp_path, locale, lang, text):
+    config = BASIC.replace('      name: sumi\n', f'      name: sumi\n      locale: {locale}\n')
+    out = _site(tmp_path, {'index.md': '# Home\n\n## One\n\n## Two\n'}, config)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert f'<html lang="{lang}" data-palette' in html
+    assert text in html
+
+
+def test_material_language_key_is_honoured(tmp_path):
+    """A site moving from Material keeps `theme.language` and gets its interface language."""
+    config = BASIC.replace('      name: sumi\n', '      name: sumi\n      language: fr\n')
+    out = _site(tmp_path, {'index.md': '# Home\n\n## One\n\n## Two\n'}, config)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert '<html lang="fr"' in html
+    assert 'Sur cette page' in html
+    assert '<meta property="og:locale" content="fr_FR">' in html
+
+
+def test_right_to_left_language(tmp_path):
+    config = BASIC.replace('      name: sumi\n', '      name: sumi\n      locale: ar\n')
+    out = _site(tmp_path, {'index.md': '# Home\n\n## One\n\n## Two\n'}, config)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert '<html lang="ar" dir="rtl"' in html
+    assert 'في هذه الصفحة' in html
+
+
+def test_dates_in_the_page_language():
+    from mkdocs_sumi.i18n import format_date
+
+    assert format_date(2026, 11, 5, 'en') == 'November 5, 2026'
+    assert format_date(2026, 11, 5, 'en', short=True) == 'Nov 5, 2026'
+    assert format_date(2026, 11, 5, 'de') == '5. November 2026'
+    assert format_date(2026, 11, 5, 'es') == '5 de noviembre de 2026'
+    assert format_date(2026, 11, 5, 'ko') == '2026년 11월 5일'
+    assert format_date(2026, 11, 5, 'zh_TW') == '2026年11月5日'
+
+
+def test_bilingual_view_only_on_translated_pages(tmp_path):
+    config = BASIC + """
+    languages:
+      en: English
+      zh:
+        name: 简体中文
+    """
+    out = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'index.zh.md': '# 首页\n',
+        'guide.md': '# Guide\n',
+    }, config)
+    home = (out / 'index.html').read_text(encoding='utf-8')
+    assert 'data-sumi-compare' in home
+    assert 'class="sumi-compare"' in home
+    assert '"href": "zh/", "lang": "zh", "name": "\\u7b80\\u4f53\\u4e2d\\u6587"' in home
+    zh_home = (out / 'zh' / 'index.html').read_text(encoding='utf-8')
+    assert '"href": "../", "lang": "en"' in zh_home
+    # Not translated: no bilingual view in either language.
+    assert 'data-sumi-compare' not in (out / 'guide' / 'index.html').read_text(encoding='utf-8')
+    assert 'data-sumi-compare' not in (out / 'zh' / 'guide' / 'index.html').read_text(encoding='utf-8')
+
+
+def test_bilingual_view_can_be_turned_off(tmp_path):
+    config = BASIC.replace('      name: sumi\n', '      name: sumi\n      bilingual_view: false\n') + """
+    languages:
+      en: English
+      zh: 简体中文
+    """
+    out = _site(tmp_path, {'index.md': '# Home\n', 'index.zh.md': '# 首页\n'}, config)
+    assert 'data-sumi-compare' not in (out / 'index.html').read_text(encoding='utf-8')
+
+
+def test_feedback_widget(tmp_path):
+    config = BASIC.replace('      name: sumi\n', '      name: sumi\n      feedback: true\n')
+    out = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'quiet.md': '---\nhide: [feedback]\n---\n# Quiet\n',
+    }, config)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert '<form class="sumi-feedback" data-pagefind-ignore hidden>' in html
+    assert 'Was this page helpful?' in html
+    assert html.count('class="sumi-feedback-btn"') == 2
+    assert 'sumi-feedback' not in (out / 'quiet' / 'index.html').read_text(encoding='utf-8')
+
+
+def test_feedback_reads_material_settings(tmp_path):
+    config = BASIC + """
+    extra:
+      analytics:
+        provider: google
+        property: G-TEST
+        feedback:
+          title: Useful?
+          ratings:
+            - icon: material/emoticon-happy-outline
+              name: Helpful
+              data: 1
+              note: 'Thanks! <a href="https://example.com/?t={title}">Tell us more</a>'
+            - icon: material/emoticon-sad-outline
+              name: Not helpful
+              data: 0
+              note: Thanks for telling us.
+    """
+    out = _site(tmp_path, {'index.md': '# Home\n'}, config)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert 'Useful?' in html and 'Not helpful' in html
+    assert 'data-note="Thanks! &lt;a href=&#34;https://example.com/?t={title}&#34;&gt;Tell us more&lt;/a&gt;"' in html
+    # Material's emoticon icons become Lucide thumbs.
+    assert 'M15 5.88 14 10h5.83' in html and 'M9 18.12 10 14H4.17' in html
+    assert "gtag('config', \"G-TEST\")" in html
+
+
+def test_giscus_comments(tmp_path):
+    config = BASIC.replace('      name: sumi\n', """      name: sumi
+      locale: zh
+      comments:
+        provider: giscus
+        repo: acme/docs
+        repo_id: R_1
+        category: Comments
+        category_id: DIC_1
+""")
+    out = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'off.md': '---\ncomments: false\n---\n# Off\n',
+    }, config)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert 'class="sumi-giscus" data-repo="acme/docs" data-repo-id="R_1"' in html
+    assert 'data-lang="zh-CN"' in html
+    assert 'id="__comments"' in html
+    assert 'sumi-giscus' not in (out / 'off' / 'index.html').read_text(encoding='utf-8')
+
+
+def test_giscus_comments_opt_in(tmp_path):
+    config = BASIC.replace('      name: sumi\n', """      name: sumi
+      comments:
+        repo: acme/docs
+        opt_in: true
+""")
+    out = _site(tmp_path, {'index.md': '# Home\n', 'on.md': '---\ncomments: true\n---\n# On\n'}, config)
+    assert 'sumi-giscus' not in (out / 'index.html').read_text(encoding='utf-8')
+    assert 'sumi-giscus' in (out / 'on' / 'index.html').read_text(encoding='utf-8')
+
+
+@pytest.mark.parametrize(('analytics', 'expected'), [
+    ('provider: plausible\n        domain: docs.example.com', ['"docs.example.com"', 'https://plausible.io/js/script.js']),
+    ('provider: umami\n        website_id: abc-123\n        src: https://stats.example.com/script.js',
+     ['"abc-123"', '"https://stats.example.com/script.js"']),
+])
+def test_privacy_friendly_analytics(tmp_path, analytics, expected):
+    config = BASIC + f"""
+    extra:
+      analytics:
+        {analytics}
+    """
+    html = (_site(tmp_path, {'index.md': '# Home\n'}, config) / 'index.html').read_text(encoding='utf-8')
+    for text in expected:
+        assert text in html
+    assert "window.name !== 'sumi-pane'" in html
+    assert 'googletagmanager' not in html
+
+
+def test_expandable_table(tmp_path):
+    out = _site(tmp_path, {'index.md': '# Home\n\n| a | b |\n| --- | --- |\n| 1 | 2 |\n{.expand .compact}\n'}, BASIC)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert 'class="sumi-table sumi-table--compact sumi-table--expand"' in html
+
+
+def test_gallery_columns_and_style_combine(tmp_path):
+    out = _site(tmp_path, {'index.md': '# Home\n\n- ![a](a.png)\n- ![b](b.png)\n{.gallery cols="2" style="--ratio: 16 / 10"}\n'}, BASIC)
+    assert 'style="--cols:2;--ratio: 16 / 10"' in (out / 'index.html').read_text(encoding='utf-8')

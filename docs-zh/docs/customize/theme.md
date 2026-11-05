@@ -21,7 +21,7 @@ theme:
 | --- | --- | --- | --- |
 | `palette` | string | `auto` | `light`、`dark` 或 `auto`（跟随操作系统）。读者可以随时切换，选择会被记住。 |
 | `accent` | string | `vermilion` | 链接、高亮和当前标签的颜色：`vermilion`、`indigo`、`moss`、`plum`、`ochre`、`teal`、`ink`，或者任意 CSS 颜色。 |
-| `locale` | string | `en` | 界面语言：`en`、`zh`、`zh_TW`。见[语言](i18n.md)。 |
+| `locale` | string | `en` | 界面语言，如 `en`、`zh`、`zh_TW`、`ja`、`de`；也认 Material 的 `language`。见[语言](i18n.md)。 |
 | `logo` | string | | `docs/` 中用于页眉的图片。不设置时使用 Sumi 标志。 |
 | `logo_dark` | string | | 深色配色下的页眉图片。不设置时两种配色都用 `logo`。 |
 | `favicon` | string | | `docs/` 中用于浏览器标签页的图片。 |
@@ -30,8 +30,11 @@ theme:
 | `announcement` | string | | 页眉上方可关闭的公告栏的 HTML。读者关闭旧公告后，新的公告仍会显示。 |
 | `navigation_tabs` | boolean | `true` | 在页眉中把顶层章节显示为标签。设为 `false` 时，整个导航都放在侧边栏中。 |
 | `toc_depth` | integer | `3` | 页面目录中最深的标题级别。 |
-| `hide` | list | `[]` | 在每个页面上隐藏的部分：`toc`、`sidebar`、`breadcrumbs`、`actions`、`pager`、`footer`。 |
+| `hide` | list | `[]` | 在每个页面上隐藏的部分：`toc`、`sidebar`、`breadcrumbs`、`actions`、`pager`、`footer`、`feedback`、`comments`。 |
 | `version_provider` | string | | 设为 `mike` 显示版本菜单。见[导航](navigation.md#versions)。 |
+| `bilingual_view` | boolean | `true` | 多语言站点上，提供页面与译文并排阅读的双语对照视图。见[语言](i18n.md#bilingual-view)。 |
+| `comments` | mapping | | 文档页和博客文章下方的 Giscus 评论。见[评论](../run/comments.md)。 |
+| `feedback` | boolean 或 mapping | | “这页内容对你有帮助吗？”反馈组件。Material 的 `extra.analytics.feedback` 同样有效。见[访问统计与反馈](../run/analytics.md)。 |
 | `repo_icon` | string | | 覆盖仓库图标，例如 `brand-gitlab`。默认根据 `repo_url` 识别。 |
 | `keyboard` | boolean | `true` | 启用单键快捷键。<kbd>⌘</kbd> <kbd>K</kbd> 始终可用。 |
 | `credit` | boolean | `true` | 在页脚显示“由 MkDocs 与 Sumi 构建”。 |
@@ -60,6 +63,7 @@ theme:
 | --- | --- |
 | `hide` | 和主题选项相同，但只作用于一个页面：`hide: [toc, pager]`。`navigation` 可以作为 `sidebar` 的别名。 |
 | `layout` | `wide` 会去掉两侧边栏，使页面占满全宽。 |
+| `comments` | `false` 关闭本页的评论；设置了 `comments.opt_in` 时，`true` 为本页打开评论。 |
 | `template` | `landing.html`、`blog.html` 或 `releases.html`。见[页面类型](../pages/landing.md)。 |
 | `description` | 用于 `<meta name="description">`、链接预览、卡片和博客首页。 |
 {.fields}

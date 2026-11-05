@@ -408,7 +408,7 @@ class ComponentTreeprocessor(Treeprocessor):
             if 'fields' in classes:
                 classes.remove('fields')
                 new = self._fields(parent, el, values.pop('meta', None))
-            for flag in ('wide', 'compact', 'striped', 'center'):
+            for flag in ('wide', 'compact', 'striped', 'center', 'expand'):
                 if flag in classes:
                     classes.remove(flag)
                     el.set('data-' + flag, '')
@@ -420,6 +420,9 @@ class ComponentTreeprocessor(Treeprocessor):
         if classes:
             target.set('class', ' '.join(filter(None, [target.get('class', ''), *classes])))
         for key, value in values.items():
+            if key == 'style' and target.get('style'):
+                # Keep the --cols that `cols` set next to the author's own style.
+                value = target.get('style') + ';' + value
             target.set(key, value)
         return new
 
@@ -494,7 +497,7 @@ class ComponentTreeprocessor(Treeprocessor):
         if parent.get('class', '').startswith('sumi-table'):
             return
         wrapper = etree.Element('div', {'class': 'sumi-table'})
-        for flag in ('wide', 'compact', 'striped', 'center'):
+        for flag in ('wide', 'compact', 'striped', 'center', 'expand'):
             if table.get('data-' + flag) is not None:
                 wrapper.set('class', wrapper.get('class') + ' sumi-table--' + flag)
         idx = list(parent).index(table)

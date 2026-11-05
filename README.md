@@ -56,6 +56,23 @@ mkdocs serve
 - **One design for the whole project site.** Data-driven landing pages, a blog with tags and an Atom feed, a releases page with checksums, and a whole-site print edition.
 - **Keeps your MkDocs content.** Admonitions, `pymdownx` tabs and details, `mike` versions and Material's `extra` keys keep working.
 
+## Showcase
+
+<table>
+  <tr>
+    <td width="33%"><a href="https://sumi.mkdocs-ng.org/"><img src="https://raw.githubusercontent.com/mkdocs-ng/mkdocs-sumi/main/docs/assets/showcase/sumi.jpg" alt="Sumi"></a><br><sub>Sumi</sub></td>
+    <td width="33%"><a href="https://mkdocs-ng.org/"><img src="https://raw.githubusercontent.com/mkdocs-ng/mkdocs-sumi/main/docs/assets/showcase/mkdocs-ng.jpg" alt="MkDocs NG"></a><br><sub>MkDocs NG</sub></td>
+    <td width="33%"><a href="https://catalog.mkdocs-ng.org/"><img src="https://raw.githubusercontent.com/mkdocs-ng/mkdocs-sumi/main/docs/assets/showcase/catalog.jpg" alt="MkDocs Catalog"></a><br><sub>MkDocs Catalog</sub></td>
+  </tr>
+  <tr>
+    <td width="33%"><a href="https://mkdocs-ng.github.io/sumi-starter/"><img src="https://raw.githubusercontent.com/mkdocs-ng/mkdocs-sumi/main/docs/assets/showcase/sumi-starter.jpg" alt="Sumi starter"></a><br><sub>Sumi starter</sub></td>
+    <td width="33%"><a href="https://shenxianpeng.dev/agentbox/"><img src="https://raw.githubusercontent.com/mkdocs-ng/mkdocs-sumi/main/docs/assets/showcase/agentbox.jpg" alt="AgentBox"></a><br><sub>AgentBox</sub></td>
+    <td width="33%"><a href="https://lt.shenxianpeng.dev/"><img src="https://raw.githubusercontent.com/mkdocs-ng/mkdocs-sumi/main/docs/assets/showcase/lithuania-guide.jpg" alt="立陶宛生活指南"></a><br><sub>立陶宛生活指南</sub></td>
+  </tr>
+</table>
+
+More on the [showcase page](https://sumi.mkdocs-ng.org/showcase/). Built something with Sumi? [Tell us](https://github.com/mkdocs-ng/mkdocs-sumi/issues/new?title=Showcase:+).
+
 ## Development
 
 ```sh

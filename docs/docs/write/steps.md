@@ -56,3 +56,13 @@ Steps do not need bodies:
 - Start each step with a verb.
 - Keep one action per step. If a step needs a list of its own, it is probably two steps.
 - Indent step content by four spaces so it stays inside the step.
+
+## Reference
+
+| What | Details |
+| --- | --- |
+| Output | `<ol class="sumi-steps">`, with each step's first line as its heading. |
+| Without Sumi | A numbered list. |
+| JavaScript | None. |
+| Limits | Step content must be indented by four spaces. Steps are not in the table of contents. |
+{.compact}

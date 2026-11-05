@@ -39,6 +39,8 @@
       cmd: '<path d="m9 18 6-6-6-6"/>',
       copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
       check: '<path d="M20 6 9 17l-5-5"/>',
+      x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+      'maximize-2': '<path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/>',
       link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'
     };
     return '<svg class="sumi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (paths[name] || paths.cmd) + '</svg>';
@@ -439,7 +441,11 @@
       if (!svgEl) return;
       var clone = svgEl.cloneNode(true);
       clone.removeAttribute('style'); clone.removeAttribute('width'); clone.removeAttribute('height');
-      box.appendChild(clone);
+      var canvas = doc.createElement('div');
+      canvas.className = 'sumi-diagram-view-canvas';
+      canvas.appendChild(clone);
+      box.appendChild(canvas);
+      resetZoom();
       view.showModal();
     });
     btn(t('diagram_source'), svg('copy'), function () {
@@ -457,9 +463,84 @@
     fig.appendChild(bar);
   }
   var diagramView = $('.sumi-diagram-view');
+  var resetZoom = function () {};
   if (diagramView) {
     diagramView.addEventListener('click', function (e) {
       if (e.target === diagramView || e.target.closest('[data-close]')) diagramView.close();
+    });
+    // Pan and zoom: drag, wheel, pinch, double-click, the buttons, or + - 0.
+    var viewBody = $('.sumi-diagram-view-body', diagramView);
+    var zoom = { x: 0, y: 0, s: 1 };
+    var applyZoom = function () {
+      var c = $('.sumi-diagram-view-canvas', diagramView);
+      if (c) c.style.transform = 'translate(' + zoom.x + 'px, ' + zoom.y + 'px) scale(' + zoom.s + ')';
+    };
+    var zoomAt = function (px, py, f) {
+      var s = Math.min(8, Math.max(0.5, zoom.s * f));
+      zoom.x = px - (px - zoom.x) * s / zoom.s;
+      zoom.y = py - (py - zoom.y) * s / zoom.s;
+      zoom.s = s;
+      applyZoom();
+    };
+    var zoomCenter = function (f) { zoomAt(viewBody.clientWidth / 2, viewBody.clientHeight / 2, f); };
+    resetZoom = function () { zoom = { x: 0, y: 0, s: 1 }; applyZoom(); };
+    var local = function (cx, cy) { var r = viewBody.getBoundingClientRect(); return [cx - r.left, cy - r.top]; };
+    viewBody.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      var p = local(e.clientX, e.clientY);
+      zoomAt(p[0], p[1], Math.exp(-e.deltaY * (e.deltaMode ? 0.05 : 0.002)));
+    }, { passive: false });
+    var pts = {}, pinch = null;
+    viewBody.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      viewBody.setPointerCapture(e.pointerId);
+      pts[e.pointerId] = [e.clientX, e.clientY];
+      pinch = null;
+      viewBody.classList.add('is-dragging');
+    });
+    viewBody.addEventListener('pointermove', function (e) {
+      var prev = pts[e.pointerId];
+      if (!prev) return;
+      pts[e.pointerId] = [e.clientX, e.clientY];
+      var ids = Object.keys(pts);
+      if (ids.length === 1) {
+        zoom.x += e.clientX - prev[0]; zoom.y += e.clientY - prev[1];
+        applyZoom();
+        return;
+      }
+      var a = pts[ids[0]], b = pts[ids[1]];
+      var dist = Math.hypot(a[0] - b[0], a[1] - b[1]);
+      var mid = local((a[0] + b[0]) / 2, (a[1] + b[1]) / 2);
+      if (pinch && pinch.d) {
+        zoom.x += mid[0] - pinch.m[0]; zoom.y += mid[1] - pinch.m[1];
+        zoomAt(mid[0], mid[1], dist / pinch.d);
+      }
+      pinch = { d: dist, m: mid };
+    });
+    var lift = function (e) {
+      var left = {};
+      Object.keys(pts).forEach(function (k) { if (String(k) !== String(e.pointerId)) left[k] = pts[k]; });
+      pts = left;
+      pinch = null;
+      if (!Object.keys(pts).length) viewBody.classList.toggle('is-dragging', false);
+    };
+    viewBody.addEventListener('pointerup', lift);
+    viewBody.addEventListener('pointercancel', lift);
+    viewBody.addEventListener('dblclick', function (e) { var p = local(e.clientX, e.clientY); zoomAt(p[0], p[1], 2); });
+    $$('[data-zoom]', diagramView).forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (b.dataset.zoom === 'in') zoomCenter(1.5);
+        else if (b.dataset.zoom === 'out') zoomCenter(1 / 1.5);
+        else resetZoom();
+      });
+    });
+    diagramView.addEventListener('keydown', function (e) {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key === '+' || e.key === '=') zoomCenter(1.5);
+      else if (e.key === '-' || e.key === '_') zoomCenter(1 / 1.5);
+      else if (e.key === '0') resetZoom();
+      else return;
+      e.preventDefault();
     });
   }
 
@@ -703,6 +784,7 @@
     (S.versionList || []).forEach(function (v) {
       list.push({ title: t('cmd_version', { name: v.title || v.version }), run: function () { location.href = new URL('../' + v.version + '/', new URL(url('./'), location.href)).href; }, keys: 'version 版本' });
     });
+    if (openCompare) list.push({ title: t('compare_open'), run: function () { openCompare(); }, keys: 'bilingual compare translation side 双语 对照 翻译' });
     if (doc.querySelector('link[href$="llms.txt"]')) list.push({ title: t('cmd_llms'), run: function () { location.href = url('llms.txt'); }, keys: 'llms ai agent' });
     return list;
   }
@@ -775,6 +857,227 @@
     pal.addEventListener('click', function (e) { if (e.target === pal) pal.close(); });
   }
 
+  /* ── Bilingual view ────────────────────────────────────────────────── */
+  // Two existing pages side by side, this one and its translation, each in
+  // its own frame. Headings share their ids across languages, so scrolling
+  // one pane brings the other to the same section.
+  var inPane = root.classList.contains('sumi-pane');
+  var openCompare = null;
+  if (inPane) {
+    S.keyboard = false;
+    // Links to other pages open in the main window; anchors stay in the pane.
+    doc.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href]');
+      if (!a || a.target) return;
+      var u = new URL(a.href, location.href);
+      if (u.origin === location.origin && u.pathname === location.pathname && u.search === location.search) return;
+      a.target = '_top';
+    }, true);
+    doc.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      try { var host = parent.document.querySelector('.sumi-compare[open]'); if (host) host.close(); } catch (err) {}
+    });
+  }
+  var cmp = !inPane && (S.translations || []).length ? $('.sumi-compare') : null;
+  if (cmp) {
+    var frames = $$('iframe', cmp);
+    var langSel = $('.sumi-compare-lang', cmp);
+    var syncBox = $('.sumi-compare-sync input', cmp);
+    var target = 0, started = false, lock = -1, lockTimer = null;
+    var heads = function (w) {
+      return Array.prototype.slice.call(w.document.querySelectorAll('.sumi-content :is(h1, h2, h3, h4, h5, h6)[id]'));
+    };
+    var topOf = function (w, el) { return el.getBoundingClientRect().top + w.scrollY; };
+    var maxY = function (w) { return Math.max(0, w.document.documentElement.scrollHeight - w.innerHeight); };
+    // Where a reader is: the last heading passed, and how far towards the next one.
+    var where = function (w) {
+      var hs = heads(w), y = w.scrollY + 8, i = -1;
+      for (var k = 0; k < hs.length && topOf(w, hs[k]) <= y; k++) i = k;
+      var a = i >= 0 ? topOf(w, hs[i]) : 0;
+      var b = i + 1 < hs.length ? topOf(w, hs[i + 1]) : maxY(w);
+      return {
+        id: i >= 0 ? hs[i].id : null,
+        f: b > a ? Math.min(1, Math.max(0, (w.scrollY - a) / (b - a))) : 0,
+        r: maxY(w) ? w.scrollY / maxY(w) : 0
+      };
+    };
+    var goTo = function (w, pos) {
+      var hs = heads(w), i = -1;
+      if (pos.id) for (var k = 0; k < hs.length; k++) if (hs[k].id === pos.id) { i = k; break; }
+      if (pos.id && i < 0) { w.scrollTo(0, pos.r * maxY(w)); return; }
+      var a = i >= 0 ? topOf(w, hs[i]) : 0;
+      var b = i + 1 < hs.length ? topOf(w, hs[i + 1]) : maxY(w);
+      w.scrollTo(0, a + pos.f * (b - a));
+    };
+    var ready = function (n) {
+      try { return !!frames[n].contentDocument.querySelector('.sumi-content'); } catch (e) { return false; }
+    };
+    var follow = function (from) {
+      var to = 1 - from;
+      if (!syncBox.checked || lock === from || !ready(0) || !ready(1)) return;
+      lock = to;
+      goTo(frames[to].contentWindow, where(frames[from].contentWindow));
+      clearTimeout(lockTimer);
+      lockTimer = setTimeout(function () { lock = -1; }, 150);
+    };
+    frames.forEach(function (f, n) {
+      f.addEventListener('load', function () {
+        var pane = f.parentNode, err = $('.sumi-compare-error', pane);
+        if (err) pane.removeChild(err);
+        if (!ready(n)) {
+          if (f.getAttribute('src')) {
+            err = doc.createElement('div');
+            err.className = 'sumi-compare-error';
+            err.textContent = t('compare_failed');
+            pane.appendChild(err);
+          }
+          return;
+        }
+        var ticking = false;
+        f.contentWindow.addEventListener('scroll', function () {
+          if (ticking) return;
+          ticking = true;
+          requestAnimationFrame(function () { ticking = false; follow(n); });
+        }, { passive: true });
+        // First open: start where the reader is on this page, then align the translation.
+        if (n === 0) goTo(f.contentWindow, where(window));
+        if (ready(0) && ready(1)) follow(0);
+      });
+    });
+    var load = function (n, href) {
+      // Replace the frame's page instead of adding a history entry.
+      if (frames[n].getAttribute('src') && frames[n].contentWindow) frames[n].contentWindow.location.replace(href);
+      else frames[n].src = href;
+    };
+    var setTarget = function (i) {
+      target = i;
+      var tr = S.translations[i];
+      $$('.sumi-compare-target-name', cmp).forEach(function (el) { el.textContent = tr.name; });
+      frames[1].title = tr.name;
+      frames[1].lang = tr.lang;
+      load(1, tr.href);
+    };
+    var show = function (n) {
+      cmp.dataset.show = String(n);
+      $$('.sumi-compare-switch button', cmp).forEach(function (b) { b.setAttribute('aria-pressed', String(+b.dataset.pane === n)); });
+    };
+    openCompare = function (restoring) {
+      if (cmp.open) return;
+      closeMenus();
+      cmp.showModal();
+      if (restoring !== true) history.pushState({ sumiCompare: true }, '');
+      if (!started) {
+        started = true;
+        load(0, location.pathname + location.search);
+        setTarget(target);
+      }
+    };
+    $$('[data-sumi-compare]').forEach(function (b) { b.addEventListener('click', function () { openCompare(); }); });
+    $('[data-close]', cmp).addEventListener('click', function () { cmp.close(); });
+    $$('.sumi-compare-switch button', cmp).forEach(function (b) { b.addEventListener('click', function () { show(+b.dataset.pane); }); });
+    if (langSel) langSel.addEventListener('change', function () { setTarget(+langSel.value); });
+    syncBox.addEventListener('change', function () { if (syncBox.checked) follow(+cmp.dataset.show || 0); });
+    // Back closes the reader, and closing it takes its history entry away.
+    cmp.addEventListener('close', function () { if (history.state && history.state.sumiCompare) history.back(); });
+    window.addEventListener('popstate', function () {
+      if (history.state && history.state.sumiCompare) openCompare(true);
+      else if (cmp.open) cmp.close();
+    });
+    if (history.state && history.state.sumiCompare) openCompare(true);
+  }
+
+  /* ── Page feedback ─────────────────────────────────────────────────── */
+  // Sent to whichever analytics is on the page, and as a `sumi:feedback` event.
+  $$('.sumi-feedback').forEach(function (form) {
+    if (inPane) return;
+    form.hidden = false;
+    var note = $('.sumi-feedback-note', form);
+    $$('.sumi-feedback-btn', form).forEach(function (b) {
+      b.addEventListener('click', function () {
+        var value = isNaN(+b.dataset.value) ? b.dataset.value : +b.dataset.value;
+        var page = location.pathname;
+        try {
+          if (typeof window.gtag === 'function') window.gtag('event', 'feedback', { event_category: 'feedback', event_label: page, value: value });
+          if (typeof window.plausible === 'function') window.plausible('Feedback', { props: { page: page, rating: String(value) } });
+          if (window.umami && typeof window.umami.track === 'function') window.umami.track('feedback', { page: page, rating: value });
+        } catch (err) {}
+        doc.dispatchEvent(new CustomEvent('sumi:feedback', { detail: { page: page, value: value } }));
+        $$('.sumi-feedback-btn', form).forEach(function (x) { x.disabled = true; x.setAttribute('aria-pressed', String(x === b)); });
+        // The note is the site author's HTML; {title} and {url} are filled in, as in Material.
+        note.innerHTML = (b.dataset.note || '')
+          .replace(/\{title\}/g, encodeURIComponent(doc.title))
+          .replace(/\{url\}/g, encodeURIComponent(location.href));
+        form.classList.add('is-done');
+      });
+    });
+  });
+
+  /* ── Comments (Giscus, lazy) ───────────────────────────────────────── */
+  var giscus = inPane ? null : $('.sumi-giscus');
+  if (giscus) {
+    var giscusTheme = function () { return root.dataset.theme === 'dark' ? giscus.dataset.themeDark : giscus.dataset.themeLight; };
+    whenNear([giscus], function () {
+      var s = doc.createElement('script');
+      s.src = 'https://giscus.app/client.js';
+      s.async = true; s.crossOrigin = 'anonymous';
+      ['repo', 'repoId', 'category', 'categoryId', 'mapping', 'strict', 'reactionsEnabled', 'inputPosition', 'lang'].forEach(function (k) {
+        if (giscus.dataset[k]) s.dataset[k] = giscus.dataset[k];
+      });
+      s.dataset.emitMetadata = '0';
+      s.dataset.loading = 'lazy';
+      s.dataset.theme = giscusTheme();
+      giscus.appendChild(s);
+    });
+    listeners.push(function () {
+      var f = $('iframe.giscus-frame', giscus);
+      if (f && f.contentWindow) f.contentWindow.postMessage({ giscus: { setConfig: { theme: giscusTheme() } } }, 'https://giscus.app');
+    });
+  }
+
+  /* ── Table reader ──────────────────────────────────────────────────── */
+  // A table wider than the column, or one marked {.expand}, can open full screen.
+  var tableView = null;
+  var openTable = function (wrap) {
+    if (!tableView) {
+      tableView = doc.createElement('dialog');
+      tableView.className = 'sumi-table-view';
+      tableView.setAttribute('aria-label', t('table_expand'));
+      tableView.innerHTML = '<button type="button" class="sumi-icon-btn sumi-table-view-close" data-close aria-label="' + t('close') + '" title="' + t('close') + '">' + svg('x') + '</button><div class="sumi-table-view-body sumi-prose"></div>';
+      doc.body.appendChild(tableView);
+      tableView.addEventListener('click', function (e) {
+        if (e.target === tableView || e.target.closest('[data-close]')) tableView.close();
+      });
+    }
+    var body = $('.sumi-table-view-body', tableView);
+    body.innerHTML = '';
+    var copy = wrap.cloneNode(true);
+    copy.classList.remove('sumi-table--wide');
+    body.appendChild(copy);
+    tableView.showModal();
+  };
+  var tableTools = function (wrap) {
+    var next = wrap.nextElementSibling;
+    var has = next && next.classList.contains('sumi-table-tools');
+    var want = wrap.classList.contains('sumi-table--expand') || wrap.scrollWidth > wrap.clientWidth + 2;
+    if (has || !want) return;
+    var bar = doc.createElement('div');
+    bar.className = 'sumi-table-tools';
+    var b = doc.createElement('button');
+    b.type = 'button'; b.className = 'sumi-table-expand';
+    b.innerHTML = svg('maximize-2') + '<span>' + t('table_expand') + '</span>';
+    b.addEventListener('click', function () { openTable(wrap); });
+    bar.appendChild(b);
+    wrap.parentNode.insertBefore(bar, wrap.nextSibling);
+  };
+  var tables = inPane ? [] : $$('.sumi-content .sumi-table');
+  if (tables.length) {
+    tables.forEach(tableTools);
+    if ('ResizeObserver' in window) {
+      var tro = new ResizeObserver(function (entries) { entries.forEach(function (en) { tableTools(en.target); }); });
+      tables.forEach(function (w) { tro.observe(w); });
+    }
+  }
+
   /* ── Help dialog ───────────────────────────────────────────────────── */
   var help = $('.sumi-help');
   function openHelp() { if (help && !help.open) help.showModal(); }
@@ -801,6 +1104,7 @@
       case '[': if (S.prev) location.href = S.prev; break;
       case ']': if (S.next) location.href = S.next; break;
       case '?': openHelp(); break;
+      case 'b': if (openCompare) openCompare(); break;
       case 'j': case 'k': {
         if (!headings.length) break;
         var y = (parseInt(getComputedStyle(root).getPropertyValue('--sumi-header-h'), 10) || 60) + 30;

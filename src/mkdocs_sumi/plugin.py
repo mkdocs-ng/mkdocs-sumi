@@ -37,8 +37,8 @@ from mkdocs.structure.files import File, Files
 from mkdocs.structure.nav import Navigation, Section
 from mkdocs.structure.pages import Page
 
-from mkdocs_sumi.i18n import STRINGS, translator
-from mkdocs_sumi.icons import icon
+from mkdocs_sumi.i18n import STRINGS, format_date, is_rtl, og_locale, translator
+from mkdocs_sumi.icons import has_icon, icon
 
 if TYPE_CHECKING:
     from jinja2 import Environment
@@ -142,7 +142,11 @@ class SumiPlugin(BasePlugin[SumiConfig]):
     def on_config(self, config: MkDocsConfig) -> MkDocsConfig:
         if config.theme.name != 'sumi':
             log.warning("The 'sumi' plugin is meant to be used with 'theme: sumi'.")
-        self.language = self.config.language or str(config.theme.get('locale') or 'en')
+        # `theme.language` is what Material calls it: honour it so a site that
+        # switches themes keeps its interface language. On a multi-language
+        # site MkDocs NG sets `locale` for each language, so that one wins.
+        material = None if config.get('languages') else config.theme.get('language')
+        self.language = str(self.config.language or material or config.theme.get('locale') or 'en')
         exts = config.markdown_extensions
         names = set(exts)
         for name in ('attr_list', 'admonition', 'footnotes', 'def_list', 'md_in_html', 'tables', 'toc'):
@@ -391,10 +395,94 @@ class SumiPlugin(BasePlugin[SumiConfig]):
             ctx['blog_layout'] = page.meta.get('blog_layout') or self.config.blog.layout
         if page.meta.get('template') == 'releases.html':
             ctx['releases'] = self._releases(page, config)
+        ctx['translations'] = self._translations(page, config, context.get('i18n'))
+        ctx['feedback'] = self._feedback(page, config)
+        ctx['comments'] = self._comments(page, config)
         ctx['nav_json'] = Markup(self._nav_index())
         ctx['strings_json'] = Markup(self._strings())
         context['sumi'] = ctx
         return context
+
+    def _feedback(self, page: Page, config: MkDocsConfig) -> dict[str, Any] | None:
+        """The "Was this page helpful?" widget: Material's `extra.analytics.feedback`, or `theme.feedback`."""
+        analytics = (config.extra or {}).get('analytics') or {}
+        conf = analytics.get('feedback') if isinstance(analytics, dict) else None
+        if conf is None:
+            conf = config.theme.get('feedback')
+        if not conf or _hidden(page, config, 'feedback') or page.meta.get('template') in ('landing.html', 'blog.html'):
+            return None
+        conf = conf if isinstance(conf, dict) else {}
+        t = translator(self.language)
+        ratings = conf.get('ratings') or [
+            {'icon': 'thumbs-up', 'name': t('feedback_yes'), 'data': 1, 'note': t('feedback_thanks')},
+            {'icon': 'thumbs-down', 'name': t('feedback_no'), 'data': 0, 'note': t('feedback_thanks')},
+        ]
+        out = []
+        for i, r in enumerate(ratings):
+            if not isinstance(r, dict):
+                continue
+            out.append({'icon': _feedback_icon(str(r.get('icon') or ''), i), 'name': str(r.get('name') or ''),
+                        'data': r.get('data', 1 - i), 'note': str(r.get('note') or t('feedback_thanks'))})
+        return {'title': str(conf.get('title') or t('feedback_title')), 'ratings': out}
+
+    def _comments(self, page: Page, config: MkDocsConfig) -> dict[str, Any] | None:
+        """Giscus comments under the page, from `theme.comments`."""
+        conf = config.theme.get('comments')
+        if not isinstance(conf, dict) or not conf.get('repo'):
+            return None
+        wanted = page.meta.get('comments')
+        if wanted is False or _hidden(page, config, 'comments') or page.meta.get('template') in ('landing.html', 'blog.html'):
+            return None
+        if conf.get('opt_in') and wanted is not True:
+            return None
+        return {
+            'repo': conf['repo'], 'repo_id': conf.get('repo_id', ''), 'category': conf.get('category', ''),
+            'category_id': conf.get('category_id', ''), 'mapping': conf.get('mapping', 'pathname'),
+            'strict': '1' if conf.get('strict') else '0', 'reactions': '0' if conf.get('reactions') is False else '1',
+            'input_position': conf.get('input_position', 'bottom'),
+            'lang': conf.get('lang') or _giscus_lang(self.language),
+            'theme_light': conf.get('theme_light', 'light'), 'theme_dark': conf.get('theme_dark', 'dark'),
+        }
+
+    def _translations(self, page: Page, config: MkDocsConfig, i18n: dict | None) -> list[dict[str, str]]:
+        """The other languages that have their own version of this page, for the bilingual view."""
+        if not i18n or i18n.get('fallback') or config.theme.get('bilingual_view') is False:
+            return []
+        out = []
+        for lang in i18n.get('languages') or []:
+            if lang.get('current') or not lang.get('available'):
+                continue
+            if page.file.src_uri in self._translated_pages(config, lang['code']):
+                out.append({'lang': lang['code'], 'name': lang['name'], 'link': lang['link']})
+        return out
+
+    def _translated_pages(self, config: MkDocsConfig, code: str) -> set[str]:
+        """The pages a language has its own source for, not borrowed from the default language."""
+        cache = self.__dict__.setdefault('_translated_cache', {})
+        if code in cache:
+            return cache[code]
+        pages: set[str] = set()
+        try:
+            from mkdocs import languages as ng_languages
+
+            skipped = ng_languages.docs_dirs(config)
+
+            def walk(src_dir: str):
+                for source_dir, dirnames, filenames in os.walk(src_dir, followlinks=True):
+                    dirnames[:] = sorted(d for d in dirnames
+                                         if os.path.abspath(os.path.join(source_dir, d)) not in skipped)
+                    for name in filenames:
+                        yield os.path.relpath(os.path.join(source_dir, name), src_dir).replace(os.sep, '/')
+
+            for lang in config.get('languages') or []:
+                if lang.code == code:
+                    for source in ng_languages.select_sources(config, lang, walk):
+                        if not source.is_fallback and utils.is_markdown_file(source.src_uri):
+                            pages.add(source.src_uri)
+        except (ImportError, AttributeError):  # MkDocs NG before 1.11
+            pass
+        cache[code] = pages
+        return pages
 
     def _nav_index(self) -> str:
         """Every page in the nav, with its section path, for the command palette."""
@@ -444,6 +532,8 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         env.globals['icon'] = icon
         env.globals['t'] = translator(self.language)
         env.globals['sumi_language'] = self.language
+        env.globals['sumi_dir'] = 'rtl' if is_rtl(self.language) else 'ltr'
+        env.globals['sumi_og_locale'] = og_locale(self.language)
         env.filters['sumi_date'] = _format_date
         env.filters['sumi_md'] = _inline_markdown
         env.filters['sumi_strip_tags'] = lambda s: Markup(_TAG_RE.sub('', str(s or ''))).unescape()
@@ -731,18 +821,40 @@ def _file_date(file: File) -> datetime.datetime:
     return datetime.datetime.now()
 
 
-_MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
-              'October', 'November', 'December']
+
+def _hidden(page: Page, config: MkDocsConfig, part: str) -> bool:
+    """Whether `hide:` in the page's front matter or in the theme options lists `part`."""
+    for hide in (page.meta.get('hide'), config.theme.get('hide')):
+        if isinstance(hide, list) and part in hide:
+            return True
+    return False
+
+
+def _feedback_icon(name: str, index: int) -> str:
+    """A Lucide icon for a feedback rating, also for Material's `material/emoticon-happy-outline` and the like."""
+    name = name.rsplit('/', 1)[-1]
+    if any(k in name for k in ('happy', 'thumb-up', 'thumbs-up', 'heart', 'smile')):
+        return 'thumbs-up'
+    if any(k in name for k in ('sad', 'thumb-down', 'thumbs-down', 'frown', 'neutral')):
+        return 'thumbs-down'
+    if name and has_icon(name):
+        return name
+    return 'thumbs-up' if index == 0 else 'thumbs-down'
+
+
+def _giscus_lang(language: str) -> str:
+    norm = language.replace('_', '-')
+    if norm.lower() in ('zh-tw', 'zh-hk', 'zh-hant'):
+        return 'zh-TW'
+    base = norm.split('-')[0].lower()
+    return {'zh': 'zh-CN', 'pt': 'pt'}.get(base, base)
 
 
 def _format_date(value: Any, language: str = 'en', short: bool = False) -> str:
     d = value if isinstance(value, datetime.datetime) else _parse_date(value)
     if d is None:
         return ''
-    if language.startswith(('zh', 'ja')):
-        return f'{d.year}年{d.month}月{d.day}日'
-    month = _MONTHS_EN[d.month - 1]
-    return f'{month[:3] if short else month} {d.day}, {d.year}'
+    return format_date(d.year, d.month, d.day, language, short)
 
 
 def _inline_markdown(text: Any, block: bool = False) -> Markup:

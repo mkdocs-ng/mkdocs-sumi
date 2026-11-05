@@ -40,3 +40,13 @@ $$
 ## Compatibility
 
 If `pymdownx.arithmatex` is configured with `generic: true`, Sumi renders its output with the same KaTeX and turns its own `$` parsing off. To disable math entirely, set `math: false` on the [plugin](../customize/plugin.md).
+
+## Reference
+
+| What | Details |
+| --- | --- |
+| Output | `<span class="sumi-math">` and `<div class="sumi-math">` holding the TeX, typeset in the browser. |
+| Without Sumi | The TeX between dollar signs. GitHub typesets it too. |
+| JavaScript | KaTeX, bundled, loaded only on pages with a formula. |
+| Limits | KaTeX supports most of LaTeX math, but not every package. |
+{.compact}

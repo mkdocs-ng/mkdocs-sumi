@@ -64,16 +64,7 @@ overrides/
 
 ## 统计分析 {#analytics}
 
-支持 Google Analytics，配置键和 Material 相同：
-
-```yaml title="mkdocs.yml"
-extra:
-  analytics:
-    provider: google
-    property: G-XXXXXXXXXX
-```
-
-如果用别的统计服务，把它的代码加到 `overrides/main.html` 的 `analytics` 块中。
+Google Analytics、Plausible 和 Umami 是内置的，配置键和 Material 相同，见[访问统计与反馈](../run/analytics.md)。如果用别的统计服务，把它的代码加到 `overrides/main.html` 的 `analytics` 块中。
 
 > [!NOTE]
-> 统计分析是唯一会联系第三方的功能，不配置就不会开启。
+> 统计分析和[评论](../run/comments.md)是仅有的会联系第三方的功能，不配置就不会开启。

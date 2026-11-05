@@ -66,3 +66,13 @@ tests/
 ```
 
 这棵树在构建时用普通的 HTML `<details>` 元素生成，所以不需要 JavaScript，打印时会完全展开。
+
+## 参考 {#reference}
+
+| 项目 | 说明 |
+| --- | --- |
+| 输出 | `<div class="sumi-filetree">`，由嵌套的 `<details>` 元素构成，带图标和注释。 |
+| 没有 Sumi 时 | 一个包含目录列表的代码块。 |
+| JavaScript | 不需要。 |
+| 限制 | 名称是纯文本，不能放链接。注释以 ` # ` 开头。 |
+{.compact}

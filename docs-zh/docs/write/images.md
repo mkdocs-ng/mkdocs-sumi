@@ -50,3 +50,13 @@ description: 图片、带图注的插图、放大查看，以及分别用于浅�
 
 > [!NOTE]
 > 图片会延迟加载。请给大图写上明确的 `width` 和 `height` 属性，以免页面布局跳动。
+
+## 参考 {#reference}
+
+| 项目 | 说明 |
+| --- | --- |
+| 输出 | `<img loading="lazy">`；设置 `caption` 时是带 `<figcaption>` 的 `<figure class="sumi-figure">`。 |
+| 没有 Sumi 时 | 普通图片。`#only-light` 和 `#only-dark` 两张图都会显示。 |
+| JavaScript | 只有放大查看时需要。 |
+| 限制 | 放大时显示的是图片本身的尺寸，不会加载更大的文件。 |
+{.compact}

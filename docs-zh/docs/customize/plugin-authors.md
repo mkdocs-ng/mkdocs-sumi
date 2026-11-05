@@ -77,6 +77,8 @@ document.addEventListener("sumi:theme", (event) => {
 
 `data-theme` 在页面绘制之前就已设置好，所以脚本随时都能读取它。不要假定 Sumi 自己的脚本已经先运行：它是延迟加载的。
 
+在[双语对照](i18n.md#bilingual-view)里，页面会在名为 `sumi-pane` 的 frame 中再加载一次，`<html>` 上带有 `sumi-pane` 类。统计访问或弹出窗口的脚本应当跳过它：`if (window.name === 'sumi-pane') return;`。
+
 ## 模板 {#templates}
 
 Sumi 提供常见的 MkDocs 模板块。继承 Material `main.html` 的插件或用户覆盖可以这样对应：

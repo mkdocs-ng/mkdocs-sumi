@@ -36,6 +36,8 @@ If a renderer does not know Sumi, the reader still sees a numbered list. Sumi se
 | Badge | `**New**{.badge}` | [Badges](badges.md) |
 {.wide}
 
+Each component page ends with a **Reference** table: the HTML it produces, what readers see without Sumi, whether it needs JavaScript, and its limits.
+
 ## Attribute lines
 
 An attribute line is a paragraph that contains only `{…}` and sits directly under the block it modifies. It can carry classes, an id and key–value pairs:

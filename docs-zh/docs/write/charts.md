@@ -116,3 +116,13 @@ plugins:
       echarts: false
       markmap: false
 ```
+
+## 参考 {#reference}
+
+| 项目 | 说明 |
+| --- | --- |
+| 输出 | `<figure class="sumi-chart">` 以 JSON 保存图表配置，`<figure class="sumi-markmap">` 以嵌套列表保存大纲。 |
+| 没有 Sumi 时 | 包含 YAML 或大纲的代码块。 |
+| JavaScript | ECharts 或 Markmap，随主题打包，图表快进入屏幕时加载。 |
+| 限制 | 图表配置是数据，不能写回调函数。思维导图只接受标题和列表。 |
+{.compact}

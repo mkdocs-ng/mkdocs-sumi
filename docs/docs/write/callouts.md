@@ -92,3 +92,13 @@ If your pages already use the `admonition` extension, they keep working and look
     Use `theme.palette` instead.
 
 `??? note` and `???+ note` from `pymdownx.details` are styled as collapsible callouts.
+
+## Reference
+
+| What | Details |
+| --- | --- |
+| Output | `<div class="sumi-callout">`, or `<details class="sumi-callout">` when collapsible, with a title and an icon. |
+| Without Sumi | GitHub draws the same alert. Other renderers show a blockquote whose first line is `[!NOTE]`. |
+| JavaScript | None: folding uses the browser's own `<details>`. |
+| Limits | Five GitHub types plus Material's names. Collapsed callouts are printed open. |
+{.compact}

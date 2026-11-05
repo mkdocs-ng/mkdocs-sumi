@@ -85,3 +85,13 @@ markdown_extensions:
 ```
 
 In print and in the Markdown copy, every tab is shown one after another under its label.
+
+## Reference
+
+| What | Details |
+| --- | --- |
+| Output | `<div class="sumi-tabs">`, one `<div class="sumi-tab">` per fence, with its label. |
+| Without Sumi | Consecutive code blocks. |
+| JavaScript | To switch tabs. Without it, every tab shows under its label. |
+| Limits | Fence tabs hold code only; use `pymdownx.tabbed` for prose. |
+{.compact}
