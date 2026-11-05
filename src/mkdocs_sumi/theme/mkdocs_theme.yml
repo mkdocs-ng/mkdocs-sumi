@@ -25,7 +25,7 @@ social_image: null
 brand: null
 # Text or HTML for a dismissible bar above the header.
 announcement: null
-# Show the "Built with MkDocs and Sumi" credit in the footer.
+# Show the "Built with MkDocs NG and Sumi" credit in the footer.
 credit: true
 # Keyboard shortcuts (search, prev/next, theme...).
 keyboard: true

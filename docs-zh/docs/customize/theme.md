@@ -37,7 +37,7 @@ theme:
 | `feedback` | boolean 或 mapping | | “这页内容对你有帮助吗？”反馈组件。Material 的 `extra.analytics.feedback` 同样有效。见[访问统计与反馈](../run/analytics.md)。 |
 | `repo_icon` | string | | 覆盖仓库图标，例如 `brand-gitlab`。默认根据 `repo_url` 识别。 |
 | `keyboard` | boolean | `true` | 启用单键快捷键。<kbd>⌘</kbd> <kbd>K</kbd> 始终可用。 |
-| `credit` | boolean | `true` | 在页脚显示“由 MkDocs 与 Sumi 构建”。 |
+| `credit` | boolean | `true` | 在页脚显示“由 MkDocs NG 与 Sumi 构建”。 |
 {.fields}
 
 ## 强调色 {#accent-colours}
