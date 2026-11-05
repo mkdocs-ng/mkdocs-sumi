@@ -20,7 +20,7 @@
       - {type: cta, title, text, actions}
       - {type: content}   # the page's Markdown body
 -#}
-{% extends "base.html" %}
+{% extends "main.html" %}
 {%- macro actions(list) -%}
 <div class="sumi-actions-row">
   {%- for a in list or [] %}

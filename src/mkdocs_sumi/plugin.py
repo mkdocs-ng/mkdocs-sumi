@@ -81,6 +81,7 @@ class SumiConfig(base.Config):
     markdown_copy = c.Type(bool, default=True)
     assistant_links = c.ListOfItems(c.Choice(['chatgpt', 'claude']), default=[])
     git_dates = c.Type(bool, default=False)
+    date_format = c.Optional(c.Type(str))
     blog = c.SubConfig(_BlogConfig)
     print = c.SubConfig(_PrintConfig)
 
@@ -497,7 +498,7 @@ class SumiPlugin(BasePlugin[SumiConfig]):
     def _blog_context(self, page: Page) -> dict[str, Any]:
         """The posts a page lists, and where it sits among them."""
         ctx: dict[str, Any] = {}
-        all_posts = sorted(self.posts, key=lambda p: p.date, reverse=True)
+        all_posts = _newest_first(self.posts)
         current = next((p for p in all_posts if p.page is page), None)
         blog = current.blog if current else next(
             (d for d, uri in self.blog_indexes.items() if uri == page.file.src_uri), None)
@@ -648,7 +649,7 @@ class SumiPlugin(BasePlugin[SumiConfig]):
 
         walk(self.nav.items if self.nav else [], [])
         if self.blog_index:
-            for post in sorted(self.posts, key=lambda p: p.date, reverse=True):
+            for post in _newest_first(self.posts):
                 entries.append({'t': post.title, 'u': post.url, 's': translator(self.language)('blog')})
         self._nav_json = _json_html(entries)
         return self._nav_json
@@ -681,7 +682,8 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         env.globals['sumi_language'] = self.language
         env.globals['sumi_dir'] = 'rtl' if is_rtl(self.language) else 'ltr'
         env.globals['sumi_og_locale'] = og_locale(self.language)
-        env.filters['sumi_date'] = _format_date
+        fmt = self.config.date_format
+        env.filters['sumi_date'] = (lambda v, language='en', short=False: _format_date(v, language, short, fmt)) if fmt else _format_date
         env.filters['sumi_md'] = _inline_markdown
         env.filters['sumi_strip_tags'] = lambda s: Markup(_TAG_RE.sub('', str(s or ''))).unescape()
         env.filters['sumi_links'] = _site_links
@@ -771,7 +773,7 @@ class SumiPlugin(BasePlugin[SumiConfig]):
 
     def _write_feed(self, config: MkDocsConfig) -> None:
         site = (config.site_url or '').rstrip('/') + '/'
-        posts = sorted(self.posts, key=lambda p: p.date, reverse=True)
+        posts = _newest_first(self.posts)
         if self.config.blog.feed_items > 0:
             posts = posts[: self.config.blog.feed_items]
         updated = max(p.updated or p.date for p in posts)
@@ -1119,10 +1121,18 @@ def _giscus_lang(language: str) -> str:
     return {'zh': 'zh-CN', 'pt': 'pt'}.get(base, base)
 
 
-def _format_date(value: Any, language: str = 'en', short: bool = False) -> str:
+def _newest_first(posts: list[Post]) -> list[Post]:
+    """Newest post first; posts of the same day in title order."""
+    by_title = sorted(posts, key=lambda p: p.title.lower())
+    return sorted(by_title, key=lambda p: p.date, reverse=True)
+
+
+def _format_date(value: Any, language: str = 'en', short: bool = False, fmt: str | None = None) -> str:
     d = value if isinstance(value, datetime.datetime) else _parse_date(value)
     if d is None:
         return ''
+    if fmt:
+        return d.strftime(fmt)
     return format_date(d.year, d.month, d.day, language, short)
 
 

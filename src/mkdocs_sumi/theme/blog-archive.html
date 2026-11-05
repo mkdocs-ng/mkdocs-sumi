@@ -1,8 +1,9 @@
-{% extends "base.html" %}
+{% extends "main.html" %}
 {#- Every post, newest first, grouped by year: `template: blog-archive.html`. -#}
 {% block content %}
 <div class="sumi-blog sumi-archive">
   <header class="sumi-blog-head sumi-prose">
+    {%- if '<h1' not in page.content %}<h1>{{ page.title }}</h1>{% endif %}
     {{ page.content }}
     <p class="sumi-archive-count">{{ t('n_posts', n=sumi.posts | length) }}</p>
   </header>

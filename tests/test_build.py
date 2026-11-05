@@ -901,9 +901,35 @@ def test_hugo_style_blog(hugo_blog):
         assert 'http-equiv="refresh"' in redirect and 'posts/2026/hello/' in redirect
     # A specific Giscus term.
     assert 'data-term="posts/hello/"' in hello
+    # The title comes from front matter when the body has no `# heading`.
+    assert '<h1 class="sumi-post-heading">Hello</h1>' in hello
     # The archive, by year.
     archive = (out / 'archive' / 'index.html').read_text(encoding='utf-8')
     assert archive.index('2026') < archive.index('2025') and '4 posts' in archive
+
+
+def test_date_format_and_same_day_order(tmp_path):
+    out = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'blog/index.md': '# Posts\n',
+        'blog/posts/b.md': '---\ndate: 2026-03-04\ntags: [beta, alpha, alpha2]\n---\n# Beta\n',
+        'blog/posts/a.md': '---\ndate: 2026-03-04\ntags: [beta]\n---\n# Alpha\n',
+        'tags/index.md': '---\ntemplate: blog-tags.html\ntags_sort: name\n---\n# Tags\n',
+    }, """
+    site_name: Test
+    theme: {name: sumi}
+    plugins:
+      - sumi:
+          date_format: "%Y-%m-%d"
+          blog: {tags_dir: tags}
+    """)
+    posts = _post_list((out / 'blog' / 'index.html').read_text(encoding='utf-8'))
+    # Posts of the same day are in title order, as Hugo lists them.
+    assert posts.index('Alpha') < posts.index('Beta')
+    assert '>2026-03-04</time>' in posts
+    # `tags_sort: name` lists tags A to Z instead of most used first.
+    tags = (out / 'tags' / 'index.html').read_text(encoding='utf-8')
+    assert tags.index('>alpha<') < tags.index('>alpha2<') < tags.index('>beta<')
 
 
 def test_alias_never_replaces_a_page(tmp_path):
@@ -914,3 +940,18 @@ def test_alias_never_replaces_a_page(tmp_path):
     }, BASIC)
     assert 'refresh' not in (out / 'other' / 'index.html').read_text(encoding='utf-8')
     assert 'url=../new/' in (out / 'gone' / 'index.html').read_text(encoding='utf-8')
+
+
+def test_main_html_override_applies_to_every_page(tmp_path):
+    (tmp_path / 'overrides').mkdir()
+    (tmp_path / 'overrides' / 'main.html').write_text(
+        '{% extends "base.html" %}{% block extrahead %}<meta name="x-site" content="1">{% endblock %}', encoding='utf-8')
+    out = _site(tmp_path, {
+        'index.md': '---\ntemplate: landing.html\nhero: {title: Hi}\n---\n',
+        'blog/index.md': '---\ntitle: Posts\n---\n',
+        'blog/posts/2026-01-02-hello.md': '# Hello\n',
+    }, BASIC.replace('  name: sumi\n', '  name: sumi\n      custom_dir: overrides\n'))
+    for page in ('index.html', 'blog/index.html', 'blog/2026/01/02/hello/index.html', '404.html'):
+        assert '<meta name="x-site" content="1">' in (out / page).read_text(encoding='utf-8'), page
+    # A blog index without a heading of its own gets its title.
+    assert '<h1>Posts</h1>' in (out / 'blog' / 'index.html').read_text(encoding='utf-8')

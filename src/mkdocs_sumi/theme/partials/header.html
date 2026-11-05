@@ -19,7 +19,9 @@
     <nav class="sumi-tabs-nav" aria-label="{{ t('navigation') }}">
       {%- for item in nav.items if not (item.is_page and item.is_homepage) %}
       {%- set href = m.first_url(item) | trim %}
-      <a class="sumi-tab-link{% if item.active %} is-active{% endif %}" href="{{ href }}"{% if item.active %} aria-current="page"{% endif %}{% if item.is_link and item.url.startswith('http') %} target="_blank" rel="noopener"{% endif %}>{{ item.title }}</a>
+      {#- A post isn't in the nav: its blog's tab is the current one. -#}
+      {%- set current = item.active or (sumi.is_post and item.is_page and sumi.blog_index_url and item.url == sumi.blog_index_url) %}
+      <a class="sumi-tab-link{% if current %} is-active{% endif %}" href="{{ href }}"{% if item.active %} aria-current="page"{% endif %}{% if item.is_link and item.url.startswith('http') %} target="_blank" rel="noopener"{% endif %}>{{ item.title }}</a>
       {%- endfor %}
     </nav>
     {%- endif %}

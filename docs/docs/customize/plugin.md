@@ -27,10 +27,15 @@ plugins:
 | `markdown_copy` | boolean | `true` | Show **Copy as Markdown** and **View as Markdown** when a Markdown copy of the page exists. |
 | `assistant_links` | list | `[]` | Add "Open in Claude" or "Open in ChatGPT" to the page menu: `claude`, `chatgpt`. Off by default, because they send the page address to a third party. |
 | `git_dates` | boolean | `false` | Show "Last updated" from the last Git commit that touched each page. One `git log` runs per build. |
+| `date_format` | string | none | A `strftime` pattern for every date the theme shows, such as `"%Y-%m-%d"`. By default dates are written out in the page's language: "November 5, 2026", "2026年11月5日". |
 | `blog.enabled` | boolean | `true` | Treat files under `blog.dir` as posts. |
-| `blog.dir` | string | `blog` | The blog folder under `docs/`. |
+| `blog.dir` | string or list | `blog` | The blog folder under `docs/`, or a list of them. |
+| `blog.layout` | string | `list` | `list` or `cards`. |
+| `blog.tags_dir` | string | none | Write a page for every tag, and a list of tags, under this folder. |
 | `blog.feed` | boolean | `true` | Write an Atom feed to `blog/feed.xml`. |
-| `blog.feed_items` | integer | `20` | Number of posts in the feed. |
+| `blog.feed_items` | integer | `20` | Number of posts in the feed; `0` puts every post in it. |
+| `blog.feed_path` | string | none | Where to write the feed, such as `index.xml`. |
+| `blog.feed_format` | string | `atom` | `atom` or `rss`. |
 | `blog.authors` | mapping | `{}` | Authors, if you prefer not to use `.authors.yml`. |
 | `print.enabled` | boolean | `true` | Write the [print edition](../pages/print.md). |
 | `print.path` | string | `print/` | Where to write it. |

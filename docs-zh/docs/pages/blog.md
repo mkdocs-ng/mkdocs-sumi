@@ -88,7 +88,7 @@ plugins:
         tags_dir: tags
 ```
 
-Sumi 会生成 `tags/`，列出所有标签和文章数，并为每个标签生成一个页面。标签地址和 Hugo 的生成方式相同：`Open Source` 对应 `tags/open-source/`。文章上的标签会链接到这些页面。想在标签列表上方加一段介绍，就创建 `tags/index.md` 并设置 `template: blog-tags.html`。
+Sumi 会生成 `tags/`，列出所有标签和文章数，并为每个标签生成一个页面。标签地址和 Hugo 的生成方式相同：`Open Source` 对应 `tags/open-source/`。文章上的标签会链接到这些页面。想在标签列表上方加一段介绍，就创建 `tags/index.md` 并设置 `template: blog-tags.html`。标签默认按文章数从多到少排列，在这个页面加上 `tags_sort: name` 则按字母排序。
 
 ## 归档 {#archive}
 

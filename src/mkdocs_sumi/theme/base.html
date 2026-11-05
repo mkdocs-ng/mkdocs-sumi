@@ -6,7 +6,8 @@
 {%- set hide = (page.meta.hide if page and page.meta and page.meta.hide else []) + (theme.hide or []) -%}
 {%- set layout = page.meta.layout if page and page.meta and page.meta.layout else 'docs' -%}
 {%- set has_sections = nav.items | selectattr('is_section') | list | length > 0 -%}
-{%- set tabs_on = theme.navigation_tabs and has_sections -%}
+{#- Without sections, the pages are tabs when the sidebar is hidden, or nothing would show them. -#}
+{%- set tabs_on = theme.navigation_tabs and (has_sections or 'sidebar' in (theme.hide or []) or 'navigation' in (theme.hide or [])) -%}
 {%- set active_top = nav.items | selectattr('active') | first -%}
 {%- if tabs_on -%}
   {%- set side_items = active_top.children if active_top and active_top.is_section else [] -%}

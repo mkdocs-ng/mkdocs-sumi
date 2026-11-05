@@ -27,10 +27,15 @@ plugins:
 | `markdown_copy` | boolean | `true` | 当页面有 Markdown 副本时，显示 **复制为 Markdown** 和 **查看 Markdown**。 |
 | `assistant_links` | list | `[]` | 在页面菜单中加入“在 Claude 中打开”或“在 ChatGPT 中打开”：`claude`、`chatgpt`。默认关闭，因为它们会把页面地址发送给第三方。 |
 | `git_dates` | boolean | `false` | 根据最后一次修改该页面的 Git 提交显示“最后更新”。每次构建只运行一次 `git log`。 |
+| `date_format` | string | 无 | 主题显示的所有日期使用的 `strftime` 格式，例如 `"%Y-%m-%d"`。默认按页面语言写出日期：“November 5, 2026”、“2026年11月5日”。 |
 | `blog.enabled` | boolean | `true` | 把 `blog.dir` 下的文件当作文章。 |
-| `blog.dir` | string | `blog` | `docs/` 下的博客文件夹。 |
+| `blog.dir` | string 或 list | `blog` | `docs/` 下的博客文件夹，也可以是多个文件夹的列表。 |
+| `blog.layout` | string | `list` | `list` 或 `cards`。 |
+| `blog.tags_dir` | string | 无 | 在这个文件夹下为每个标签生成页面，并生成标签列表。 |
 | `blog.feed` | boolean | `true` | 把 Atom 订阅源写到 `blog/feed.xml`。 |
-| `blog.feed_items` | integer | `20` | 订阅源中的文章数。 |
+| `blog.feed_items` | integer | `20` | 订阅源中的文章数；`0` 表示全部文章。 |
+| `blog.feed_path` | string | 无 | 订阅源的写入位置，例如 `index.xml`。 |
+| `blog.feed_format` | string | `atom` | `atom` 或 `rss`。 |
 | `blog.authors` | mapping | `{}` | 作者信息，如果你不想用 `.authors.yml`。 |
 | `print.enabled` | boolean | `true` | 生成[打印版](../pages/print.md)。 |
 | `print.path` | string | `print/` | 打印版的输出位置。 |

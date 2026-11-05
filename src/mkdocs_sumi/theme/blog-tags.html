@@ -1,10 +1,11 @@
-{% extends "base.html" %}
-{#- Every tag of the blog, with the number of posts: `template: blog-tags.html` (written for you with `blog.tags_dir`). -#}
+{% extends "main.html" %}
+{#- Every tag of the blog, with the number of posts: `template: blog-tags.html` (written for you with `blog.tags_dir`).
+    Most used first; `tags_sort: name` in the page's front matter lists them A to Z. -#}
 {% block content %}
 <div class="sumi-blog sumi-blog-tags">
-  <header class="sumi-blog-head sumi-prose">{{ page.content }}</header>
+  <header class="sumi-blog-head sumi-prose">{% if '<h1' not in page.content %}<h1>{{ page.title }}</h1>{% endif %}{{ page.content }}</header>
   <ul class="sumi-tag-cloud">
-    {%- for tag, count in sumi.tags %}
+    {%- for tag, count in (sumi.tags | sort(attribute='0') if page.meta.tags_sort == 'name' else sumi.tags) %}
     <li><a class="sumi-tag" href="{{ sumi.tag_urls[tag] | url if tag in sumi.tag_urls else (sumi.blog_index_url | url) ~ '#tag=' ~ (tag | urlencode) }}">{{ tag | e }}<span>{{ count }}</span></a></li>
     {%- endfor %}
   </ul>

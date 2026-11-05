@@ -88,7 +88,7 @@ plugins:
         tags_dir: tags
 ```
 
-Sumi then writes `tags/` with every tag and its number of posts, and a page for each tag. Tag URLs are made the way Hugo makes them: `Open Source` is `tags/open-source/`. Tags on posts link to these pages. To add an introduction to the list of tags, create `tags/index.md` with `template: blog-tags.html`.
+Sumi then writes `tags/` with every tag and its number of posts, and a page for each tag. Tag URLs are made the way Hugo makes them: `Open Source` is `tags/open-source/`. Tags on posts link to these pages. To add an introduction to the list of tags, create `tags/index.md` with `template: blog-tags.html`. Tags are listed most used first; add `tags_sort: name` to that page to list them A to Z.
 
 ## Archive
 

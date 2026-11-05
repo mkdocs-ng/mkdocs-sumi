@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "main.html" %}
 {% block content %}
 <article class="sumi-article sumi-post">
   <div class="sumi-article-top">
@@ -7,6 +7,9 @@
   </div>
   {%- if sumi.post %}
   <div class="sumi-post-header">
+    {%- if '<h1' not in page.content %}
+    <h1 class="sumi-post-heading">{{ page.title }}</h1>
+    {%- endif %}
     <div class="sumi-post-meta">
       <time datetime="{{ sumi.post.date.isoformat() }}">{{ sumi.post.date | sumi_date(sumi_language) }}</time>
       <span aria-hidden="true">·</span><span>{{ t('reading_time', n=sumi.post.reading_time) }}</span>
