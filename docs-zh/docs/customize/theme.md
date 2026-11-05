@@ -21,7 +21,7 @@ theme:
 | --- | --- | --- | --- |
 | `palette` | string | `auto` | `light`、`dark` 或 `auto`（跟随操作系统）。读者可以随时切换，选择会被记住。 |
 | `accent` | string | `vermilion` | 链接、高亮和当前标签的颜色：`vermilion`、`indigo`、`moss`、`plum`、`ochre`、`teal`、`ink`，或者任意 CSS 颜色。 |
-| `locale` | string | `en` | 界面语言：`en`、`zh`、`zh_TW`。见[语言](i18n.md)。 |
+| `locale` | string | `en` | 界面语言，如 `en`、`zh`、`zh_TW`、`ja`、`de`；也认 Material 的 `language`。见[语言](i18n.md)。 |
 | `logo` | string | | `docs/` 中用于页眉的图片。不设置时使用 Sumi 标志。 |
 | `logo_dark` | string | | 深色配色下的页眉图片。不设置时两种配色都用 `logo`。 |
 | `favicon` | string | | `docs/` 中用于浏览器标签页的图片。 |

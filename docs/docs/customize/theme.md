@@ -21,7 +21,7 @@ theme:
 | --- | --- | --- | --- |
 | `palette` | string | `auto` | `light`, `dark` or `auto` (follow the operating system). Readers can switch at any time; their choice is remembered. |
 | `accent` | string | `vermilion` | The colour of links, highlights and the active tab: `vermilion`, `indigo`, `moss`, `plum`, `ochre`, `teal`, `ink`, or any CSS colour. |
-| `locale` | string | `en` | The interface language: `en`, `zh`, `zh_TW`. See [Languages](i18n.md). |
+| `locale` | string | `en` | The interface language, such as `en`, `zh`, `zh_TW`, `ja` or `de`; Material's `language` works too. See [Languages](i18n.md). |
 | `logo` | string | | An image in `docs/` for the header. The Sumi mark is used if unset. |
 | `logo_dark` | string | | A second header image for the dark palette. `logo` is used in both if unset. |
 | `favicon` | string | | An image in `docs/` for the browser tab. |

@@ -491,3 +491,60 @@ def test_malformed_front_matter_is_a_clear_error(tmp_path, caplog, meta, message
         _site(tmp_path, {'index.md': f'---\n{meta}\n---\n# Home\n'}, BASIC)
     assert message in caplog.text
     assert 'Traceback' not in caplog.text
+
+
+def test_every_language_has_every_string():
+    """Each interface language translates every key, with the same placeholders as English."""
+    import string
+
+    from mkdocs_sumi.i18n import STRINGS
+
+    def fields(text):
+        return {f for _, f, _, _ in string.Formatter().parse(text) if f}
+
+    for code, table in STRINGS.items():
+        assert set(table) == set(STRINGS['en']), code
+        for key, text in table.items():
+            assert fields(text) == fields(STRINGS['en'][key]), (code, key)
+
+
+@pytest.mark.parametrize(('locale', 'lang', 'text'), [
+    ('de', 'de', 'Auf dieser Seite'),
+    ('ja', 'ja', 'このページの内容'),
+    ('pt_BR', 'pt-BR', 'Nesta página'),
+])
+def test_interface_language(tmp_path, locale, lang, text):
+    config = BASIC.replace('      name: sumi\n', f'      name: sumi\n      locale: {locale}\n')
+    out = _site(tmp_path, {'index.md': '# Home\n\n## One\n\n## Two\n'}, config)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert f'<html lang="{lang}" data-palette' in html
+    assert text in html
+
+
+def test_material_language_key_is_honoured(tmp_path):
+    """A site moving from Material keeps `theme.language` and gets its interface language."""
+    config = BASIC.replace('      name: sumi\n', '      name: sumi\n      language: fr\n')
+    out = _site(tmp_path, {'index.md': '# Home\n\n## One\n\n## Two\n'}, config)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert '<html lang="fr"' in html
+    assert 'Sur cette page' in html
+    assert '<meta property="og:locale" content="fr_FR">' in html
+
+
+def test_right_to_left_language(tmp_path):
+    config = BASIC.replace('      name: sumi\n', '      name: sumi\n      locale: ar\n')
+    out = _site(tmp_path, {'index.md': '# Home\n\n## One\n\n## Two\n'}, config)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert '<html lang="ar" dir="rtl"' in html
+    assert 'في هذه الصفحة' in html
+
+
+def test_dates_in_the_page_language():
+    from mkdocs_sumi.i18n import format_date
+
+    assert format_date(2026, 11, 5, 'en') == 'November 5, 2026'
+    assert format_date(2026, 11, 5, 'en', short=True) == 'Nov 5, 2026'
+    assert format_date(2026, 11, 5, 'de') == '5. November 2026'
+    assert format_date(2026, 11, 5, 'es') == '5 de noviembre de 2026'
+    assert format_date(2026, 11, 5, 'ko') == '2026년 11월 5일'
+    assert format_date(2026, 11, 5, 'zh_TW') == '2026年11月5日'

@@ -37,7 +37,7 @@ from mkdocs.structure.files import File, Files
 from mkdocs.structure.nav import Navigation, Section
 from mkdocs.structure.pages import Page
 
-from mkdocs_sumi.i18n import STRINGS, translator
+from mkdocs_sumi.i18n import STRINGS, format_date, is_rtl, og_locale, translator
 from mkdocs_sumi.icons import icon
 
 if TYPE_CHECKING:
@@ -142,7 +142,11 @@ class SumiPlugin(BasePlugin[SumiConfig]):
     def on_config(self, config: MkDocsConfig) -> MkDocsConfig:
         if config.theme.name != 'sumi':
             log.warning("The 'sumi' plugin is meant to be used with 'theme: sumi'.")
-        self.language = self.config.language or str(config.theme.get('locale') or 'en')
+        # `theme.language` is what Material calls it: honour it so a site that
+        # switches themes keeps its interface language. On a multi-language
+        # site MkDocs NG sets `locale` for each language, so that one wins.
+        material = None if config.get('languages') else config.theme.get('language')
+        self.language = str(self.config.language or material or config.theme.get('locale') or 'en')
         exts = config.markdown_extensions
         names = set(exts)
         for name in ('attr_list', 'admonition', 'footnotes', 'def_list', 'md_in_html', 'tables', 'toc'):
@@ -444,6 +448,8 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         env.globals['icon'] = icon
         env.globals['t'] = translator(self.language)
         env.globals['sumi_language'] = self.language
+        env.globals['sumi_dir'] = 'rtl' if is_rtl(self.language) else 'ltr'
+        env.globals['sumi_og_locale'] = og_locale(self.language)
         env.filters['sumi_date'] = _format_date
         env.filters['sumi_md'] = _inline_markdown
         env.filters['sumi_strip_tags'] = lambda s: Markup(_TAG_RE.sub('', str(s or ''))).unescape()
@@ -731,18 +737,12 @@ def _file_date(file: File) -> datetime.datetime:
     return datetime.datetime.now()
 
 
-_MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
-              'October', 'November', 'December']
-
 
 def _format_date(value: Any, language: str = 'en', short: bool = False) -> str:
     d = value if isinstance(value, datetime.datetime) else _parse_date(value)
     if d is None:
         return ''
-    if language.startswith(('zh', 'ja')):
-        return f'{d.year}年{d.month}月{d.day}日'
-    month = _MONTHS_EN[d.month - 1]
-    return f'{month[:3] if short else month} {d.day}, {d.year}'
+    return format_date(d.year, d.month, d.day, language, short)
 
 
 def _inline_markdown(text: Any, block: bool = False) -> Markup:
