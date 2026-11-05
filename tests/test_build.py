@@ -682,3 +682,113 @@ def test_expandable_table(tmp_path):
 def test_gallery_columns_and_style_combine(tmp_path):
     out = _site(tmp_path, {'index.md': '# Home\n\n- ![a](a.png)\n- ![b](b.png)\n{.gallery cols="2" style="--ratio: 16 / 10"}\n'}, BASIC)
     assert 'style="--cols:2;--ratio: 16 / 10"' in (out / 'index.html').read_text(encoding='utf-8')
+
+
+GITHUB_RELEASES = [
+    {'tag_name': 'v0.3.0', 'name': 'v0.3.0', 'draft': True, 'published_at': None, 'body': 'Not out yet.'},
+    {'tag_name': 'v0.2.0', 'name': 'v0.2.0', 'published_at': '2026-11-05T16:35:46Z', 'prerelease': False,
+     'body': '<!-- Optional: add a release summary here -->\r\nLanguages and comments.\r\n\r\n'
+             '## 🚀 New features\r\n\r\n- Ten more languages by @octo-cat in #22\r\n\r\n'
+             '**Full Changelog**: https://github.com/o/r/compare/v0.1.0...v0.2.0\r\n',
+     'assets': [{'name': 'app.zip', 'browser_download_url': 'https://github.com/o/r/app.zip', 'size': 2_500_000,
+                 'digest': 'sha256:' + 'a' * 64}]},
+    {'tag_name': 'v0.1.1', 'name': 'Small fixes', 'published_at': '2026-11-02T08:00:00Z', 'prerelease': True,
+     'body': '## What\'s Changed\r\n* Fix it by @octo-cat in https://github.com/o/r/pull/5\r\n'},
+]
+PYPI = {'releases': {
+    '0.1.1': [
+        {'filename': 'r-0.1.1.tar.gz', 'url': 'https://files/r-0.1.1.tar.gz', 'size': 1200,
+         'digests': {'sha256': 'b' * 64}},
+        {'filename': 'r-0.1.1-py3-none-any.whl', 'url': 'https://files/r-0.1.1-py3-none-any.whl', 'size': 900,
+         'digests': {'sha256': 'c' * 64}},
+    ],
+    '0.2.0': [{'filename': 'r-0.2.0.tar.gz', 'url': 'https://files/r-0.2.0.tar.gz', 'size': 1,
+               'digests': {'sha256': 'd' * 64}}],
+}}
+
+
+@pytest.fixture
+def remote(monkeypatch):
+    from mkdocs_sumi import releases
+
+    calls = []
+
+    def get_json(url):
+        calls.append(url)
+        if url.startswith('https://api.github.com/repos/o/r/releases'):
+            return GITHUB_RELEASES
+        if url == 'https://pypi.org/pypi/r/json':
+            return PYPI
+        raise OSError('offline')
+
+    monkeypatch.setattr(releases, '_get_json', get_json)
+    monkeypatch.setattr(releases, '_cache', {})
+    return calls
+
+
+def test_releases_from_github_and_pypi(tmp_path, remote):
+    out = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'releases.md': """
+            ---
+            template: releases.html
+            releases:
+              github: o/r
+              pypi: r
+              file: releases.yml
+            ---
+            # Releases
+        """,
+        'releases.yml': """
+            - version: 0.1.1
+              summary: Hand-written summary.
+            - version: 0.0.9
+              date: 2026-10-01
+              notes: Only in the file.
+        """,
+    }, BASIC)
+    html = (out / 'releases' / 'index.html').read_text(encoding='utf-8')
+    # Drafts are left out; GitHub's order, then file-only versions by date.
+    assert 'v0-3-0' not in html
+    assert html.index('id="v0-2-0"') < html.index('id="v0-1-1"') < html.index('id="v0-0-9"')
+    # The first paragraph is the summary; comments go; headings move down; refs and users link.
+    assert '<p class="sumi-release-summary">Languages and comments.</p>' in html
+    assert 'Optional: add a release summary' not in html
+    assert '<h4>🚀 New features</h4>' in html
+    assert '<a href="https://github.com/octo-cat">@octo-cat</a>' in html
+    assert '<a href="https://github.com/o/r/issues/22">#22</a>' in html
+    assert '<a href="https://github.com/o/r/compare/v0.1.0...v0.2.0">' in html
+    # GitHub assets win over PyPI's; PyPI fills in the rest, wheels first.
+    assert 'app.zip' in html and 'data-copy="' + 'a' * 64 + '"' in html and '2.5 MB' in html
+    assert 'r-0.2.0.tar.gz' not in html
+    assert html.index('r-0.1.1-py3-none-any.whl') < html.index('r-0.1.1.tar.gz')
+    assert '1.2 KB' in html
+    # The file's fields win; a GitHub name that isn't the tag is the title; pre-releases are marked.
+    assert 'Hand-written summary.' in html
+    assert 'Small fixes' in html
+    assert 'sumi-release--prerelease' in html
+    assert '<a href="https://github.com/o/r/pull/5">https://github.com/o/r/pull/5</a>' in html
+
+
+def test_releases_sources_are_read_once(tmp_path, remote):
+    page = '---\ntemplate: releases.html\nreleases:\n  github: o/r\n---\n# Releases\n'
+    _site(tmp_path, {'index.md': '# Home\n', 'a.md': page, 'b.md': page}, BASIC)
+    assert len(remote) == 1
+
+
+def test_releases_unreachable_source_warns_and_keeps_the_file(tmp_path, remote, caplog):
+    out = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'releases.md': '---\ntemplate: releases.html\nreleases:\n  github: x/offline\n  file: releases.yml\n---\n# R\n',
+        'releases.yml': '- version: 1.0.0\n  notes: From the file.\n- version: 0.9.0\n',
+    }, BASIC)
+    assert "couldn't read the releases of x/offline from GitHub: offline" in caplog.text
+    html = (out / 'releases' / 'index.html').read_text(encoding='utf-8')
+    assert html.index('id="v1-0-0"') < html.index('id="v0-9-0"')
+    assert 'From the file.' in html
+
+
+def test_releases_unknown_source_is_a_clear_error(tmp_path, caplog):
+    with pytest.raises(Abort):
+        _site(tmp_path, {'index.md': '---\ntemplate: releases.html\nreleases:\n  gitlab: o/r\n---\n# R\n'}, BASIC)
+    assert "Unknown 'releases' keys in 'index.md': gitlab" in caplog.text

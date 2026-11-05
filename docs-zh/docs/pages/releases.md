@@ -1,5 +1,5 @@
 ---
-description: 由 YAML 生成的下载与发布说明页面，带校验和。
+description: 由 YAML、GitHub Releases 或 PyPI 生成的下载与发布说明页面，带校验和。
 ---
 
 # 发布与下载
@@ -17,7 +17,7 @@ releases: releases.yml
 下载最新版本，或者浏览历史版本。
 ```
 
-`releases` 可以是 front matter 中的一个列表，也可以是一个 YAML 文件的路径（相对于 `docs/`）。
+`releases` 可以是 front matter 中的一个列表、一个 YAML 文件的路径（相对于 `docs/`），也可以是[要读取的来源](#remote)，比如 GitHub Releases。
 
 ```yaml title="docs/releases.yml"
 - version: 0.2.0
@@ -50,3 +50,28 @@ releases: releases.yml
 {.fields}
 
 页面自身的 Markdown 显示在列表上方，可以在这里写安装说明或支持策略。
+
+## 来自 GitHub Releases 和 PyPI {#remote}
+
+不必手写每个版本，可以让页面在构建站点时自己读取：
+
+```yaml title="docs/releases.md"
+---
+template: releases.html
+releases:
+  github: owner/repo     # 版本、日期和说明来自 GitHub Releases
+  pypi: package-name     # 下载文件，带大小和 SHA-256 校验和
+  file: releases.yml     # 可选：手写的字段优先
+---
+```
+
+| 键 | 说明 |
+| --- | --- |
+| `github` | 仓库所有已发布的版本，从新到旧。草稿不会列出，标为预发布的版本状态为 `prerelease`。发布说明的第一段成为 `summary`，其余部分成为 `notes`；标题降两级，`#123` 和 `@user` 变成链接。附加在 release 上的文件成为 `assets`。 |
+| `pypi` | 每个版本在 PyPI 上的文件，用于自身没有 `assets` 的版本。 |
+| `file` | 按 `version` 匹配的条目会覆盖对应字段，可以为某个版本写更好的概要或说明。只在文件里出现的版本按 `date` 排入列表。 |
+{.fields}
+
+在 CI 中构建时设置 `GITHUB_TOKEN`（或 `GH_TOKEN`），以免触发 GitHub 未认证时每小时 60 次请求的限制。每个来源在一次构建进程中只读取一次，所以 `mkdocs serve` 不会在每次修改时重新读取。某个来源无法访问时，构建会给出警告，并显示已有的内容。
+
+想在发布新版本时刷新页面，就在发布流程里重新构建站点。本站的 [`release.yml`](https://github.com/mkdocs-ng/mkdocs-sumi/blob/main/.github/workflows/release.yml) 会在包上传到 PyPI 后启动文档构建。

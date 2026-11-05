@@ -541,7 +541,16 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         return env
 
     def _releases(self, page: Page, config: MkDocsConfig) -> list[dict[str, Any]]:
+        from mkdocs_sumi import releases as sources
+
         data = page.meta.get('releases')
+        remote: dict[str, Any] = {}
+        if isinstance(data, dict):
+            unknown = set(data) - {'file', 'github', 'pypi'}
+            if unknown:
+                raise PluginError(f"Unknown 'releases' keys in '{page.file.src_uri}': {', '.join(sorted(unknown))}. "
+                                  "Use 'file', 'github' or 'pypi'.")
+            remote, data = data, data.get('file')
         if isinstance(data, str):
             path = _source_path(self.files, config, data)
             if not os.path.isfile(path):
@@ -556,6 +565,14 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         for n, rel in enumerate(data or []):
             if not isinstance(rel, dict):
                 raise PluginError(f"Release {n + 1} of '{page.file.src_uri}' must be a mapping, got: {rel!r}")
+        data = list(data or [])
+        if remote.get('github'):
+            data = sources.merge(sources.github_releases(str(remote['github'])), data)
+        if remote.get('pypi'):
+            files = sources.pypi_assets(str(remote['pypi']))
+            data = [rel if rel.get('assets') or str(rel.get('version')) not in files
+                    else {**rel, 'assets': files[str(rel.get('version'))]} for rel in data]
+        for n, rel in enumerate(data):
             rel = dict(rel)
             if rel.get('notes'):
                 rel['notes_html'] = Markup(md_lib.markdown(str(rel['notes']), extensions=['fenced_code', 'tables']))

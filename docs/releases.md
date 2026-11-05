@@ -2,7 +2,10 @@
 template: releases.html
 title: Releases
 description: Sumi versions, release notes and downloads.
-releases: releases.yml
+releases:
+  github: mkdocs-ng/mkdocs-sumi
+  pypi: mkdocs-sumi
+  file: releases.yml
 hide: [toc]
 ---
 
