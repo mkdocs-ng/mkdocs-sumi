@@ -215,3 +215,76 @@ def test_bilingual_view_scrolls_both_languages_together(base_url, page):
     sync_api.expect(dialog).to_be_hidden()
     assert page.url.endswith('/docs/write/code/')
     assert not page.errors
+
+
+def test_wide_table_opens_full_screen(base_url, page):
+    url, _ = base_url
+    page.goto(url + 'docs/write/tables/', wait_until='networkidle')
+    # The table marked {.expand} gets the button; tables that fit do not.
+    buttons = page.get_by_role('button', name='Expand table')
+    sync_api.expect(buttons).to_have_count(1)
+    buttons.click()
+    view = page.locator('.sumi-table-view')
+    sync_api.expect(view).to_be_visible()
+    sync_api.expect(view.locator('table th').first).to_have_text('Option')
+    page.keyboard.press('Escape')
+    sync_api.expect(view).to_be_hidden()
+    assert not page.errors
+
+
+def test_diagram_view_pans_and_zooms(base_url, page):
+    url, _ = base_url
+    page.goto(url + 'docs/write/diagrams/', wait_until='networkidle')
+    fig = page.locator('.sumi-diagram').first
+    sync_api.expect(fig.locator('svg').first).to_be_visible()
+    fig.hover()
+    fig.get_by_role('button', name='Expand diagram').click()
+    view = page.locator('.sumi-diagram-view')
+    sync_api.expect(view).to_be_visible()
+    canvas = view.locator('.sumi-diagram-view-canvas')
+
+    def scale():
+        return canvas.evaluate('c => new DOMMatrix(getComputedStyle(c).transform).a')
+
+    view.get_by_role('button', name='Zoom in').click()
+    assert abs(scale() - 1.5) < 0.01
+    page.keyboard.press('-')
+    assert abs(scale() - 1) < 0.01
+    box = view.locator('.sumi-diagram-view-body').bounding_box()
+    page.mouse.move(box['x'] + 200, box['y'] + 200)
+    page.mouse.wheel(0, -300)
+    assert scale() > 1.2
+    before = canvas.evaluate('c => new DOMMatrix(getComputedStyle(c).transform).e')
+    page.mouse.down()
+    page.mouse.move(box['x'] + 260, box['y'] + 200, steps=4)
+    page.mouse.up()
+    after = canvas.evaluate('c => new DOMMatrix(getComputedStyle(c).transform).e')
+    assert abs(after - before - 60) < 2
+    page.keyboard.press('0')
+    assert abs(scale() - 1) < 0.01
+    assert not page.errors
+
+
+def test_feedback_widget_sends_the_rating(tmp_path, page):
+    docs = tmp_path / 'docs'
+    docs.mkdir()
+    (docs / 'index.md').write_text('# Home\n\nText.\n', encoding='utf-8')
+    (tmp_path / 'mkdocs.yml').write_text(
+        'site_name: Test\ntheme:\n  name: sumi\nplugins: [sumi]\nextra:\n  analytics:\n    feedback:\n'
+        '      title: Useful?\n      ratings:\n        - {icon: thumbs-up, name: "Yes", data: 1, note: "Thanks, <b>{title}</b>"}\n'
+        '        - {icon: thumbs-down, name: "No", data: 0, note: Sorry}\n', encoding='utf-8')
+    build.build(load_config(str(tmp_path / 'mkdocs.yml')))
+    handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(tmp_path / 'site'))
+    handler.log_message = lambda *a: None
+    server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    page.goto(f'http://127.0.0.1:{server.server_address[1]}/', wait_until='networkidle')
+    page.evaluate("document.addEventListener('sumi:feedback', e => { window.rated = e.detail.value; })")
+    form = page.locator('.sumi-feedback')
+    sync_api.expect(form).to_be_visible()
+    form.get_by_role('button', name='Yes').click()
+    assert page.evaluate('window.rated') == 1
+    sync_api.expect(form.locator('.sumi-feedback-note b')).to_have_text('Test')
+    sync_api.expect(form.get_by_role('button', name='No')).to_be_disabled()
+    assert not page.errors
+    server.shutdown()

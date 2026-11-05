@@ -39,6 +39,8 @@
       cmd: '<path d="m9 18 6-6-6-6"/>',
       copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
       check: '<path d="M20 6 9 17l-5-5"/>',
+      x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+      'maximize-2': '<path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/>',
       link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'
     };
     return '<svg class="sumi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (paths[name] || paths.cmd) + '</svg>';
@@ -439,7 +441,11 @@
       if (!svgEl) return;
       var clone = svgEl.cloneNode(true);
       clone.removeAttribute('style'); clone.removeAttribute('width'); clone.removeAttribute('height');
-      box.appendChild(clone);
+      var canvas = doc.createElement('div');
+      canvas.className = 'sumi-diagram-view-canvas';
+      canvas.appendChild(clone);
+      box.appendChild(canvas);
+      resetZoom();
       view.showModal();
     });
     btn(t('diagram_source'), svg('copy'), function () {
@@ -457,9 +463,84 @@
     fig.appendChild(bar);
   }
   var diagramView = $('.sumi-diagram-view');
+  var resetZoom = function () {};
   if (diagramView) {
     diagramView.addEventListener('click', function (e) {
       if (e.target === diagramView || e.target.closest('[data-close]')) diagramView.close();
+    });
+    // Pan and zoom: drag, wheel, pinch, double-click, the buttons, or + - 0.
+    var viewBody = $('.sumi-diagram-view-body', diagramView);
+    var zoom = { x: 0, y: 0, s: 1 };
+    var applyZoom = function () {
+      var c = $('.sumi-diagram-view-canvas', diagramView);
+      if (c) c.style.transform = 'translate(' + zoom.x + 'px, ' + zoom.y + 'px) scale(' + zoom.s + ')';
+    };
+    var zoomAt = function (px, py, f) {
+      var s = Math.min(8, Math.max(0.5, zoom.s * f));
+      zoom.x = px - (px - zoom.x) * s / zoom.s;
+      zoom.y = py - (py - zoom.y) * s / zoom.s;
+      zoom.s = s;
+      applyZoom();
+    };
+    var zoomCenter = function (f) { zoomAt(viewBody.clientWidth / 2, viewBody.clientHeight / 2, f); };
+    resetZoom = function () { zoom = { x: 0, y: 0, s: 1 }; applyZoom(); };
+    var local = function (cx, cy) { var r = viewBody.getBoundingClientRect(); return [cx - r.left, cy - r.top]; };
+    viewBody.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      var p = local(e.clientX, e.clientY);
+      zoomAt(p[0], p[1], Math.exp(-e.deltaY * (e.deltaMode ? 0.05 : 0.002)));
+    }, { passive: false });
+    var pts = {}, pinch = null;
+    viewBody.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      viewBody.setPointerCapture(e.pointerId);
+      pts[e.pointerId] = [e.clientX, e.clientY];
+      pinch = null;
+      viewBody.classList.add('is-dragging');
+    });
+    viewBody.addEventListener('pointermove', function (e) {
+      var prev = pts[e.pointerId];
+      if (!prev) return;
+      pts[e.pointerId] = [e.clientX, e.clientY];
+      var ids = Object.keys(pts);
+      if (ids.length === 1) {
+        zoom.x += e.clientX - prev[0]; zoom.y += e.clientY - prev[1];
+        applyZoom();
+        return;
+      }
+      var a = pts[ids[0]], b = pts[ids[1]];
+      var dist = Math.hypot(a[0] - b[0], a[1] - b[1]);
+      var mid = local((a[0] + b[0]) / 2, (a[1] + b[1]) / 2);
+      if (pinch && pinch.d) {
+        zoom.x += mid[0] - pinch.m[0]; zoom.y += mid[1] - pinch.m[1];
+        zoomAt(mid[0], mid[1], dist / pinch.d);
+      }
+      pinch = { d: dist, m: mid };
+    });
+    var lift = function (e) {
+      var left = {};
+      Object.keys(pts).forEach(function (k) { if (String(k) !== String(e.pointerId)) left[k] = pts[k]; });
+      pts = left;
+      pinch = null;
+      if (!Object.keys(pts).length) viewBody.classList.toggle('is-dragging', false);
+    };
+    viewBody.addEventListener('pointerup', lift);
+    viewBody.addEventListener('pointercancel', lift);
+    viewBody.addEventListener('dblclick', function (e) { var p = local(e.clientX, e.clientY); zoomAt(p[0], p[1], 2); });
+    $$('[data-zoom]', diagramView).forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (b.dataset.zoom === 'in') zoomCenter(1.5);
+        else if (b.dataset.zoom === 'out') zoomCenter(1 / 1.5);
+        else resetZoom();
+      });
+    });
+    diagramView.addEventListener('keydown', function (e) {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key === '+' || e.key === '=') zoomCenter(1.5);
+      else if (e.key === '-' || e.key === '_') zoomCenter(1 / 1.5);
+      else if (e.key === '0') resetZoom();
+      else return;
+      e.preventDefault();
     });
   }
 
@@ -903,6 +984,98 @@
       else if (cmp.open) cmp.close();
     });
     if (history.state && history.state.sumiCompare) openCompare(true);
+  }
+
+  /* ── Page feedback ─────────────────────────────────────────────────── */
+  // Sent to whichever analytics is on the page, and as a `sumi:feedback` event.
+  $$('.sumi-feedback').forEach(function (form) {
+    if (inPane) return;
+    form.hidden = false;
+    var note = $('.sumi-feedback-note', form);
+    $$('.sumi-feedback-btn', form).forEach(function (b) {
+      b.addEventListener('click', function () {
+        var value = isNaN(+b.dataset.value) ? b.dataset.value : +b.dataset.value;
+        var page = location.pathname;
+        try {
+          if (typeof window.gtag === 'function') window.gtag('event', 'feedback', { event_category: 'feedback', event_label: page, value: value });
+          if (typeof window.plausible === 'function') window.plausible('Feedback', { props: { page: page, rating: String(value) } });
+          if (window.umami && typeof window.umami.track === 'function') window.umami.track('feedback', { page: page, rating: value });
+        } catch (err) {}
+        doc.dispatchEvent(new CustomEvent('sumi:feedback', { detail: { page: page, value: value } }));
+        $$('.sumi-feedback-btn', form).forEach(function (x) { x.disabled = true; x.setAttribute('aria-pressed', String(x === b)); });
+        // The note is the site author's HTML; {title} and {url} are filled in, as in Material.
+        note.innerHTML = (b.dataset.note || '')
+          .replace(/\{title\}/g, encodeURIComponent(doc.title))
+          .replace(/\{url\}/g, encodeURIComponent(location.href));
+        form.classList.add('is-done');
+      });
+    });
+  });
+
+  /* ── Comments (Giscus, lazy) ───────────────────────────────────────── */
+  var giscus = inPane ? null : $('.sumi-giscus');
+  if (giscus) {
+    var giscusTheme = function () { return root.dataset.theme === 'dark' ? giscus.dataset.themeDark : giscus.dataset.themeLight; };
+    whenNear([giscus], function () {
+      var s = doc.createElement('script');
+      s.src = 'https://giscus.app/client.js';
+      s.async = true; s.crossOrigin = 'anonymous';
+      ['repo', 'repoId', 'category', 'categoryId', 'mapping', 'strict', 'reactionsEnabled', 'inputPosition', 'lang'].forEach(function (k) {
+        if (giscus.dataset[k]) s.dataset[k] = giscus.dataset[k];
+      });
+      s.dataset.emitMetadata = '0';
+      s.dataset.loading = 'lazy';
+      s.dataset.theme = giscusTheme();
+      giscus.appendChild(s);
+    });
+    listeners.push(function () {
+      var f = $('iframe.giscus-frame', giscus);
+      if (f && f.contentWindow) f.contentWindow.postMessage({ giscus: { setConfig: { theme: giscusTheme() } } }, 'https://giscus.app');
+    });
+  }
+
+  /* ── Table reader ──────────────────────────────────────────────────── */
+  // A table wider than the column, or one marked {.expand}, can open full screen.
+  var tableView = null;
+  var openTable = function (wrap) {
+    if (!tableView) {
+      tableView = doc.createElement('dialog');
+      tableView.className = 'sumi-table-view';
+      tableView.setAttribute('aria-label', t('table_expand'));
+      tableView.innerHTML = '<button type="button" class="sumi-icon-btn sumi-table-view-close" data-close aria-label="' + t('close') + '" title="' + t('close') + '">' + svg('x') + '</button><div class="sumi-table-view-body sumi-prose"></div>';
+      doc.body.appendChild(tableView);
+      tableView.addEventListener('click', function (e) {
+        if (e.target === tableView || e.target.closest('[data-close]')) tableView.close();
+      });
+    }
+    var body = $('.sumi-table-view-body', tableView);
+    body.innerHTML = '';
+    var copy = wrap.cloneNode(true);
+    copy.classList.remove('sumi-table--wide');
+    body.appendChild(copy);
+    tableView.showModal();
+  };
+  var tableTools = function (wrap) {
+    var next = wrap.nextElementSibling;
+    var has = next && next.classList.contains('sumi-table-tools');
+    var want = wrap.classList.contains('sumi-table--expand') || wrap.scrollWidth > wrap.clientWidth + 2;
+    if (has || !want) return;
+    var bar = doc.createElement('div');
+    bar.className = 'sumi-table-tools';
+    var b = doc.createElement('button');
+    b.type = 'button'; b.className = 'sumi-table-expand';
+    b.innerHTML = svg('maximize-2') + '<span>' + t('table_expand') + '</span>';
+    b.addEventListener('click', function () { openTable(wrap); });
+    bar.appendChild(b);
+    wrap.parentNode.insertBefore(bar, wrap.nextSibling);
+  };
+  var tables = inPane ? [] : $$('.sumi-content .sumi-table');
+  if (tables.length) {
+    tables.forEach(tableTools);
+    if ('ResizeObserver' in window) {
+      var tro = new ResizeObserver(function (entries) { entries.forEach(function (en) { tableTools(en.target); }); });
+      tables.forEach(function (w) { tro.observe(w); });
+    }
   }
 
   /* ── Help dialog ───────────────────────────────────────────────────── */

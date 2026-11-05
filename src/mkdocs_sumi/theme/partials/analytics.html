@@ -12,4 +12,26 @@
     document.head.appendChild(s);
   }
 </script>
+{%- elif a.provider == 'plausible' %}
+<script>
+  if (window.name !== 'sumi-pane') {
+    window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments); };
+    var s = document.createElement('script'); s.defer = true;
+    s.dataset.domain = {{ (a.domain or a.property or '') | tojson }} || location.hostname;
+    s.src = {{ (a.src or 'https://plausible.io/js/script.js') | tojson }};
+    document.head.appendChild(s);
+  }
+</script>
+{%- elif a.provider == 'umami' and (a.website_id or a.property) %}
+<script>
+  if (window.name !== 'sumi-pane') {
+    var s = document.createElement('script'); s.defer = true;
+    s.dataset.websiteId = {{ (a.website_id or a.property) | tojson }};
+    {%- if a.domains %}
+    s.dataset.domains = {{ (a.domains if a.domains is string else a.domains | join(',')) | tojson }};
+    {%- endif %}
+    s.src = {{ (a.src or 'https://cloud.umami.is/script.js') | tojson }};
+    document.head.appendChild(s);
+  }
+</script>
 {%- endif %}

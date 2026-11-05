@@ -581,3 +581,99 @@ def test_bilingual_view_can_be_turned_off(tmp_path):
     """
     out = _site(tmp_path, {'index.md': '# Home\n', 'index.zh.md': '# 首页\n'}, config)
     assert 'data-sumi-compare' not in (out / 'index.html').read_text(encoding='utf-8')
+
+
+def test_feedback_widget(tmp_path):
+    config = BASIC.replace('      name: sumi\n', '      name: sumi\n      feedback: true\n')
+    out = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'quiet.md': '---\nhide: [feedback]\n---\n# Quiet\n',
+    }, config)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert '<form class="sumi-feedback" data-pagefind-ignore hidden>' in html
+    assert 'Was this page helpful?' in html
+    assert html.count('class="sumi-feedback-btn"') == 2
+    assert 'sumi-feedback' not in (out / 'quiet' / 'index.html').read_text(encoding='utf-8')
+
+
+def test_feedback_reads_material_settings(tmp_path):
+    config = BASIC + """
+    extra:
+      analytics:
+        provider: google
+        property: G-TEST
+        feedback:
+          title: Useful?
+          ratings:
+            - icon: material/emoticon-happy-outline
+              name: Helpful
+              data: 1
+              note: 'Thanks! <a href="https://example.com/?t={title}">Tell us more</a>'
+            - icon: material/emoticon-sad-outline
+              name: Not helpful
+              data: 0
+              note: Thanks for telling us.
+    """
+    out = _site(tmp_path, {'index.md': '# Home\n'}, config)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert 'Useful?' in html and 'Not helpful' in html
+    assert 'data-note="Thanks! &lt;a href=&#34;https://example.com/?t={title}&#34;&gt;Tell us more&lt;/a&gt;"' in html
+    # Material's emoticon icons become Lucide thumbs.
+    assert 'M15 5.88 14 10h5.83' in html and 'M9 18.12 10 14H4.17' in html
+    assert "gtag('config', \"G-TEST\")" in html
+
+
+def test_giscus_comments(tmp_path):
+    config = BASIC.replace('      name: sumi\n', """      name: sumi
+      locale: zh
+      comments:
+        provider: giscus
+        repo: acme/docs
+        repo_id: R_1
+        category: Comments
+        category_id: DIC_1
+""")
+    out = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'off.md': '---\ncomments: false\n---\n# Off\n',
+    }, config)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert 'class="sumi-giscus" data-repo="acme/docs" data-repo-id="R_1"' in html
+    assert 'data-lang="zh-CN"' in html
+    assert 'id="__comments"' in html
+    assert 'sumi-giscus' not in (out / 'off' / 'index.html').read_text(encoding='utf-8')
+
+
+def test_giscus_comments_opt_in(tmp_path):
+    config = BASIC.replace('      name: sumi\n', """      name: sumi
+      comments:
+        repo: acme/docs
+        opt_in: true
+""")
+    out = _site(tmp_path, {'index.md': '# Home\n', 'on.md': '---\ncomments: true\n---\n# On\n'}, config)
+    assert 'sumi-giscus' not in (out / 'index.html').read_text(encoding='utf-8')
+    assert 'sumi-giscus' in (out / 'on' / 'index.html').read_text(encoding='utf-8')
+
+
+@pytest.mark.parametrize(('analytics', 'expected'), [
+    ('provider: plausible\n        domain: docs.example.com', ['"docs.example.com"', 'https://plausible.io/js/script.js']),
+    ('provider: umami\n        website_id: abc-123\n        src: https://stats.example.com/script.js',
+     ['"abc-123"', '"https://stats.example.com/script.js"']),
+])
+def test_privacy_friendly_analytics(tmp_path, analytics, expected):
+    config = BASIC + f"""
+    extra:
+      analytics:
+        {analytics}
+    """
+    html = (_site(tmp_path, {'index.md': '# Home\n'}, config) / 'index.html').read_text(encoding='utf-8')
+    for text in expected:
+        assert text in html
+    assert "window.name !== 'sumi-pane'" in html
+    assert 'googletagmanager' not in html
+
+
+def test_expandable_table(tmp_path):
+    out = _site(tmp_path, {'index.md': '# Home\n\n| a | b |\n| --- | --- |\n| 1 | 2 |\n{.expand .compact}\n'}, BASIC)
+    html = (out / 'index.html').read_text(encoding='utf-8')
+    assert 'class="sumi-table sumi-table--compact sumi-table--expand"' in html

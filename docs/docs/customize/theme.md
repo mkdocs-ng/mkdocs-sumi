@@ -30,9 +30,11 @@ theme:
 | `announcement` | string | | HTML for a dismissible bar above the header. A new message reappears for readers who dismissed an older one. |
 | `navigation_tabs` | boolean | `true` | Show top-level sections as tabs in the header. When `false`, the whole navigation is in the sidebar. |
 | `toc_depth` | integer | `3` | The deepest heading level in the page table of contents. |
-| `hide` | list | `[]` | Parts to hide on every page: `toc`, `sidebar`, `breadcrumbs`, `actions`, `pager`, `footer`. |
+| `hide` | list | `[]` | Parts to hide on every page: `toc`, `sidebar`, `breadcrumbs`, `actions`, `pager`, `footer`, `feedback`, `comments`. |
 | `version_provider` | string | | `mike` to show a version menu. See [Navigation](navigation.md#versions). |
 | `bilingual_view` | boolean | `true` | On a multi-language site, offer a side-by-side view of a page and its translation. See [Languages](i18n.md#bilingual-view). |
+| `comments` | mapping | | Giscus comments under docs pages and blog posts. See [Comments](../run/comments.md). |
+| `feedback` | boolean or mapping | | A "Was this page helpful?" widget. Material's `extra.analytics.feedback` works too. See [Analytics and feedback](../run/analytics.md). |
 | `repo_icon` | string | | Override the repository icon, e.g. `brand-gitlab`. Detected from `repo_url` by default. |
 | `keyboard` | boolean | `true` | Enable single-key shortcuts. <kbd>⌘</kbd> <kbd>K</kbd> always works. |
 | `credit` | boolean | `true` | Show "Built with MkDocs and Sumi" in the footer. |
@@ -61,6 +63,7 @@ Front matter on a page can change its layout:
 | --- | --- |
 | `hide` | Like the theme option, for one page: `hide: [toc, pager]`. `navigation` is accepted as an alias for `sidebar`. |
 | `layout` | `wide` removes both sidebars for a full-width page. |
+| `comments` | `false` turns comments off on the page; `true` turns them on when `comments.opt_in` is set. |
 | `template` | `landing.html`, `blog.html` or `releases.html`. See [Pages](../pages/landing.md). |
 | `description` | Used for the `<meta name="description">`, link previews, cards and the blog index. |
 {.fields}

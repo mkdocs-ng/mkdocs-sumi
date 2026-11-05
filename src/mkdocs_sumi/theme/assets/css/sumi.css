@@ -535,6 +535,23 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 .sumi-table--compact :is(th, td) { padding: 6px 10px; font-size: 13.5px; }
 .sumi-table--striped tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--sumi-bg-soft) 60%, transparent); }
 .sumi-table--center :is(th, td) { text-align: center; }
+.sumi-table-tools { display: flex; justify-content: flex-end; margin: -1.1em 0 1.4em; }
+.sumi-table-expand {
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border: 0; border-radius: 6px;
+  background: none; color: var(--sumi-fg-3); font: inherit; font-size: 12.5px; cursor: pointer;
+}
+.sumi-table-expand:hover { color: var(--sumi-accent); background: var(--sumi-bg-soft); }
+.sumi-table-expand .sumi-icon { width: 14px; height: 14px; }
+.sumi-table-view {
+  width: 96vw; max-width: 96vw; height: 92vh; max-height: 92vh; padding: 0; border: 1px solid var(--sumi-line);
+  border-radius: 12px; background: var(--sumi-bg); color: var(--sumi-fg); box-shadow: var(--sumi-shadow-lg);
+}
+.sumi-table-view::backdrop { background: rgba(15, 14, 12, .42); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+.sumi-table-view-body { height: 100%; padding: 52px 20px 20px; overflow: auto; }
+.sumi-table-view-body .sumi-table { width: max-content; min-width: 100%; max-width: none; margin: 0; overflow: visible; }
+.sumi-table-view-body .sumi-table th { position: sticky; top: -52px; z-index: 1; }
+.sumi-table-view-close { position: absolute; top: 10px; inset-inline-end: 10px; z-index: 2; }
+@media print { .sumi-table-tools { display: none; } }
 /* Wide tables reach into the table-of-contents column, never past it. */
 .sumi-table--wide { width: min(100vw - 40px, calc(var(--sumi-content-w) + var(--sumi-rail-w) + 48px), calc(100% + var(--sumi-rail-w) + 48px)); }
 .sumi-shell--no-toc .sumi-table--wide { width: auto; }
@@ -745,8 +762,15 @@ code.doc-symbol.doc-symbol-type_parameter::after { content: "tparam"; }
   border-radius: 12px; background: var(--sumi-bg-elev); color: var(--sumi-fg); box-shadow: var(--sumi-shadow-lg);
 }
 .sumi-diagram-view::backdrop { background: rgba(15, 14, 12, .42); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
-.sumi-diagram-view-body { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 48px 24px 24px; overflow: auto; }
-.sumi-diagram-view-body svg { width: 100%; height: 100%; max-width: none; }
+.sumi-diagram-view-body { position: relative; width: 100%; height: 100%; overflow: hidden; touch-action: none; cursor: grab; }
+.sumi-diagram-view-body.is-dragging { cursor: grabbing; }
+.sumi-diagram-view-canvas { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 48px 24px 64px; transform-origin: 0 0; }
+.sumi-diagram-view-canvas svg { width: 100%; height: 100%; max-width: none; }
+.sumi-diagram-view-zoom {
+  position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; padding: 3px;
+  border: 1px solid var(--sumi-line); border-radius: 999px; background: var(--sumi-bg-elev); box-shadow: var(--sumi-shadow-md);
+}
+.sumi-diagram-view-zoom .sumi-icon-btn { border-radius: 999px; }
 .sumi-diagram-view-close { position: absolute; top: 10px; inset-inline-end: 10px; z-index: 1; }
 @media print { .sumi-diagram-tools { display: none; } }
 .sumi-math.math-display { margin: 1.4em 0; overflow-x: auto; overflow-y: hidden; text-align: center; font-family: var(--sumi-font-mono); color: var(--sumi-fg-2); }
@@ -1345,3 +1369,25 @@ a.sumi-sidebar-title.is-current { color: var(--sumi-accent-ink); }
   .sumi-article-top, .sumi-toc-inline, .sumi-article-footer, .sumi-footer, .sumi-comments, .sumi-feedback) { display: none !important; }
 .sumi-pane .sumi-shell { display: block; max-width: none; padding: 28px clamp(16px, 4vw, 40px) 50vh; }
 .sumi-pane .sumi-main, .sumi-pane .sumi-article { max-width: var(--sumi-content-w); margin: 0 auto; padding: 0; }
+
+/* ── Page feedback and comments ───────────────────────────────────────── */
+.sumi-feedback { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 48px 0 0; padding: 16px 18px; border: 1px solid var(--sumi-line); border-radius: var(--sumi-radius); background: var(--sumi-bg-soft); }
+.sumi-feedback[hidden] { display: none; }
+.sumi-feedback-title { margin: 0; font-weight: 600; color: var(--sumi-fg); }
+.sumi-feedback-buttons { display: flex; gap: 8px; }
+.sumi-feedback-btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border: 1px solid var(--sumi-line); border-radius: 999px;
+  background: var(--sumi-bg-elev); color: var(--sumi-fg-2); font: inherit; font-size: 13.5px; cursor: pointer;
+}
+.sumi-feedback-btn:hover:not(:disabled) { border-color: var(--sumi-accent); color: var(--sumi-accent); }
+.sumi-feedback-btn:disabled { cursor: default; opacity: .55; }
+.sumi-feedback-btn[aria-pressed="true"] { opacity: 1; border-color: var(--sumi-accent); color: var(--sumi-accent); }
+.sumi-feedback-btn .sumi-icon { width: 15px; height: 15px; }
+.sumi-feedback-note { flex-basis: 100%; margin: 0; color: var(--sumi-fg-2); font-size: 14px; }
+.sumi-feedback-note:empty { display: none; }
+.sumi-feedback + .sumi-article-footer { margin-top: 24px; }
+.sumi-comments { margin: 32px 0 8px; }
+.sumi-comments-title { display: flex; align-items: center; gap: 8px; margin: 0 0 16px; font-size: 18px; }
+.sumi-comments-title .sumi-icon { width: 18px; height: 18px; color: var(--sumi-fg-3); }
+.sumi-giscus { min-height: 150px; }
+@media print { .sumi-feedback, .sumi-comments { display: none; } }

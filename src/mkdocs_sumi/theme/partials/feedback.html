@@ -1,0 +1,12 @@
+{#- "Was this page helpful?": see the plugin's _feedback(). The note may hold HTML from mkdocs.yml. -#}
+{%- if sumi.feedback %}
+<form class="sumi-feedback" data-pagefind-ignore hidden>
+  <p class="sumi-feedback-title" id="sumi-feedback-title">{{ sumi.feedback.title | e }}</p>
+  <div class="sumi-feedback-buttons" role="group" aria-labelledby="sumi-feedback-title">
+    {%- for r in sumi.feedback.ratings %}
+    <button type="button" class="sumi-feedback-btn" data-value="{{ r.data | e }}" data-note="{{ r.note | e }}"{% if r.name %} title="{{ r.name | e }}"{% endif %}>{{ icon(r.icon) }}{% if r.name %}<span>{{ r.name | e }}</span>{% endif %}</button>
+    {%- endfor %}
+  </div>
+  <p class="sumi-feedback-note" role="status"></p>
+</form>
+{%- endif %}

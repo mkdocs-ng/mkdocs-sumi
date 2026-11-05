@@ -26,7 +26,7 @@ flowchart LR
 
 Diagrams follow the colour scheme: switch to dark mode and they are redrawn.
 
-Hover a diagram (or tap it on a phone) for three buttons: open it full screen, copy its Mermaid source, and download it as an SVG file. Until a diagram is drawn, and in a browser without JavaScript, readers see its source text.
+Hover a diagram (or tap it on a phone) for three buttons: open it full screen, copy its Mermaid source, and download it as an SVG file. Full screen, a large diagram can be explored: drag to pan, scroll or pinch to zoom, double-click to zoom in, and press <kbd>+</kbd>, <kbd>-</kbd> or <kbd>0</kbd> to zoom in, out or back to fit. Until a diagram is drawn, and in a browser without JavaScript, readers see its source text.
 
 ## Sequence diagrams
 

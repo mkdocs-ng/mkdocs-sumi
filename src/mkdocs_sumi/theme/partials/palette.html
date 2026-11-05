@@ -33,6 +33,11 @@
 <dialog class="sumi-diagram-view" aria-label="{{ t('diagram_expand') }}">
   <button type="button" class="sumi-icon-btn sumi-diagram-view-close" data-close aria-label="{{ t('close') }}" title="{{ t('close') }}"><svg class="sumi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
   <div class="sumi-diagram-view-body"></div>
+  <div class="sumi-diagram-view-zoom" role="group" aria-label="{{ t('zoom_reset') }}">
+    <button type="button" class="sumi-icon-btn" data-zoom="out" aria-label="{{ t('zoom_out') }}" title="{{ t('zoom_out') }} (−)">{{ icon('zoom-out') }}</button>
+    <button type="button" class="sumi-icon-btn" data-zoom="reset" aria-label="{{ t('zoom_reset') }}" title="{{ t('zoom_reset') }} (0)">{{ icon('scan') }}</button>
+    <button type="button" class="sumi-icon-btn" data-zoom="in" aria-label="{{ t('zoom_in') }}" title="{{ t('zoom_in') }} (+)">{{ icon('zoom-in') }}</button>
+  </div>
 </dialog>
 {%- endif %}
 {%- if sumi.translations %}

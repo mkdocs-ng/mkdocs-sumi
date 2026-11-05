@@ -38,7 +38,7 @@ from mkdocs.structure.nav import Navigation, Section
 from mkdocs.structure.pages import Page
 
 from mkdocs_sumi.i18n import STRINGS, format_date, is_rtl, og_locale, translator
-from mkdocs_sumi.icons import icon
+from mkdocs_sumi.icons import has_icon, icon
 
 if TYPE_CHECKING:
     from jinja2 import Environment
@@ -396,10 +396,53 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         if page.meta.get('template') == 'releases.html':
             ctx['releases'] = self._releases(page, config)
         ctx['translations'] = self._translations(page, config, context.get('i18n'))
+        ctx['feedback'] = self._feedback(page, config)
+        ctx['comments'] = self._comments(page, config)
         ctx['nav_json'] = Markup(self._nav_index())
         ctx['strings_json'] = Markup(self._strings())
         context['sumi'] = ctx
         return context
+
+    def _feedback(self, page: Page, config: MkDocsConfig) -> dict[str, Any] | None:
+        """The "Was this page helpful?" widget: Material's `extra.analytics.feedback`, or `theme.feedback`."""
+        analytics = (config.extra or {}).get('analytics') or {}
+        conf = analytics.get('feedback') if isinstance(analytics, dict) else None
+        if conf is None:
+            conf = config.theme.get('feedback')
+        if not conf or _hidden(page, config, 'feedback') or page.meta.get('template') in ('landing.html', 'blog.html'):
+            return None
+        conf = conf if isinstance(conf, dict) else {}
+        t = translator(self.language)
+        ratings = conf.get('ratings') or [
+            {'icon': 'thumbs-up', 'name': t('feedback_yes'), 'data': 1, 'note': t('feedback_thanks')},
+            {'icon': 'thumbs-down', 'name': t('feedback_no'), 'data': 0, 'note': t('feedback_thanks')},
+        ]
+        out = []
+        for i, r in enumerate(ratings):
+            if not isinstance(r, dict):
+                continue
+            out.append({'icon': _feedback_icon(str(r.get('icon') or ''), i), 'name': str(r.get('name') or ''),
+                        'data': r.get('data', 1 - i), 'note': str(r.get('note') or t('feedback_thanks'))})
+        return {'title': str(conf.get('title') or t('feedback_title')), 'ratings': out}
+
+    def _comments(self, page: Page, config: MkDocsConfig) -> dict[str, Any] | None:
+        """Giscus comments under the page, from `theme.comments`."""
+        conf = config.theme.get('comments')
+        if not isinstance(conf, dict) or not conf.get('repo'):
+            return None
+        wanted = page.meta.get('comments')
+        if wanted is False or _hidden(page, config, 'comments') or page.meta.get('template') in ('landing.html', 'blog.html'):
+            return None
+        if conf.get('opt_in') and wanted is not True:
+            return None
+        return {
+            'repo': conf['repo'], 'repo_id': conf.get('repo_id', ''), 'category': conf.get('category', ''),
+            'category_id': conf.get('category_id', ''), 'mapping': conf.get('mapping', 'pathname'),
+            'strict': '1' if conf.get('strict') else '0', 'reactions': '0' if conf.get('reactions') is False else '1',
+            'input_position': conf.get('input_position', 'bottom'),
+            'lang': conf.get('lang') or _giscus_lang(self.language),
+            'theme_light': conf.get('theme_light', 'light'), 'theme_dark': conf.get('theme_dark', 'dark'),
+        }
 
     def _translations(self, page: Page, config: MkDocsConfig, i18n: dict | None) -> list[dict[str, str]]:
         """The other languages that have their own version of this page, for the bilingual view."""
@@ -777,6 +820,34 @@ def _file_date(file: File) -> datetime.datetime:
         return datetime.datetime.fromtimestamp(os.path.getmtime(file.abs_src_path))
     return datetime.datetime.now()
 
+
+
+def _hidden(page: Page, config: MkDocsConfig, part: str) -> bool:
+    """Whether `hide:` in the page's front matter or in the theme options lists `part`."""
+    for hide in (page.meta.get('hide'), config.theme.get('hide')):
+        if isinstance(hide, list) and part in hide:
+            return True
+    return False
+
+
+def _feedback_icon(name: str, index: int) -> str:
+    """A Lucide icon for a feedback rating, also for Material's `material/emoticon-happy-outline` and the like."""
+    name = name.rsplit('/', 1)[-1]
+    if any(k in name for k in ('happy', 'thumb-up', 'thumbs-up', 'heart', 'smile')):
+        return 'thumbs-up'
+    if any(k in name for k in ('sad', 'thumb-down', 'thumbs-down', 'frown', 'neutral')):
+        return 'thumbs-down'
+    if name and has_icon(name):
+        return name
+    return 'thumbs-up' if index == 0 else 'thumbs-down'
+
+
+def _giscus_lang(language: str) -> str:
+    norm = language.replace('_', '-')
+    if norm.lower() in ('zh-tw', 'zh-hk', 'zh-hant'):
+        return 'zh-TW'
+    base = norm.split('-')[0].lower()
+    return {'zh': 'zh-CN', 'pt': 'pt'}.get(base, base)
 
 
 def _format_date(value: Any, language: str = 'en', short: bool = False) -> str:

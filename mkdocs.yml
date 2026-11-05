@@ -62,6 +62,9 @@ languages:
           - 博客: docs/pages/blog.md
           - 发布与下载: docs/pages/releases.md
           - 打印版: docs/pages/print.md
+        - 运营站点:
+          - 访问统计与反馈: docs/run/analytics.md
+          - 评论: docs/run/comments.md
         - 自定义:
           - 主题选项: docs/customize/theme.md
           - 插件选项: docs/customize/plugin.md
@@ -118,6 +121,9 @@ nav:
       - Blog: docs/pages/blog.md
       - Releases and downloads: docs/pages/releases.md
       - Print edition: docs/pages/print.md
+    - Run your site:
+      - Analytics and feedback: docs/run/analytics.md
+      - Comments: docs/run/comments.md
     - Customize:
       - Theme options: docs/customize/theme.md
       - Plugin options: docs/customize/plugin.md

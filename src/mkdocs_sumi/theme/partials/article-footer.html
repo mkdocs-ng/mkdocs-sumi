@@ -1,3 +1,4 @@
+{%- include "partials/feedback.html" %}
 <footer class="sumi-article-footer">
   {%- if sumi.last_updated or page.edit_url %}
   <div class="sumi-meta-row">
@@ -5,6 +6,7 @@
     {%- if page.edit_url %}<a class="sumi-meta sumi-edit" href="{{ page.edit_url }}" rel="noopener">{{ icon('square-pen') }}{{ t('edit_page') }}</a>{% endif %}
   </div>
   {%- endif %}
+  {%- include "partials/comments.html" %}
   {%- if 'pager' not in hide and (page.previous_page or page.next_page) %}
   <nav class="sumi-pager" aria-label="{{ t('previous') }} / {{ t('next') }}">
     {%- if page.previous_page %}

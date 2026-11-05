@@ -29,6 +29,8 @@
     {%- endfor %}
   </div>
   {%- endif %}
+  {%- include "partials/feedback.html" %}
+  {%- include "partials/comments.html" %}
   {%- if sumi.newer or sumi.older %}
   <nav class="sumi-pager">
     {%- if sumi.older %}<a class="sumi-pager-prev" href="{{ sumi.older.url | url }}"><span class="sumi-pager-label">{{ icon('arrow-left') }}{{ t('older_post') }}</span><span class="sumi-pager-title">{{ sumi.older.title }}</span></a>{% else %}<span></span>{% endif %}
