@@ -1112,7 +1112,7 @@
       var s = doc.createElement('script');
       s.src = 'https://giscus.app/client.js';
       s.async = true; s.crossOrigin = 'anonymous';
-      ['repo', 'repoId', 'category', 'categoryId', 'mapping', 'strict', 'reactionsEnabled', 'inputPosition', 'lang'].forEach(function (k) {
+      ['repo', 'repoId', 'category', 'categoryId', 'mapping', 'term', 'strict', 'reactionsEnabled', 'inputPosition', 'lang'].forEach(function (k) {
         if (giscus.dataset[k]) s.dataset[k] = giscus.dataset[k];
       });
       s.dataset.emitMetadata = '0';

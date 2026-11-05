@@ -3,7 +3,7 @@
 {%- set c = sumi.comments %}
 <section class="sumi-comments" data-pagefind-ignore aria-labelledby="__comments">
   <h2 class="sumi-comments-title" id="__comments">{{ icon('message-square') }}{{ t('comments') }}</h2>
-  <div class="sumi-giscus" data-repo="{{ c.repo | e }}" data-repo-id="{{ c.repo_id | e }}" data-category="{{ c.category | e }}" data-category-id="{{ c.category_id | e }}" data-mapping="{{ c.mapping | e }}" data-strict="{{ c.strict | e }}" data-reactions-enabled="{{ c.reactions | e }}" data-input-position="{{ c.input_position | e }}" data-lang="{{ c.lang | e }}" data-theme-light="{{ c.theme_light | e }}" data-theme-dark="{{ c.theme_dark | e }}"></div>
+  <div class="sumi-giscus" data-repo="{{ c.repo | e }}" data-repo-id="{{ c.repo_id | e }}" data-category="{{ c.category | e }}" data-category-id="{{ c.category_id | e }}" data-mapping="{{ c.mapping | e }}"{% if c.term %} data-term="{{ c.term | e }}"{% endif %} data-strict="{{ c.strict | e }}" data-reactions-enabled="{{ c.reactions | e }}" data-input-position="{{ c.input_position | e }}" data-lang="{{ c.lang | e }}" data-theme-light="{{ c.theme_light | e }}" data-theme-dark="{{ c.theme_dark | e }}"></div>
   <noscript><p><a href="https://github.com/{{ c.repo | urlencode | e }}/discussions" rel="noopener">GitHub Discussions</a></p></noscript>
 </section>
 {%- endif %}

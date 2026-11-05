@@ -29,7 +29,7 @@ theme:
 | --- | --- | --- |
 | `repo` | | 存放讨论的仓库，格式为 `owner/name`。必填。 |
 | `repo_id`、`category`、`category_id` | | 从 giscus.app 获取。 |
-| `mapping` | `pathname` | 页面如何找到对应的讨论：`pathname`、`url`、`title`、`og:title` 或 `specific`。 |
+| `mapping` | `pathname` | 页面如何找到对应的讨论：`pathname`、`url`、`title`、`og:title` 或 `specific`。用 `specific` 时，页面前置元数据中的 `comments_term` 指定它的讨论，页面换了地址也不会丢掉原来的评论。 |
 | `strict` | `false` | 按讨论标题精确匹配，而不是搜索匹配。 |
 | `reactions` | `true` | 在主帖上显示表情回应。 |
 | `input_position` | `bottom` | 设为 `top` 时，评论框放在评论列表上方。 |

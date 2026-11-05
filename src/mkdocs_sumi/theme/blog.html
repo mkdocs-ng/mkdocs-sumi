@@ -2,11 +2,12 @@
 {% block content %}
 <div class="sumi-blog" data-view="{{ sumi.blog_layout or 'list' }}">
   <header class="sumi-blog-head sumi-prose">
+    {%- if sumi.blog_tag is not none and sumi.tags_url %}<p class="sumi-blog-up"><a href="{{ sumi.tags_url | url }}">{{ icon('arrow-left') }}{{ t('tags') }}</a></p>{% endif %}
     {{ page.content }}
     {%- if sumi.feed_url %}<p class="sumi-blog-feed"><a href="{{ sumi.feed_url | url }}">{{ icon('rss') }}{{ t('subscribe_rss') }}</a></p>{% endif %}
   </header>
   <div class="sumi-blog-bar">
-  {%- if sumi.tags %}
+  {%- if sumi.tags and sumi.blog_tag is none %}
   <div class="sumi-tag-filter" role="toolbar" aria-label="{{ t('tags') }}">
     <button type="button" class="sumi-tag is-active" data-tag="">{{ t('all_posts') }}</button>
     {%- for tag, count in sumi.tags %}

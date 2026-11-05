@@ -22,6 +22,7 @@ import subprocess
 from dataclasses import dataclass, field
 from importlib import resources
 from typing import TYPE_CHECKING, Any
+from html import escape
 from urllib.parse import quote, unquote, urlsplit
 
 import yaml
@@ -56,9 +57,12 @@ _URL_ATTR_RE = re.compile(r'(?P<attr>\s(?:href|src))="(?P<url>[^"]*)"')
 
 class _BlogConfig(base.Config):
     enabled = c.Type(bool, default=True)
-    dir = c.Type(str, default='blog')
+    dir = c.Type((str, list), default='blog')
     feed = c.Type(bool, default=True)
     feed_items = c.Type(int, default=20)
+    feed_path = c.Optional(c.Type(str))
+    feed_format = c.Choice(['atom', 'rss'], default='atom')
+    tags_dir = c.Optional(c.Type(str))
     authors = c.Type(dict, default={})
     layout = c.Choice(['list', 'cards'], default='list')
 
@@ -90,6 +94,8 @@ class Post:
     tags: list[str] = field(default_factory=list)
     excerpt: str = ''
     reading_time: int = 1
+    blog: str = ''
+    series: list[str] = field(default_factory=list)
 
     @property
     def title(self) -> str:
@@ -136,6 +142,11 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         self.language = 'en'
         self.authors: dict[str, dict[str, str]] = {}
         self.blog_index: str | None = None
+        self.blog_indexes: dict[str, str] = {}
+        self.tag_pages: dict[str, str] = {}
+        self.tags_index: str | None = None
+        self.covers: dict[str, str] = {}
+        self.aliases: list[tuple[str, Page]] = []
 
     # -- configuration -------------------------------------------------------
 
@@ -180,17 +191,39 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         self.contents.clear()
         self.posts.clear()
         self.blog_index = None
+        self.blog_indexes = {}
+        self.tag_pages = {}
+        self.tags_index = None
+        self.covers = {}
+        self.aliases = []
 
     # -- blog ------------------------------------------------------------------
 
+    def _blog_dirs(self) -> list[str]:
+        dirs = self.config.blog.dir
+        dirs = [dirs] if isinstance(dirs, str) else list(dirs)
+        return [str(d).strip('/') for d in dirs if str(d).strip('/')]
+
     def _blog_dir(self) -> str:
-        return self.config.blog.dir.strip('/')
+        dirs = self._blog_dirs()
+        return dirs[0] if dirs else 'blog'
+
+    def _blog_of(self, file: File) -> str | None:
+        """The blog folder `file` is a post of, or None.
+
+        A post is any page under a blog folder except the folder's own
+        `index.md`: `posts/2026-11-01-hello.md` as well as a page bundle,
+        `posts/2026/hello/index.md` next to its images.
+        """
+        if not self.config.blog.enabled or not file.is_documentation_page():
+            return None
+        for d in self._blog_dirs():
+            if file.src_uri.startswith(d + '/') and file.src_uri not in (f'{d}/index.md', f'{d}/README.md'):
+                return d
+        return None
 
     def _is_post(self, file: File) -> bool:
-        d = self._blog_dir()
-        return (self.config.blog.enabled and file.is_documentation_page()
-                and file.src_uri.startswith(d + '/') and file.src_uri != f'{d}/index.md'
-                and not posixpath.basename(file.src_uri).startswith(('index.', 'README.')))
+        return self._blog_of(file) is not None
 
     def on_files(self, files: Files, *, config: MkDocsConfig) -> Files:
         self.files = files
@@ -199,45 +232,94 @@ class SumiPlugin(BasePlugin[SumiConfig]):
             target = self.config.print.path.strip('/') + '/index.html'
             if files.get_file_from_path(target) is None:
                 files.append(File.generated(config, target, content=''))
-        if not self.config.blog.enabled or not any(self._is_post(f) for f in files):
+        posts = [f for f in files if self._is_post(f)]
+        if not posts:
             return files
-        d = self._blog_dir()
         from mkdocs.structure.files import InclusionLevel
 
-        for f in files:
-            if self._is_post(f) and f.inclusion == InclusionLevel.INCLUDED:
+        for f in posts:
+            if f.inclusion == InclusionLevel.INCLUDED:
                 f.inclusion = InclusionLevel.NOT_IN_NAV
-            if self._is_post(f):
-                # posts/2026-11-01-hello.md -> blog/2026/11/01/hello/
-                m = _POST_NAME_RE.match(posixpath.basename(f.src_uri))
-                if m:
-                    slug = posixpath.join(d, m['y'], m['m'], m['d'], m['slug'])
-                    f.dest_uri = slug + ('/index.html' if config.use_directory_urls else '.html')
-                    f.__dict__.pop('url', None)
-                    f.__dict__.pop('abs_dest_path', None)
-        authors_file = _source_path(files, config, posixpath.join(d, '.authors.yml'))
-        if os.path.isfile(authors_file):
-            with open(authors_file, encoding='utf-8') as fh:
-                data = yaml.safe_load(fh) or {}
-            self.authors.update(data.get('authors', data))
-        self.blog_index = f'{d}/index.md'
-        if files.get_file_from_path(self.blog_index) is None:
-            title = translator(self.language)('blog')
-            files.append(File.generated(config, self.blog_index,
-                                        content=f'---\ntemplate: blog.html\n---\n\n# {title}\n'))
+            # posts/2026-11-01-hello.md -> blog/2026/11/01/hello/
+            m = _POST_NAME_RE.match(posixpath.basename(f.src_uri))
+            if m:
+                slug = posixpath.join(self._blog_of(f), m['y'], m['m'], m['d'], m['slug'])
+                f.dest_uri = slug + ('/index.html' if config.use_directory_urls else '.html')
+                f.__dict__.pop('url', None)
+                f.__dict__.pop('abs_dest_path', None)
+            elif posixpath.basename(f.src_uri).startswith(('index.', 'README.')):
+                # A page bundle: its cover is the `featured` or `cover` image next to it (Hugo's convention).
+                folder = posixpath.dirname(f.src_uri)
+                for name in _COVER_NAMES:
+                    if files.get_file_from_path(f'{folder}/{name}') is not None:
+                        self.covers[f.src_uri] = f'{folder}/{name}'
+                        break
+        for d in self._blog_dirs():
+            authors_file = _source_path(files, config, posixpath.join(d, '.authors.yml'))
+            if os.path.isfile(authors_file):
+                with open(authors_file, encoding='utf-8') as fh:
+                    data = yaml.safe_load(fh) or {}
+                self.authors.update(data.get('authors', data))
+        for d in dict.fromkeys(self._blog_of(f) for f in posts):
+            index = f'{d}/index.md'
+            self.blog_indexes[d] = index
+            if files.get_file_from_path(index) is None:
+                title = translator(self.language)('blog')
+                files.append(File.generated(config, index, content=f'---\ntemplate: blog.html\n---\n\n# {title}\n'))
+        self.blog_index = self.blog_indexes.get(self._blog_dir()) or next(iter(self.blog_indexes.values()))
+        if self.config.blog.tags_dir:
+            self._tag_files(files, config, posts)
         return files
+
+    def _tag_files(self, files: Files, config: MkDocsConfig, posts: list[File]) -> None:
+        """Generate a page for each tag, and an index of the tags, under `blog.tags_dir`."""
+        from mkdocs.structure.files import InclusionLevel
+        from mkdocs.utils.meta import get_data
+
+        tags: dict[str, None] = {}
+        for f in posts:
+            try:
+                meta = get_data(f.content_string)[1]
+            except (OSError, UnicodeDecodeError):
+                continue
+            if not meta.get('draft'):
+                for tag in _tag_list(meta.get('tags') or meta.get('categories')):
+                    tags.setdefault(tag)
+        root = self.config.blog.tags_dir.strip('/')
+        self.tags_index = f'{root}/index.md'
+        existing = files.get_file_from_path(self.tags_index)
+        if existing is None:
+            t = translator(self.language)
+            files.append(File.generated(config, self.tags_index,
+                                        content=f'---\ntemplate: blog-tags.html\n---\n\n# {t("tags")}\n'))
+        slugs: dict[str, str] = {}
+        for tag in sorted(tags, key=str.lower):
+            slug = _slugify_tag(tag)
+            if not slug or slugs.get(slug, tag) != tag:
+                log.warning("Sumi: tag '%s' has the same URL as tag '%s'; it gets no page of its own.", tag, slugs[slug])
+                continue
+            slugs[slug] = tag
+            uri = f'{root}/{slug}/index.md'
+            if files.get_file_from_path(uri) is None:
+                title = tag.replace('\\', '\\\\').replace('"', '\\"')
+                f = File.generated(config, uri, content=f'---\ntemplate: blog.html\nblog_tag: "{title}"\n---\n\n# {tag}\n')
+                f.inclusion = InclusionLevel.NOT_IN_NAV
+                files.append(f)
+            self.tag_pages[tag] = uri
 
     def on_nav(self, nav: Navigation, *, config: MkDocsConfig, files: Files) -> Navigation:
         self.nav = nav
         self._nav_json: str | None = None
-        if self.blog_index and config.nav is None:
+        if self.blog_indexes and config.nav is None:
+            indexes = set(self.blog_indexes.values())
+
             # Keep posts out of the sidebar: the blog section shows its index only.
             def prune(items: list) -> list:
                 out = []
                 for item in items:
                     if isinstance(item, Section):
                         index = next((ch for ch in item.children if isinstance(ch, Page)
-                                      and ch.file.src_uri == self.blog_index), None)
+                                      and ch.file.src_uri in indexes), None)
                         if index is not None:
                             index.parent = item.parent
                             out.append(index)
@@ -258,11 +340,31 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         template = page.meta.get('template')
         if template in ('landing.html', 'blog.html'):
             page.meta.setdefault('layout', template[:-5])
-        if self.blog_index and page.file.src_uri == self.blog_index:
+        if template in ('blog-tags.html', 'blog-archive.html'):
+            page.meta.setdefault('layout', 'blog')
+        # Hugo's `summary` is the page description.
+        if not page.meta.get('description') and isinstance(page.meta.get('summary'), str):
+            page.meta['description'] = ' '.join(page.meta['summary'].split())
+        if isinstance(page.meta.get('aliases'), (list, str)):
+            aliases = page.meta['aliases']
+            for alias in [aliases] if isinstance(aliases, str) else aliases:
+                if isinstance(alias, str) and alias.strip('/'):
+                    self.aliases.append((alias, page))
+        blog = self._blog_of(page.file)
+        if self.blog_indexes and page.file.src_uri in self.blog_indexes.values():
             page.meta.setdefault('template', 'blog.html')
             page.meta.setdefault('layout', 'blog')
-        elif self.blog_index and self._is_post(page.file):
+        elif self.blog_indexes and blog is not None:
             page.meta.setdefault('template', 'blog-post.html')
+            if not page.meta.get('image'):
+                cover = page.meta.get('cover')
+                if isinstance(cover, dict):  # Hugo themes write `cover: {image: …}`
+                    cover = cover.get('image')
+                if isinstance(cover, str) and cover:
+                    page.meta['image'] = cover if '/' in cover or cover.startswith('http') else \
+                        posixpath.join(posixpath.dirname(page.file.src_uri), cover)
+                elif page.file.src_uri in self.covers:
+                    page.meta['image'] = self.covers[page.file.src_uri]
             date = _parse_date(page.meta.get('date')) or _file_date(page.file)
             meta_authors = page.meta.get('authors') or page.meta.get('author') or []
             if isinstance(meta_authors, str):
@@ -275,7 +377,8 @@ class SumiPlugin(BasePlugin[SumiConfig]):
             if not page.meta.get('draft'):
                 self.posts.append(Post(page=page, date=date, updated=_parse_date(page.meta.get('updated')),
                                        authors=authors, tags=tags,
-                                       reading_time=reading_minutes(markdown)))
+                                       reading_time=reading_minutes(markdown), blog=blog,
+                                       series=_tag_list(page.meta.get('series'))))
         page.meta.setdefault('reading_time', reading_minutes(markdown))
         return markdown
 
@@ -376,23 +479,7 @@ class SumiPlugin(BasePlugin[SumiConfig]):
             'is_post': False,
         }
         if self.blog_index:
-            posts = sorted(self.posts, key=lambda p: p.date, reverse=True)
-            ctx['posts'] = posts
-            index = self.files.get_file_from_path(self.blog_index) if self.files else None
-            ctx['blog_index_url'] = index.url if index else None
-            tags: dict[str, int] = {}
-            for p in posts:
-                for tag in p.tags:
-                    tags[tag] = tags.get(tag, 0) + 1
-            ctx['tags'] = sorted(tags.items(), key=lambda kv: (-kv[1], kv[0].lower()))
-            for i, p in enumerate(posts):
-                if p.page is page:
-                    ctx['is_post'] = True
-                    ctx['post'] = p
-                    ctx['newer'] = posts[i - 1] if i > 0 else None
-                    ctx['older'] = posts[i + 1] if i + 1 < len(posts) else None
-            ctx['feed_url'] = f'{self._blog_dir()}/feed.xml' if self.config.blog.feed else None
-            ctx['blog_layout'] = page.meta.get('blog_layout') or self.config.blog.layout
+            ctx.update(self._blog_context(page))
         if page.meta.get('template') == 'releases.html':
             ctx['releases'] = self._releases(page, config)
         ctx['translations'] = self._translations(page, config, context.get('i18n'))
@@ -403,13 +490,68 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         context['sumi'] = ctx
         return context
 
+    def _url_of(self, src_uri: str | None) -> str | None:
+        f = self.files.get_file_from_path(src_uri) if self.files and src_uri else None
+        return f.url if f else None
+
+    def _blog_context(self, page: Page) -> dict[str, Any]:
+        """The posts a page lists, and where it sits among them."""
+        ctx: dict[str, Any] = {}
+        all_posts = sorted(self.posts, key=lambda p: p.date, reverse=True)
+        current = next((p for p in all_posts if p.page is page), None)
+        blog = current.blog if current else next(
+            (d for d, uri in self.blog_indexes.items() if uri == page.file.src_uri), None)
+        tag = page.meta.get('blog_tag')
+        if tag is not None:
+            posts = [p for p in all_posts if str(tag) in p.tags]
+        elif blog is not None:
+            posts = [p for p in all_posts if p.blog == blog]
+        else:
+            posts = all_posts
+        ctx['posts'] = posts
+        ctx['all_posts'] = all_posts
+        ctx['blog_tag'] = str(tag) if tag is not None else None
+        ctx['blog_index_url'] = self._url_of(self.blog_indexes.get(blog or '') or self.blog_index)
+        tag_urls = {t: self._url_of(uri) for t, uri in self.tag_pages.items()}
+        ctx['tag_urls'] = {t: u for t, u in tag_urls.items() if u}
+        ctx['tags_url'] = self._url_of(self.tags_index)
+        counts: dict[str, int] = {}
+        for p in posts if tag is None else all_posts:
+            for t in p.tags:
+                counts[t] = counts.get(t, 0) + 1
+        ctx['tags'] = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0].lower()))
+        years: dict[int, list[Post]] = {}
+        for p in posts:
+            years.setdefault(p.date.year, []).append(p)
+        ctx['years'] = list(years.items())
+        if current is not None:
+            siblings = [p for p in all_posts if p.blog == current.blog]
+            i = siblings.index(current)
+            ctx['is_post'] = True
+            ctx['post'] = current
+            ctx['newer'] = siblings[i - 1] if i > 0 else None
+            ctx['older'] = siblings[i + 1] if i + 1 < len(siblings) else None
+            ctx['series'] = []
+            for name in current.series:
+                members = [p for p in all_posts if name in p.series]
+                members.sort(key=lambda p: (_series_order(p), p.date))
+                ctx['series'].append({'name': name, 'posts': members})
+        if self.config.blog.feed:
+            ctx['feed_url'] = self._feed_path()
+            ctx['feed_type'] = 'application/rss+xml' if self.config.blog.feed_format == 'rss' else 'application/atom+xml'
+        ctx['blog_layout'] = page.meta.get('blog_layout') or self.config.blog.layout
+        return ctx
+
+    def _feed_path(self) -> str:
+        return (self.config.blog.feed_path or f'{self._blog_dir()}/feed.xml').lstrip('/')
+
     def _feedback(self, page: Page, config: MkDocsConfig) -> dict[str, Any] | None:
         """The "Was this page helpful?" widget: Material's `extra.analytics.feedback`, or `theme.feedback`."""
         analytics = (config.extra or {}).get('analytics') or {}
         conf = analytics.get('feedback') if isinstance(analytics, dict) else None
         if conf is None:
             conf = config.theme.get('feedback')
-        if not conf or _hidden(page, config, 'feedback') or page.meta.get('template') in ('landing.html', 'blog.html'):
+        if not conf or _hidden(page, config, 'feedback') or page.meta.get('template') in _LIST_TEMPLATES:
             return None
         conf = conf if isinstance(conf, dict) else {}
         t = translator(self.language)
@@ -431,11 +573,13 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         if not isinstance(conf, dict) or not conf.get('repo'):
             return None
         wanted = page.meta.get('comments')
-        if wanted is False or _hidden(page, config, 'comments') or page.meta.get('template') in ('landing.html', 'blog.html'):
+        if wanted is False or _hidden(page, config, 'comments') or page.meta.get('template') in _LIST_TEMPLATES:
             return None
         if conf.get('opt_in') and wanted is not True:
             return None
+        term = page.meta.get('comments_term')
         return {
+            'term': str(term) if term is not None else '',
             'repo': conf['repo'], 'repo_id': conf.get('repo_id', ''), 'category': conf.get('category', ''),
             'category_id': conf.get('category_id', ''), 'mapping': conf.get('mapping', 'pathname'),
             'strict': '1' if conf.get('strict') else '0', 'reactions': '0' if conf.get('reactions') is False else '1',
@@ -596,6 +740,8 @@ class SumiPlugin(BasePlugin[SumiConfig]):
             self._write_print(config)
         if self.blog_index and self.config.blog.feed and self.posts:
             self._write_feed(config)
+        if self.aliases:
+            self._write_aliases(config)
 
     def _write_print(self, config: MkDocsConfig) -> None:
         from mkdocs.commands.build import get_context
@@ -622,8 +768,11 @@ class SumiPlugin(BasePlugin[SumiConfig]):
 
     def _write_feed(self, config: MkDocsConfig) -> None:
         site = (config.site_url or '').rstrip('/') + '/'
-        posts = sorted(self.posts, key=lambda p: p.date, reverse=True)[: self.config.blog.feed_items]
+        posts = sorted(self.posts, key=lambda p: p.date, reverse=True)
+        if self.config.blog.feed_items > 0:
+            posts = posts[: self.config.blog.feed_items]
         updated = max(p.updated or p.date for p in posts)
+        feed_url = site + self._feed_path()
 
         def esc(s: str) -> str:
             return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
@@ -631,22 +780,102 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         def iso(d: datetime.datetime) -> str:
             return (d if d.tzinfo else d.replace(tzinfo=datetime.timezone.utc)).isoformat()
 
-        entries = []
-        for p in posts:
-            url = site + p.url
-            authors = ''.join(f'<author><name>{esc(a.get("name", ""))}</name></author>' for a in p.authors)
-            content = _rebase(p.excerpt, p.url, '', None, absolute=site)
-            entries.append(
-                f'<entry><title>{esc(p.title)}</title><link href="{esc(url)}"/><id>{esc(url)}</id>'
-                f'<published>{iso(p.date)}</published><updated>{iso(p.updated or p.date)}</updated>{authors}'
-                + ''.join(f'<category term="{esc(t)}"/>' for t in p.tags)
-                + f'<summary type="html">{esc(content)}</summary></entry>')
-        feed_url = site + self._blog_dir() + '/feed.xml'
-        xml = ('<?xml version="1.0" encoding="utf-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom">'
-               f'<title>{esc(config.site_name)}</title><id>{esc(feed_url)}</id>'
-               f'<link rel="self" href="{esc(feed_url)}"/><link href="{esc(site)}"/>'
-               f'<updated>{iso(updated)}</updated>' + ''.join(entries) + '</feed>\n')
-        utils.write_file(xml.encode('utf-8'), os.path.join(config.site_dir, self._blog_dir(), 'feed.xml'))
+        def rfc822(d: datetime.datetime) -> str:
+            from email.utils import format_datetime
+
+            return format_datetime(d if d.tzinfo else d.replace(tzinfo=datetime.timezone.utc))
+
+        def summary(p: Post) -> str:
+            if p.page.meta.get('description'):
+                return str(p.page.meta['description'])
+            return _rebase(p.excerpt, p.url, '', None, absolute=site)
+
+        def cover(p: Post) -> str | None:
+            image = p.page.meta.get('image')
+            if not isinstance(image, str) or not image:
+                return None
+            return image if image.startswith(('http://', 'https://')) else site + image.lstrip('/')
+
+        if self.config.blog.feed_format == 'rss':
+            items = []
+            for p in posts:
+                url = site + p.url
+                image = cover(p)
+                items.append(
+                    f'<item><title>{esc(p.title)}</title><link>{esc(url)}</link>'
+                    f'<pubDate>{rfc822(p.date)}</pubDate><guid>{esc(url)}</guid>'
+                    + ''.join(f'<category>{esc(t)}</category>' for t in p.tags)
+                    + f'<description>{esc(summary(p))}</description>'
+                    + (f'<media:content url="{esc(image)}" medium="image"/>' if image else '')
+                    + '</item>')
+            xml = ('<?xml version="1.0" encoding="utf-8"?>\n<rss version="2.0" '
+                   'xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/"><channel>'
+                   f'<title>{esc(config.site_name)}</title><link>{esc(site)}</link>'
+                   f'<description>{esc(config.site_description or config.site_name)}</description>'
+                   f'<language>{esc(self.language.replace("_", "-").lower())}</language>'
+                   f'<lastBuildDate>{rfc822(updated)}</lastBuildDate>'
+                   f'<atom:link href="{esc(feed_url)}" rel="self" type="application/rss+xml"/>'
+                   + ''.join(items) + '</channel></rss>\n')
+        else:
+            entries = []
+            for p in posts:
+                url = site + p.url
+                authors = ''.join(f'<author><name>{esc(a.get("name", ""))}</name></author>' for a in p.authors)
+                entries.append(
+                    f'<entry><title>{esc(p.title)}</title><link href="{esc(url)}"/><id>{esc(url)}</id>'
+                    f'<published>{iso(p.date)}</published><updated>{iso(p.updated or p.date)}</updated>{authors}'
+                    + ''.join(f'<category term="{esc(t)}"/>' for t in p.tags)
+                    + f'<summary type="html">{esc(_rebase(p.excerpt, p.url, "", None, absolute=site))}</summary></entry>')
+            xml = ('<?xml version="1.0" encoding="utf-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom">'
+                   f'<title>{esc(config.site_name)}</title><id>{esc(feed_url)}</id>'
+                   f'<link rel="self" href="{esc(feed_url)}"/><link href="{esc(site)}"/>'
+                   f'<updated>{iso(updated)}</updated>' + ''.join(entries) + '</feed>\n')
+        utils.write_file(xml.encode('utf-8'), os.path.join(config.site_dir, *self._feed_path().split('/')))
+
+    def _write_aliases(self, config: MkDocsConfig) -> None:
+        """A redirect page at each of a page's old addresses (front matter `aliases`).
+
+        `old/path/` is from the root of the page's language, `/old/path/` from
+        the root of the whole site. A redirect never replaces a page, and on a
+        multi-language site the default language's redirects win.
+        """
+        lang_path, is_default = '', True
+        try:
+            from mkdocs import languages
+
+            lang = languages.current(config)
+            if lang is not None:
+                lang_path, is_default = lang.path, lang.default
+        except ImportError:  # MkDocs NG before 1.11
+            pass
+        root = config.site_dir
+        if lang_path:
+            root = os.path.normpath(os.path.join(config.site_dir, *(['..'] * len(lang_path.split('/')))))
+        for alias, page in self.aliases:
+            path = alias if alias.startswith('/') else posixpath.join(lang_path, alias)
+            path = posixpath.normpath('/' + unquote(path.split('#')[0].split('?')[0])).lstrip('/')
+            if not path or path.startswith('..'):
+                continue
+            file = path if path.endswith(('.html', '.htm')) else posixpath.join(path, 'index.html')
+            dest = os.path.join(root, *file.split('/'))
+            target = posixpath.join(lang_path, page.url) if lang_path else page.url
+            if posixpath.normpath(target or '.') == posixpath.normpath(posixpath.dirname(file) or '.'):
+                continue  # the page itself
+            if os.path.exists(dest):
+                with open(dest, encoding='utf-8', errors='replace') as fh:
+                    is_redirect = _REDIRECT_MARK in fh.read(600)
+                if not is_redirect or not is_default:
+                    continue
+            href = posixpath.relpath(target or '.', posixpath.dirname(file) or '.')
+            if target.endswith('/') or not target:
+                href = href.rstrip('/') + '/'
+            canonical = page.canonical_url or href
+            html = ('<!doctype html><html><head><meta charset="utf-8">' + _REDIRECT_MARK
+                    + f'<title>{escape(page.title or "")}</title><link rel="canonical" href="{escape(canonical)}">'
+                    + '<meta name="robots" content="noindex">'
+                    + f'<meta http-equiv="refresh" content="0; url={escape(href)}"></head>'
+                    + f'<body><a href="{escape(href)}">{escape(page.title or href)}</a></body></html>\n')
+            utils.write_file(html.encode('utf-8'), dest)
 
 
 @pass_context
@@ -672,6 +901,27 @@ def _page_markdown(page: Page) -> str:
     if getattr(page, 'content_title', None) is None and page.title and not re.match(r'\s*#\s', markdown):
         markdown = f'# {page.title}\n\n{markdown}'
     return markdown.strip() + '\n'
+
+
+_COVER_NAMES = ('featured.jpg', 'featured.jpeg', 'featured.png', 'featured.webp', 'featured.svg',
+                'cover.jpg', 'cover.jpeg', 'cover.png', 'cover.webp', 'cover.svg')
+_LIST_TEMPLATES = ('landing.html', 'blog.html', 'blog-tags.html', 'blog-archive.html')
+_REDIRECT_MARK = '<meta name="generator" content="sumi-redirect">'
+
+
+def _slugify_tag(tag: str) -> str:
+    """A tag's URL path, as Hugo makes it: `Open Source` -> `open-source`, `CI/CD` -> `ci/cd`."""
+    slug = re.sub(r'\s+', '-', tag.strip().lower())
+    slug = re.sub(r'[^\w/.+#-]', '', slug)
+    slug = '/'.join(part for part in slug.split('/') if part not in ('', '.', '..'))
+    return slug
+
+
+def _series_order(post: Post) -> float:
+    try:
+        return float(post.page.meta.get('series_order'))
+    except (TypeError, ValueError):
+        return float('inf')
 
 
 _POST_NAME_RE = re.compile(r'^(?P<y>\d{4})-(?P<m>\d{2})-(?P<d>\d{2})-(?P<slug>.+)\.md$')

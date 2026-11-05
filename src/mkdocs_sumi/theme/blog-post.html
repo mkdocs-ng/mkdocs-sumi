@@ -10,14 +10,25 @@
     <div class="sumi-post-meta">
       <time datetime="{{ sumi.post.date.isoformat() }}">{{ sumi.post.date | sumi_date(sumi_language) }}</time>
       <span aria-hidden="true">·</span><span>{{ t('reading_time', n=sumi.post.reading_time) }}</span>
-      {%- for tag in sumi.post.tags %}<a class="sumi-tag sumi-tag--static" href="{{ sumi.blog_index_url | url }}#tag={{ tag | urlencode }}">{{ tag | e }}</a>{% endfor %}
+      {%- for tag in sumi.post.tags %}<a class="sumi-tag sumi-tag--static" href="{{ sumi.tag_urls[tag] | url if tag in sumi.tag_urls else (sumi.blog_index_url | url) ~ '#tag=' ~ (tag | urlencode) }}">{{ tag | e }}</a>{% endfor %}
     </div>
   </div>
   {%- endif %}
   {%- if page.meta.image and not page.meta.hide_cover %}
   <figure class="sumi-post-hero"><img src="{{ page.meta.image | url }}" alt="{{ page.meta.image_alt or '' }}"></figure>
   {%- endif %}
+  {%- for s in sumi.series or [] %}
+  <details class="sumi-series">
+    <summary>{{ t('series_note', name=s.name) }}</summary>
+    <ol>
+      {%- for p in s.posts %}
+      <li>{% if p.page is sameas page %}<span aria-current="page">{{ p.title }}</span>{% else %}<a href="{{ p.url | url }}">{{ p.title }}</a>{% endif %}</li>
+      {%- endfor %}
+    </ol>
+  </details>
+  {%- endfor %}
   <div class="sumi-content sumi-prose"{% if i18n and i18n.fallback %} lang="{{ i18n.default_language }}"{% endif %}>{% include "partials/untranslated.html" %}{{ page.content }}</div>
+  {%- include "partials/post-footer.html" %}
   {%- if sumi.post and sumi.post.authors %}
   <div class="sumi-post-authors">
     {%- for a in sumi.post.authors %}

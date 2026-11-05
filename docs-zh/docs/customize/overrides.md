@@ -57,6 +57,7 @@ overrides/
 | `partials/page-actions.html` | 复制为 Markdown 和页面菜单 |
 | `partials/toc.html` | 页面目录 |
 | `partials/article-footer.html` | 正文下方 |
+| `partials/post-footer.html` | 博客文章下方，默认为空 |
 | `partials/footer.html` | 站点页脚 |
 | `partials/palette.html` | 搜索和命令面板 |
 | `partials/analytics.html` | 统计分析 |

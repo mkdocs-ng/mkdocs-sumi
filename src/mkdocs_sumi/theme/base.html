@@ -41,7 +41,7 @@
   {%- endif %}
   {%- if sumi.markdown_url %}<link rel="alternate" type="text/markdown" href="{{ sumi.markdown_url | url }}" title="Markdown">{% endif %}
   {%- if sumi.llms_txt %}<link rel="alternate" type="text/plain" href="{{ 'llms.txt' | url }}" title="llms.txt">{% endif %}
-  {%- if sumi.feed_url %}<link rel="alternate" type="application/atom+xml" href="{{ sumi.feed_url | url }}" title="{{ config.site_name | e }}">{% endif %}
+  {%- if sumi.feed_url %}<link rel="alternate" type="{{ sumi.feed_type or 'application/atom+xml' }}" href="{{ sumi.feed_url | url }}" title="{{ config.site_name | e }}">{% endif %}
   <link rel="icon" href="{{ (theme.favicon or 'assets/images/favicon.svg') | url }}">
   <meta name="generator" content="mkdocs-{{ mkdocs_version }}, sumi">
   <meta name="theme-color" content="#f8f7f4" media="(prefers-color-scheme: light)">

@@ -57,6 +57,7 @@ Create `overrides/main.html` and extend `base.html`:
 | `partials/page-actions.html` | Copy as Markdown and the page menu |
 | `partials/toc.html` | Table of contents |
 | `partials/article-footer.html` | Below the article |
+| `partials/post-footer.html` | Below a blog post; empty by default |
 | `partials/footer.html` | Site footer |
 | `partials/palette.html` | Search and command palette |
 | `partials/analytics.html` | Analytics |

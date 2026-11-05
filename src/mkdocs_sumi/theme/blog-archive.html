@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{#- Every post, newest first, grouped by year: `template: blog-archive.html`. -#}
+{% block content %}
+<div class="sumi-blog sumi-archive">
+  <header class="sumi-blog-head sumi-prose">
+    {{ page.content }}
+    <p class="sumi-archive-count">{{ t('n_posts', n=sumi.posts | length) }}</p>
+  </header>
+  {%- for year, posts in sumi.years %}
+  <section class="sumi-archive-year" aria-labelledby="y{{ year }}">
+    <h2 id="y{{ year }}">{{ year }}<span>{{ posts | length }}</span></h2>
+    <ol>
+      {%- for post in posts %}
+      <li><time datetime="{{ post.date.isoformat() }}">{{ post.date.strftime('%m-%d') }}</time><a href="{{ post.url | url }}">{{ post.title }}</a></li>
+      {%- endfor %}
+    </ol>
+  </section>
+  {%- endfor %}
+</div>
+{% endblock %}

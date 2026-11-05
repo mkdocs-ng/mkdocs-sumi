@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{#- Every tag of the blog, with the number of posts: `template: blog-tags.html` (written for you with `blog.tags_dir`). -#}
+{% block content %}
+<div class="sumi-blog sumi-blog-tags">
+  <header class="sumi-blog-head sumi-prose">{{ page.content }}</header>
+  <ul class="sumi-tag-cloud">
+    {%- for tag, count in sumi.tags %}
+    <li><a class="sumi-tag" href="{{ sumi.tag_urls[tag] | url if tag in sumi.tag_urls else (sumi.blog_index_url | url) ~ '#tag=' ~ (tag | urlencode) }}">{{ tag | e }}<span>{{ count }}</span></a></li>
+    {%- endfor %}
+  </ul>
+</div>
+{% endblock %}

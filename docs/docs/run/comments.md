@@ -29,7 +29,7 @@ theme:
 | --- | --- | --- |
 | `repo` | | The repository that holds the discussions, `owner/name`. Required. |
 | `repo_id`, `category`, `category_id` | | From giscus.app. |
-| `mapping` | `pathname` | How a page finds its discussion: `pathname`, `url`, `title`, `og:title` or `specific`. |
+| `mapping` | `pathname` | How a page finds its discussion: `pathname`, `url`, `title`, `og:title` or `specific`. With `specific`, a page's `comments_term` front matter names its discussion, so pages keep their threads when their URL changes. |
 | `strict` | `false` | Match discussion titles exactly instead of by search. |
 | `reactions` | `true` | Show reactions on the main post. |
 | `input_position` | `bottom` | `top` puts the comment box above the comments. |

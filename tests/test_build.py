@@ -792,3 +792,125 @@ def test_releases_unknown_source_is_a_clear_error(tmp_path, caplog):
     with pytest.raises(Abort):
         _site(tmp_path, {'index.md': '---\ntemplate: releases.html\nreleases:\n  gitlab: o/r\n---\n# R\n'}, BASIC)
     assert "Unknown 'releases' keys in 'index.md': gitlab" in caplog.text
+
+
+HUGO_BLOG = """
+    site_name: Test
+    site_url: https://example.com/
+    theme:
+      name: sumi
+      comments: {provider: giscus, repo: a/b, mapping: specific}
+    plugins:
+      - search
+      - sumi:
+          blog:
+            dir: [posts, misc]
+            feed_path: index.xml
+            feed_format: rss
+            feed_items: 0
+            tags_dir: tags
+"""
+
+
+@pytest.fixture
+def hugo_blog(tmp_path):
+    files = {
+        'index.md': '# Home\n',
+        'posts/index.md': '# Posts\n',
+        'posts/2026/hello/index.md': """
+            ---
+            title: Hello
+            summary: |
+              The summary,
+              on two lines.
+            date: 2026-01-02
+            tags: [Open Source, CI/CD]
+            series: [Getting started]
+            aliases: [/2019/05/hello/, old-hello/]
+            comments_term: posts/hello/
+            ---
+            Body.
+        """,
+        'posts/2026/second/index.md': """
+            ---
+            title: Second
+            date: 2026-02-03
+            tags: [Open Source]
+            series: [Getting started]
+            ---
+            Second body.
+        """,
+        'posts/2025/old/index.md': '---\ntitle: Old\ndate: 2025-12-31\n---\nOld body.\n',
+        'misc/essay/index.md': '---\ntitle: Essay\ndate: 2026-03-01\ntags: [Life]\n---\nAn essay.\n',
+        'archive.md': '---\ntemplate: blog-archive.html\n---\n# Archive\n',
+    }
+    return _site(tmp_path, files, HUGO_BLOG)
+
+
+def _post_list(html: str) -> str:
+    return html.split('<ol class="sumi-post-list">')[1].split('</ol>')[0]
+
+
+def test_page_bundle_posts(tmp_path):
+    (tmp_path / 'docs' / 'posts' / 'a').mkdir(parents=True)
+    (tmp_path / 'docs' / 'posts' / 'a' / 'featured.jpg').write_bytes(b'jpg')
+    out = _site(tmp_path, {
+        'posts/a/index.md': '---\ndate: 2026-01-02\n---\n# A\n\nText.\n',
+        'posts/b.md': '---\ndate: 2026-01-01\ncover: {image: pic.png}\n---\n# B\n',
+    }, BASIC.replace('      - sumi\n', '      - sumi:\n          blog: {dir: posts, layout: cards}\n'))
+    post = (out / 'posts' / 'a' / 'index.html').read_text(encoding='utf-8')
+    assert 'sumi-post-hero' in post and 'featured.jpg' in post
+    assert '<meta property="og:image" content="https://example.com/posts/a/featured.jpg">' in post
+    index = (out / 'posts' / 'index.html').read_text(encoding='utf-8')
+    assert 'href="a/"' in index and 'src="a/featured.jpg"' in index
+    assert 'src="pic.png"' in index or 'src="b/pic.png"' in index or 'posts/pic.png' in index
+
+
+def test_hugo_style_blog(hugo_blog):
+    out = hugo_blog
+    # Posts keep the URL of their folder, in two blogs.
+    hello = (out / 'posts' / '2026' / 'hello' / 'index.html').read_text(encoding='utf-8')
+    assert (out / 'misc' / 'essay' / 'index.html').is_file()
+    # Hugo's `summary` is the description.
+    assert '<meta name="description" content="The summary, on two lines.">' in hello
+    # Each blog lists its own posts; prev/next stay within it.
+    posts = _post_list((out / 'posts' / 'index.html').read_text(encoding='utf-8'))
+    assert 'Hello' in posts and 'Old' in posts and 'Essay' not in posts
+    misc = _post_list((out / 'misc' / 'index.html').read_text(encoding='utf-8'))
+    assert 'Essay' in misc and 'Hello' not in misc
+    pager = hello.split('<nav class="sumi-pager">')[1].split('</nav>')[0]
+    assert 'Second' in pager and 'Essay' not in pager
+    # Tag pages, with Hugo's URLs.
+    assert 'href="../../../tags/open-source/"' in hello
+    tag = _post_list((out / 'tags' / 'open-source' / 'index.html').read_text(encoding='utf-8'))
+    assert 'Hello' in tag and 'Second' in tag and 'Old' not in tag
+    assert (out / 'tags' / 'ci' / 'cd' / 'index.html').is_file()
+    tags = (out / 'tags' / 'index.html').read_text(encoding='utf-8')
+    assert 'href="open-source/"' in tags and 'href="life/"' in tags
+    # Series.
+    assert 'sumi-series' in hello and 'href="../second/"' in hello
+    # The RSS feed, at Hugo's address, with every post of both blogs.
+    feed = (out / 'index.xml').read_text(encoding='utf-8')
+    assert feed.startswith('<?xml') and '<rss version="2.0"' in feed
+    assert feed.count('<item>') == 4
+    assert '<description>The summary, on two lines.</description>' in feed
+    assert 'type="application/rss+xml" href="../../../index.xml"' in hello
+    # Aliases: from the site root, and from the language root.
+    for old in ('2019/05/hello', 'old-hello'):
+        redirect = (out / old / 'index.html').read_text(encoding='utf-8')
+        assert 'http-equiv="refresh"' in redirect and 'posts/2026/hello/' in redirect
+    # A specific Giscus term.
+    assert 'data-term="posts/hello/"' in hello
+    # The archive, by year.
+    archive = (out / 'archive' / 'index.html').read_text(encoding='utf-8')
+    assert archive.index('2026') < archive.index('2025') and '4 posts' in archive
+
+
+def test_alias_never_replaces_a_page(tmp_path):
+    out = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'other.md': '# Other\n',
+        'new.md': '---\naliases: [/other/, /gone/]\n---\n# New\n',
+    }, BASIC)
+    assert 'refresh' not in (out / 'other' / 'index.html').read_text(encoding='utf-8')
+    assert 'url=../new/' in (out / 'gone' / 'index.html').read_text(encoding='utf-8')
