@@ -972,3 +972,13 @@ def test_landing_page_has_a_phone_menu(tmp_path):
     # The tabs are hidden on phones, so the drawer must list them, even on a page with its own layout.
     drawer = home.split('id="sumi-sidebar"')[1].split('</aside>')[0]
     assert 'href="a/"' in drawer and 'href="b/"' in drawer
+
+
+def test_title_from_front_matter(tmp_path):
+    out = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'about.md': '---\ntitle: About me\n---\nText.\n',
+    }, BASIC)
+    about = (out / 'about' / 'index.html').read_text(encoding='utf-8')
+    assert '<h1>About me</h1>' in about
+    assert (out / 'index.html').read_text(encoding='utf-8').count('<h1') == 1

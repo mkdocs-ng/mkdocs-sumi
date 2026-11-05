@@ -149,6 +149,8 @@
         {%- endif %}
         <div class="sumi-content sumi-prose" data-pagefind-body{% if i18n and i18n.fallback %} lang="{{ i18n.default_language }}"{% endif %}>
           {%- include "partials/untranslated.html" %}
+          {#- A page whose body has no "# heading" gets its title from front matter, as in Material. -#}
+          {%- if page and page.title and '<h1' not in page.content %}<h1>{{ page.title }}</h1>{% endif %}
           {%- block page_content %}{{ page.content }}{% endblock %}
         </div>
         {%- block article_footer %}{% include "partials/article-footer.html" %}{% endblock %}
