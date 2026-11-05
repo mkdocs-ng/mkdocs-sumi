@@ -1014,6 +1014,7 @@ dialog { color: inherit; }
   .sumi-sidebar-tabs { display: block; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--sumi-line); }
   .sumi-sidebar-tabs a.is-active { color: var(--sumi-fg); font-weight: 600; }
   .sumi-sidebar--tabs-only { display: block; }
+  .sumi-sidebar--tabs-only .sumi-sidebar-tabs { border-bottom: 0; }
   body.sumi-locked { overflow: hidden; }
   .sumi-scrim { position: fixed; inset: var(--sumi-header-h) 0 0; z-index: 34; background: rgba(15, 14, 12, .35); }
   .sumi-search-btn { flex: none; width: 36px; padding: 0; justify-content: center; border: 0; background: none; margin: 0; }

@@ -955,3 +955,20 @@ def test_main_html_override_applies_to_every_page(tmp_path):
         assert '<meta name="x-site" content="1">' in (out / page).read_text(encoding='utf-8'), page
     # A blog index without a heading of its own gets its title.
     assert '<h1>Posts</h1>' in (out / 'blog' / 'index.html').read_text(encoding='utf-8')
+
+
+def test_landing_page_has_a_phone_menu(tmp_path):
+    out = _site(tmp_path, {
+        'index.md': '---\ntemplate: landing.html\nhero: {title: Hi}\n---\n',
+        'a.md': '# A\n',
+        'b.md': '# B\n',
+    }, """
+    site_name: Test
+    theme: {name: sumi, hide: [sidebar]}
+    plugins: [sumi]
+    nav: [index.md, a.md, b.md]
+    """)
+    home = (out / 'index.html').read_text(encoding='utf-8')
+    # The tabs are hidden on phones, so the drawer must list them, even on a page with its own layout.
+    drawer = home.split('id="sumi-sidebar"')[1].split('</aside>')[0]
+    assert 'href="a/"' in drawer and 'href="b/"' in drawer

@@ -16,7 +16,33 @@
 {%- endif -%}
 {%- if 'sidebar' in hide or 'navigation' in hide or layout in ('wide', 'landing', 'blog') -%}{%- set side_items = [] -%}{%- endif -%}
 {#- On small screens the header tabs are hidden, so the drawer lists them too. -#}
-{%- set drawer_tabs = tabs_on and 'navigation' not in hide and layout != 'landing' -%}
+{%- set drawer_tabs = tabs_on and 'navigation' not in hide -%}
+{%- macro sidebar() %}
+    <aside class="sumi-sidebar{% if not side_items %} sumi-sidebar--tabs-only{% endif %}" id="sumi-sidebar" aria-label="{{ t('navigation') }}">
+      <div class="sumi-sidebar-inner">
+        {%- set items = side_items %}
+        {%- if drawer_tabs %}
+        <ul class="sumi-nav-list sumi-sidebar-tabs">
+          {%- for item in nav.items if not (item.is_page and item.is_homepage) %}
+          <li class="sumi-nav-page"><a{% if item.active %} class="is-active"{% endif %} href="{{ m.first_url(item) | trim }}"{% if item.is_link and item.url.startswith('http') %} target="_blank" rel="noopener"{% endif %}>{{ item.title }}</a></li>
+          {%- endfor %}
+        </ul>
+        {%- endif %}
+        {%- if items %}
+        {%- if tabs_on and active_top and active_top.is_section %}
+        {%- set top_index = items[0] if items[0].is_page and items[0].file.name == 'index' else None %}
+        {%- if top_index %}
+        <a class="sumi-sidebar-title{% if top_index.active %} is-current{% endif %}" href="{{ top_index.url | url }}"{% if top_index.active %} aria-current="page"{% endif %}>{{ active_top.title }}</a>
+        {%- set items = items[1:] %}
+        {%- else %}
+        <div class="sumi-sidebar-title">{{ active_top.title }}</div>
+        {%- endif %}
+        {%- endif %}
+        <nav class="sumi-nav">{{ m.nav_tree(items, 1) }}</nav>
+        {%- endif %}
+      </div>
+    </aside>
+{%- endmacro %}
 {%- set toc_list = page.toc.items if page and page.toc else [] -%}
 {%- if toc_list | length == 1 and toc_list[0].level == 1 -%}{%- set toc_list = toc_list[0].children -%}{%- endif -%}
 {%- set show_toc = toc_list | length > 0 and 'toc' not in hide and layout not in ('wide', 'landing', 'blog') -%}
@@ -102,33 +128,12 @@
   {%- endif %}
   {%- block header %}{% include "partials/header.html" %}{% endblock %}
   <div class="sumi-version-banner" hidden></div>
+  {#- A drawer with only the tabs sits outside the layout, so pages that replace
+      the layout (landing pages, custom templates) still have a menu on phones. -#}
+  {%- if drawer_tabs and not side_items %}{{ sidebar() }}{% endif %}
   {%- block layout %}
   <div class="sumi-shell{% if not side_items %} sumi-shell--no-side{% endif %}{% if not show_toc %} sumi-shell--no-toc{% endif %}">
-    {%- if side_items or drawer_tabs %}
-    <aside class="sumi-sidebar{% if not side_items %} sumi-sidebar--tabs-only{% endif %}" id="sumi-sidebar" aria-label="{{ t('navigation') }}">
-      <div class="sumi-sidebar-inner">
-        {%- if drawer_tabs %}
-        <ul class="sumi-nav-list sumi-sidebar-tabs">
-          {%- for item in nav.items if not (item.is_page and item.is_homepage) %}
-          <li class="sumi-nav-page"><a{% if item.active %} class="is-active"{% endif %} href="{{ m.first_url(item) | trim }}"{% if item.is_link and item.url.startswith('http') %} target="_blank" rel="noopener"{% endif %}>{{ item.title }}</a></li>
-          {%- endfor %}
-        </ul>
-        {%- endif %}
-        {%- if side_items %}
-        {%- if tabs_on and active_top and active_top.is_section %}
-        {%- set top_index = side_items[0] if side_items and side_items[0].is_page and side_items[0].file.name == 'index' else None %}
-        {%- if top_index %}
-        <a class="sumi-sidebar-title{% if top_index.active %} is-current{% endif %}" href="{{ top_index.url | url }}"{% if top_index.active %} aria-current="page"{% endif %}>{{ active_top.title }}</a>
-        {%- set side_items = side_items[1:] %}
-        {%- else %}
-        <div class="sumi-sidebar-title">{{ active_top.title }}</div>
-        {%- endif %}
-        {%- endif %}
-        <nav class="sumi-nav">{{ m.nav_tree(side_items, 1) }}</nav>
-        {%- endif %}
-      </div>
-    </aside>
-    {%- endif %}
+    {%- if side_items %}{{ sidebar() }}{% endif %}
     <main class="sumi-main" id="content">
       {%- block content %}
       <article class="sumi-article">
