@@ -28,10 +28,11 @@ theme:
 | `social_image` | string | | 页面分享到 X、Slack、Mastodon 等平台时显示的预览图：`docs/` 中的一张图片（约 1200×630，需要 `site_url`），或者一个完整 URL。页面可以在 front matter 中用 `image:` 指定自己的预览图。 |
 | `brand` | string | `site_name` | 页眉品牌名的 HTML，例如 `"MkDocs<b>ng</b>"`。 |
 | `announcement` | string | | 页眉上方可关闭的公告栏的 HTML。读者关闭旧公告后，新的公告仍会显示。 |
-| `navigation_tabs` | boolean | `true` | 在页眉中把顶层章节显示为标签。设为 `false` 时，整个导航都放在侧边栏中。 |
+| `navigation_tabs` | boolean 或 `always` | `true` | 在页眉中把顶层章节显示为标签。设为 `false` 时，整个导航都放在侧边栏中。设为 `always` 时，即使导航没有章节，也把顶层页面和链接显示为标签，适合只有几个页面的站点。 |
 | `toc_depth` | integer | `3` | 页面目录中最深的标题级别。 |
 | `hide` | list | `[]` | 在每个页面上隐藏的部分：`toc`、`sidebar`、`breadcrumbs`、`actions`、`pager`、`footer`、`feedback`、`comments`。 |
 | `version_provider` | string | | 设为 `mike` 显示版本菜单。见[导航](navigation.md#versions)。 |
+| `versions` | list | | 放在站点文件夹里的各个版本，最新的在前：`title` 和 `path`。见[导航](navigation.md#versions-in-folders)。 |
 | `bilingual_view` | boolean | `true` | 多语言站点上，提供页面与译文并排阅读的双语对照视图。见[语言](i18n.md#bilingual-view)。 |
 | `comments` | mapping | | 文档页和博客文章下方的 Giscus 评论。见[评论](../run/comments.md)。 |
 | `feedback` | boolean 或 mapping | | “这页内容对你有帮助吗？”反馈组件。Material 的 `extra.analytics.feedback` 同样有效。见[访问统计与反馈](../run/analytics.md)。 |

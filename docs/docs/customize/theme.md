@@ -28,10 +28,11 @@ theme:
 | `social_image` | string | | The preview image shown when a page is shared on X, Slack, Mastodon and the like: an image in `docs/` (about 1200×630, needs `site_url`) or a full URL. A page can use its own with `image:` in its front matter. |
 | `brand` | string | `site_name` | HTML for the header brand, e.g. `"MkDocs<b>ng</b>"`. |
 | `announcement` | string | | HTML for a dismissible bar above the header. A new message reappears for readers who dismissed an older one. |
-| `navigation_tabs` | boolean | `true` | Show top-level sections as tabs in the header. When `false`, the whole navigation is in the sidebar. |
+| `navigation_tabs` | boolean or `always` | `true` | Show top-level sections as tabs in the header. When `false`, the whole navigation is in the sidebar. `always` shows the top-level pages and links as tabs even when the navigation has no sections, for a site of a few pages. |
 | `toc_depth` | integer | `3` | The deepest heading level in the page table of contents. |
 | `hide` | list | `[]` | Parts to hide on every page: `toc`, `sidebar`, `breadcrumbs`, `actions`, `pager`, `footer`, `feedback`, `comments`. |
 | `version_provider` | string | | `mike` to show a version menu. See [Navigation](navigation.md#versions). |
+| `versions` | list | | Versions kept in folders of the site, the latest first: `title` and `path`. See [Navigation](navigation.md#versions-in-folders). |
 | `bilingual_view` | boolean | `true` | On a multi-language site, offer a side-by-side view of a page and its translation. See [Languages](i18n.md#bilingual-view). |
 | `comments` | mapping | | Giscus comments under docs pages and blog posts. See [Comments](../run/comments.md). |
 | `feedback` | boolean or mapping | | A "Was this page helpful?" widget. Material's `extra.analytics.feedback` works too. See [Analytics and feedback](../run/analytics.md). |

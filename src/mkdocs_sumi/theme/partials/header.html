@@ -33,6 +33,16 @@
         <ul class="sumi-menu-list" role="menu"></ul>
       </div>
       {%- endif %}
+      {%- if versions and not config.theme.version_provider %}
+      <div class="sumi-menu sumi-version-menu">
+        <button class="sumi-chip-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="{{ t('version') }}">{{ icon('git-branch') }}<span class="sumi-version-current">{{ vns.current.title }}</span>{{ icon('chevron-down', 'sumi-chevron') }}</button>
+        <ul class="sumi-menu-list" role="menu">
+          {%- for v in versions %}
+          <li role="none"><a role="menuitem" href="{{ (v.path or './') | url }}"{% if v is sameas vns.current %} aria-current="true"{% endif %}>{{ v.title }}{% if loop.first %} <span class="sumi-menu-note">{{ t('latest') }}</span>{% endif %}</a></li>
+          {%- endfor %}
+        </ul>
+      </div>
+      {%- endif %}
       {%- if config.extra.alternate %}
       <div class="sumi-menu sumi-lang-menu">
         <button class="sumi-icon-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="{{ t('language') }}" title="{{ t('language') }}">{{ icon('languages') }}</button>

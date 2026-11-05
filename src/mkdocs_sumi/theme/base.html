@@ -6,7 +6,8 @@
 {%- set hide = (page.meta.hide if page and page.meta and page.meta.hide else []) + (theme.hide or []) -%}
 {%- set layout = page.meta.layout if page and page.meta and page.meta.layout else 'docs' -%}
 {%- set has_sections = nav.items | selectattr('is_section') | list | length > 0 -%}
-{%- set tabs_on = theme.navigation_tabs and has_sections -%}
+{#- `navigation_tabs: always` shows top-level items as tabs even when the nav has no sections. -#}
+{%- set tabs_on = (theme.navigation_tabs and has_sections) or theme.navigation_tabs == 'always' -%}
 {%- set active_top = nav.items | selectattr('active') | first -%}
 {%- if tabs_on -%}
   {%- set side_items = active_top.children if active_top and active_top.is_section else [] -%}
@@ -15,10 +16,14 @@
 {%- endif -%}
 {%- if 'sidebar' in hide or 'navigation' in hide or layout in ('wide', 'landing', 'blog') -%}{%- set side_items = [] -%}{%- endif -%}
 {#- On small screens the header tabs are hidden, so the drawer lists them too. -#}
-{%- set drawer_tabs = tabs_on and 'navigation' not in hide and layout != 'landing' -%}
+{%- set drawer_tabs = tabs_on and 'navigation' not in hide -%}
 {%- set toc_list = page.toc.items if page and page.toc else [] -%}
 {%- if toc_list | length == 1 and toc_list[0].level == 1 -%}{%- set toc_list = toc_list[0].children -%}{%- endif -%}
 {%- set show_toc = toc_list | length > 0 and 'toc' not in hide and layout not in ('wide', 'landing', 'blog') -%}
+{#- Versions kept in folders of the site (`theme.versions`): the first is the latest. -#}
+{%- set versions = theme.versions if theme.versions is iterable and theme.versions is not string else [] -%}
+{%- set vns = namespace(current=versions[0] if versions else None) -%}
+{%- for v in versions if v.path and page and page.url.startswith(v.path) %}{% set vns.current = v %}{% endfor -%}
 <!doctype html>
 <html lang="{{ sumi_language | replace('_', '-') }}"{% if sumi_dir == 'rtl' %} dir="rtl"{% endif %} data-palette="{{ theme.palette }}" data-layout="{{ layout }}" class="no-js">
 <head>
@@ -100,7 +105,11 @@
   </div>
   {%- endif %}
   {%- block header %}{% include "partials/header.html" %}{% endblock %}
+  {%- if versions and vns.current is not sameas versions[0] %}
+  <div class="sumi-version-banner">{{ t('old_version') }} <a href="{{ (versions[0].path or './') | url }}">{{ t('go_latest') }}</a></div>
+  {%- else %}
   <div class="sumi-version-banner" hidden></div>
+  {%- endif %}
   {%- block layout %}
   <div class="sumi-shell{% if not side_items %} sumi-shell--no-side{% endif %}{% if not show_toc %} sumi-shell--no-toc{% endif %}">
     {%- if side_items or drawer_tabs %}

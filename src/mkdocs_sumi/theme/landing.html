@@ -19,8 +19,10 @@
       - {type: faq, title, items: [{q, a}]}
       - {type: cta, title, text, actions}
       - {type: content}   # the page's Markdown body
+      - {type: content, toc: true}   # the body as a docs page, with its table of contents
+      - {type: include, template: partials/my-section.html}   # a template from custom_dir
 -#}
-{% extends "base.html" %}
+{% extends "main.html" %}
 {%- macro actions(list) -%}
 <div class="sumi-actions-row">
   {%- for a in list or [] %}
@@ -48,6 +50,18 @@
 {% block layout %}
 {%- set hero = page.meta.hero or {} -%}
 {%- set sections = page.meta.sections or [{'type': 'content'}] -%}
+{%- if drawer_tabs %}
+{#- On small screens the header tabs are hidden: the menu button opens them in a drawer. -#}
+<aside class="sumi-sidebar sumi-sidebar--tabs-only" id="sumi-sidebar" aria-label="{{ t('navigation') }}">
+  <div class="sumi-sidebar-inner">
+    <ul class="sumi-nav-list sumi-sidebar-tabs">
+      {%- for item in nav.items if not (item.is_page and item.is_homepage) %}
+      <li class="sumi-nav-page"><a{% if item.active %} class="is-active"{% endif %} href="{{ m.first_url(item) | trim }}"{% if item.is_link and item.url.startswith('http') %} target="_blank" rel="noopener"{% endif %}>{{ item.title }}</a></li>
+      {%- endfor %}
+    </ul>
+  </div>
+</aside>
+{%- endif %}
 <main class="sumi-landing" id="content">
   <section class="sumi-hero{% if hero.code or hero.image %} sumi-hero--split{% endif %}">
     <div class="sumi-hero-bg" aria-hidden="true"></div>
@@ -69,11 +83,48 @@
     </div>
   </section>
 
+  {%- set toc_list = page.toc.items if page and page.toc else [] -%}
+  {%- if toc_list | length == 1 and toc_list[0].level == 1 -%}{%- set toc_list = toc_list[0].children -%}{%- endif -%}
   {%- for s in sections %}
   {%- set type = s.type or 'content' %}
-  <section class="sumi-land-section sumi-land-{{ type }}{% if s.tone == 'soft' %} sumi-land--soft{% endif %}"{% if s.id %} id="{{ s.id }}"{% endif %}>
+  {%- if type == 'content' and s.toc %}
+  {#- The body as a docs page: the article beside its table of contents. -#}
+  {%- set with_toc = toc_list | length > 0 and 'toc' not in hide %}
+  <section class="sumi-land-section sumi-land-docs{% if s.tone == 'soft' %} sumi-land--soft{% endif %}{% if s.class %} {{ s.class }}{% endif %}"{% if s.id %} id="{{ s.id }}"{% endif %}>
+    <div class="sumi-shell sumi-shell--no-side{% if not with_toc %} sumi-shell--no-toc{% endif %}">
+      <div class="sumi-main">
+        <article class="sumi-article">
+          {%- if 'actions' not in hide %}
+          <div class="sumi-article-top">{% include "partials/page-actions.html" %}</div>
+          {%- endif %}
+          {%- if with_toc %}
+          <details class="sumi-toc-inline">
+            <summary>{{ icon('list') }}<span>{{ t('on_this_page') }}</span>{{ icon('chevron-down', 'sumi-chevron') }}</summary>
+            {% include "partials/toc.html" %}
+          </details>
+          {%- endif %}
+          <div class="sumi-content sumi-prose" data-pagefind-body>{{ page.content }}</div>
+        </article>
+      </div>
+      {%- if with_toc %}
+      <aside class="sumi-rail" aria-label="{{ t('on_this_page') }}">
+        <div class="sumi-rail-inner">
+          <div class="sumi-rail-title">{{ t('on_this_page') }}</div>
+          {% include "partials/toc.html" %}
+          {%- if s.aside %}{% include s.aside %}{% endif %}
+          <a class="sumi-rail-top" href="#">{{ icon('arrow-up') }}{{ t('back_to_top') }}</a>
+        </div>
+      </aside>
+      {%- endif %}
+    </div>
+  </section>
+  {%- else %}
+  <section class="sumi-land-section sumi-land-{{ type }}{% if s.tone == 'soft' %} sumi-land--soft{% endif %}{% if s.class %} {{ s.class }}{% endif %}"{% if s.id %} id="{{ s.id }}"{% endif %}>
     <div class="sumi-land-inner">
-      {%- if type == 'content' %}
+      {%- if type == 'include' %}
+      {{ section_head(s) }}
+      {% include s.template %}
+      {%- elif type == 'content' %}
       <div class="sumi-prose sumi-land-prose">{{ page.content }}</div>
       {%- elif type == 'features' %}
       {{ section_head(s) }}
@@ -128,6 +179,7 @@
       {%- endif %}
     </div>
   </section>
+  {%- endif %}
   {%- endfor %}
 </main>
 <script>
