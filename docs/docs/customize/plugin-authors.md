@@ -77,6 +77,8 @@ document.addEventListener("sumi:theme", (event) => {
 
 `data-theme` is set before the page is drawn, so a script can read it at any time. Don't rely on Sumi's own script having run first: it is deferred.
 
+In the [bilingual view](i18n.md#bilingual-view) a page is loaded a second time inside a frame named `sumi-pane`, with the class `sumi-pane` on `<html>`. A script that counts visits or opens a popup should skip it: `if (window.name === 'sumi-pane') return;`.
+
 ## Templates
 
 Sumi has the usual MkDocs blocks. A plugin or user override that extends Material's `main.html` maps like this:

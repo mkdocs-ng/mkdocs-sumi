@@ -395,10 +395,51 @@ class SumiPlugin(BasePlugin[SumiConfig]):
             ctx['blog_layout'] = page.meta.get('blog_layout') or self.config.blog.layout
         if page.meta.get('template') == 'releases.html':
             ctx['releases'] = self._releases(page, config)
+        ctx['translations'] = self._translations(page, config, context.get('i18n'))
         ctx['nav_json'] = Markup(self._nav_index())
         ctx['strings_json'] = Markup(self._strings())
         context['sumi'] = ctx
         return context
+
+    def _translations(self, page: Page, config: MkDocsConfig, i18n: dict | None) -> list[dict[str, str]]:
+        """The other languages that have their own version of this page, for the bilingual view."""
+        if not i18n or i18n.get('fallback') or config.theme.get('bilingual_view') is False:
+            return []
+        out = []
+        for lang in i18n.get('languages') or []:
+            if lang.get('current') or not lang.get('available'):
+                continue
+            if page.file.src_uri in self._translated_pages(config, lang['code']):
+                out.append({'lang': lang['code'], 'name': lang['name'], 'link': lang['link']})
+        return out
+
+    def _translated_pages(self, config: MkDocsConfig, code: str) -> set[str]:
+        """The pages a language has its own source for, not borrowed from the default language."""
+        cache = self.__dict__.setdefault('_translated_cache', {})
+        if code in cache:
+            return cache[code]
+        pages: set[str] = set()
+        try:
+            from mkdocs import languages as ng_languages
+
+            skipped = ng_languages.docs_dirs(config)
+
+            def walk(src_dir: str):
+                for source_dir, dirnames, filenames in os.walk(src_dir, followlinks=True):
+                    dirnames[:] = sorted(d for d in dirnames
+                                         if os.path.abspath(os.path.join(source_dir, d)) not in skipped)
+                    for name in filenames:
+                        yield os.path.relpath(os.path.join(source_dir, name), src_dir).replace(os.sep, '/')
+
+            for lang in config.get('languages') or []:
+                if lang.code == code:
+                    for source in ng_languages.select_sources(config, lang, walk):
+                        if not source.is_fallback and utils.is_markdown_file(source.src_uri):
+                            pages.add(source.src_uri)
+        except (ImportError, AttributeError):  # MkDocs NG before 1.11
+            pass
+        cache[code] = pages
+        return pages
 
     def _nav_index(self) -> str:
         """Every page in the nav, with its section path, for the command palette."""

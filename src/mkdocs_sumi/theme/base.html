@@ -77,6 +77,8 @@
       d.dataset.theme = mode;
       d.dataset.mdColorScheme = mode === 'dark' ? 'slate' : 'default';
       d.classList.replace('no-js', 'js');
+      // A page opened inside the bilingual view shows its content only.
+      if (window.name === 'sumi-pane') d.classList.add('sumi-pane');
     })();
   </script>
   {%- block styles %}
@@ -175,6 +177,7 @@
       edit: {{ (page.edit_url if page and page.edit_url else None) | tojson }},
       nav: {{ sumi.nav_json or '[]' }},
       alternate: {{ (config.extra.alternate or []) | tojson }},
+      translations: [{% for tr in (sumi.translations or []) %}{{ {'lang': tr.lang, 'name': tr.name, 'href': tr.link | url} | tojson }}{% if not loop.last %}, {% endif %}{% endfor %}],
       t: {{ sumi.strings_json or '{}' }}
     };
   </script>

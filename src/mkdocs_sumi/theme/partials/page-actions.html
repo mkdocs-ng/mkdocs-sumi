@@ -1,4 +1,7 @@
 <div class="sumi-actions">
+  {%- if sumi.translations %}
+  <button class="sumi-icon-btn sumi-chip-icon sumi-compare-btn" type="button" data-sumi-compare aria-label="{{ t('compare_open') }}" title="{{ t('compare_open') }}">{{ icon('columns-2') }}</button>
+  {%- endif %}
   {%- if sumi.markdown_url %}
   <button class="sumi-chip-btn sumi-copy-page" type="button" data-sumi-copy-page aria-label="{{ t('copy_markdown') }}" title="{{ t('copy_markdown') }}">{{ icon('copy') }}<span>{{ t('copy_markdown') }}</span></button>
   {%- endif %}

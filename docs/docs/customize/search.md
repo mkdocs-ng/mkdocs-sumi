@@ -37,6 +37,7 @@ The palette is also a command launcher. Type `>` (or press <kbd>></kbd> on a pag
 | Print | Print the current page |
 | Go to top / Go home | Navigate |
 | Switch language / version | When `extra.alternate` or versions are configured |
+| Open bilingual view | On a page that has a translation (<kbd>b</kbd>) |
 | Open llms.txt | When the `llms_txt` plugin is enabled |
 
 Press <kbd>?</kbd> to see every keyboard shortcut.

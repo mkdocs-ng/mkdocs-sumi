@@ -548,3 +548,36 @@ def test_dates_in_the_page_language():
     assert format_date(2026, 11, 5, 'es') == '5 de noviembre de 2026'
     assert format_date(2026, 11, 5, 'ko') == '2026년 11월 5일'
     assert format_date(2026, 11, 5, 'zh_TW') == '2026年11月5日'
+
+
+def test_bilingual_view_only_on_translated_pages(tmp_path):
+    config = BASIC + """
+    languages:
+      en: English
+      zh:
+        name: 简体中文
+    """
+    out = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'index.zh.md': '# 首页\n',
+        'guide.md': '# Guide\n',
+    }, config)
+    home = (out / 'index.html').read_text(encoding='utf-8')
+    assert 'data-sumi-compare' in home
+    assert 'class="sumi-compare"' in home
+    assert '"href": "zh/", "lang": "zh", "name": "\\u7b80\\u4f53\\u4e2d\\u6587"' in home
+    zh_home = (out / 'zh' / 'index.html').read_text(encoding='utf-8')
+    assert '"href": "../", "lang": "en"' in zh_home
+    # Not translated: no bilingual view in either language.
+    assert 'data-sumi-compare' not in (out / 'guide' / 'index.html').read_text(encoding='utf-8')
+    assert 'data-sumi-compare' not in (out / 'zh' / 'guide' / 'index.html').read_text(encoding='utf-8')
+
+
+def test_bilingual_view_can_be_turned_off(tmp_path):
+    config = BASIC.replace('      name: sumi\n', '      name: sumi\n      bilingual_view: false\n') + """
+    languages:
+      en: English
+      zh: 简体中文
+    """
+    out = _site(tmp_path, {'index.md': '# Home\n', 'index.zh.md': '# 首页\n'}, config)
+    assert 'data-sumi-compare' not in (out / 'index.html').read_text(encoding='utf-8')

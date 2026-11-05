@@ -194,3 +194,24 @@ def test_mobile_drawer_on_a_page_outside_the_tabs(base_url, browser):
     page.wait_for_timeout(400)
     assert page.locator('.sumi-sidebar-tabs').is_visible()
     ctx.close()
+
+
+def test_bilingual_view_scrolls_both_languages_together(base_url, page):
+    url, _ = base_url
+    page.goto(url + 'docs/write/code/', wait_until='networkidle')
+    page.get_by_role('button', name='Open bilingual view').click()
+    dialog = page.locator('.sumi-compare')
+    sync_api.expect(dialog).to_be_visible()
+    left, right = page.frame_locator('.sumi-compare iframe').nth(0), page.frame_locator('.sumi-compare iframe').nth(1)
+    sync_api.expect(right.locator('html.sumi-pane')).to_be_attached()
+    sync_api.expect(right.locator('html')).to_have_attribute('lang', 'zh')
+    # The pane shows the content only.
+    sync_api.expect(left.locator('.sumi-header')).to_be_hidden()
+    left.locator('#diffs').evaluate('h => h.scrollIntoView()')
+    page.wait_for_timeout(400)
+    top = right.locator('#diffs').evaluate('h => h.getBoundingClientRect().top')
+    assert 0 <= top < 80
+    page.keyboard.press('Escape')
+    sync_api.expect(dialog).to_be_hidden()
+    assert page.url.endswith('/docs/write/code/')
+    assert not page.errors

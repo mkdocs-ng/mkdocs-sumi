@@ -32,6 +32,7 @@ theme:
 | `toc_depth` | integer | `3` | 页面目录中最深的标题级别。 |
 | `hide` | list | `[]` | 在每个页面上隐藏的部分：`toc`、`sidebar`、`breadcrumbs`、`actions`、`pager`、`footer`。 |
 | `version_provider` | string | | 设为 `mike` 显示版本菜单。见[导航](navigation.md#versions)。 |
+| `bilingual_view` | boolean | `true` | 多语言站点上，提供页面与译文并排阅读的双语对照视图。见[语言](i18n.md#bilingual-view)。 |
 | `repo_icon` | string | | 覆盖仓库图标，例如 `brand-gitlab`。默认根据 `repo_url` 识别。 |
 | `keyboard` | boolean | `true` | 启用单键快捷键。<kbd>⌘</kbd> <kbd>K</kbd> 始终可用。 |
 | `credit` | boolean | `true` | 在页脚显示“由 MkDocs 与 Sumi 构建”。 |

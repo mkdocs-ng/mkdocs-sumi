@@ -1300,3 +1300,48 @@ a.sumi-sidebar-title.is-current { color: var(--sumi-accent-ink); }
   [dir="rtl"] .sumi-sidebar { inset: var(--sumi-header-h) 0 0 auto; transform: translateX(102%); }
   [dir="rtl"] .sumi-sidebar.is-open { transform: none; }
 }
+
+/* ── Bilingual view ─────────────────────────────────────────────────── */
+.sumi-compare-btn { margin-inline-end: 6px; border: 1px solid var(--sumi-line-2); }
+.sumi-compare {
+  width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0;
+  background: var(--sumi-bg); color: var(--sumi-fg);
+}
+.sumi-compare[open] { display: flex; flex-direction: column; }
+.sumi-compare::backdrop { background: var(--sumi-bg); }
+.sumi-compare-bar { display: flex; flex: none; align-items: center; gap: 10px; min-height: 52px; padding: 6px 10px 6px 18px; border-bottom: 1px solid var(--sumi-line); }
+.sumi-compare-title { display: inline-flex; align-items: center; gap: 8px; margin-inline-end: auto; font-size: 14.5px; font-weight: 600; }
+.sumi-compare-title .sumi-icon { width: 17px; height: 17px; color: var(--sumi-accent); }
+.sumi-compare-switch { display: none; padding: 2px; border: 1px solid var(--sumi-line); border-radius: 9px; background: var(--sumi-bg-elev); }
+.sumi-compare-switch button { padding: 5px 10px; border: 0; border-radius: 7px; background: none; color: var(--sumi-fg-2); font: inherit; font-size: 13.5px; cursor: pointer; }
+.sumi-compare-switch button[aria-pressed="true"] { background: var(--sumi-bg-soft); color: var(--sumi-fg); font-weight: 600; }
+.sumi-compare-lang { height: 32px; padding: 0 8px; border: 1px solid var(--sumi-line-2); border-radius: 8px; background: var(--sumi-bg-elev); color: var(--sumi-fg); font: inherit; font-size: 13.5px; }
+.sumi-compare-sync { display: inline-flex; align-items: center; gap: 6px; color: var(--sumi-fg-2); font-size: 13.5px; cursor: pointer; white-space: nowrap; }
+.sumi-compare-sync input { accent-color: var(--sumi-accent); }
+.sumi-compare-panes { position: relative; display: grid; flex: 1; grid-template-columns: 1fr 1fr; min-height: 0; }
+.sumi-compare-pane { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.sumi-compare-pane + .sumi-compare-pane { border-inline-start: 1px solid var(--sumi-line); }
+.sumi-compare-head { flex: none; padding: 7px 18px; border-bottom: 1px solid var(--sumi-line); background: var(--sumi-bg-soft); color: var(--sumi-fg-2); font-size: 12.5px; font-weight: 600; letter-spacing: .02em; }
+.sumi-compare-pane iframe { display: block; flex: 1; width: 100%; min-height: 0; border: 0; background: var(--sumi-bg); }
+.sumi-compare-error { position: absolute; inset: 40px 0 0; display: grid; place-items: center; padding: 24px; color: var(--sumi-fg-2); text-align: center; }
+@media (max-width: 899px) {
+  .sumi-compare-bar { padding-inline-start: 12px; }
+  .sumi-compare-title span, .sumi-compare-sync span { display: none; }
+  .sumi-compare-switch { display: flex; margin-inline-end: auto; }
+  .sumi-compare-title { margin-inline-end: 0; }
+  .sumi-compare-panes { grid-template-columns: minmax(0, 1fr); }
+  .sumi-compare-pane { grid-area: 1 / 1; }
+  .sumi-compare-pane + .sumi-compare-pane { border: 0; }
+  .sumi-compare-head { display: none; }
+  /* The hidden pane keeps its layout, so it can follow the visible one. */
+  .sumi-compare[data-show="0"] .sumi-compare-pane:nth-child(2), .sumi-compare[data-show="1"] .sumi-compare-pane:nth-child(1) { visibility: hidden; }
+}
+@media (forced-colors: active) {
+  .sumi-compare-switch button[aria-pressed="true"] { outline: 2px solid CanvasText; }
+}
+/* A page inside the bilingual view: its content only. */
+.sumi-pane { --sumi-header-h: 0px; }
+.sumi-pane :is(.sumi-skip, .sumi-announce, .sumi-header, .sumi-version-banner, .sumi-sidebar, .sumi-scrim, .sumi-rail,
+  .sumi-article-top, .sumi-toc-inline, .sumi-article-footer, .sumi-footer, .sumi-comments, .sumi-feedback) { display: none !important; }
+.sumi-pane .sumi-shell { display: block; max-width: none; padding: 28px clamp(16px, 4vw, 40px) 50vh; }
+.sumi-pane .sumi-main, .sumi-pane .sumi-article { max-width: var(--sumi-content-w); margin: 0 auto; padding: 0; }

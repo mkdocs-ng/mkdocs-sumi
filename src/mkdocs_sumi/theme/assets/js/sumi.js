@@ -703,6 +703,7 @@
     (S.versionList || []).forEach(function (v) {
       list.push({ title: t('cmd_version', { name: v.title || v.version }), run: function () { location.href = new URL('../' + v.version + '/', new URL(url('./'), location.href)).href; }, keys: 'version 版本' });
     });
+    if (openCompare) list.push({ title: t('compare_open'), run: function () { openCompare(); }, keys: 'bilingual compare translation side 双语 对照 翻译' });
     if (doc.querySelector('link[href$="llms.txt"]')) list.push({ title: t('cmd_llms'), run: function () { location.href = url('llms.txt'); }, keys: 'llms ai agent' });
     return list;
   }
@@ -775,6 +776,135 @@
     pal.addEventListener('click', function (e) { if (e.target === pal) pal.close(); });
   }
 
+  /* ── Bilingual view ────────────────────────────────────────────────── */
+  // Two existing pages side by side, this one and its translation, each in
+  // its own frame. Headings share their ids across languages, so scrolling
+  // one pane brings the other to the same section.
+  var inPane = root.classList.contains('sumi-pane');
+  var openCompare = null;
+  if (inPane) {
+    S.keyboard = false;
+    // Links to other pages open in the main window; anchors stay in the pane.
+    doc.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href]');
+      if (!a || a.target) return;
+      var u = new URL(a.href, location.href);
+      if (u.origin === location.origin && u.pathname === location.pathname && u.search === location.search) return;
+      a.target = '_top';
+    }, true);
+    doc.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      try { var host = parent.document.querySelector('.sumi-compare[open]'); if (host) host.close(); } catch (err) {}
+    });
+  }
+  var cmp = !inPane && (S.translations || []).length ? $('.sumi-compare') : null;
+  if (cmp) {
+    var frames = $$('iframe', cmp);
+    var langSel = $('.sumi-compare-lang', cmp);
+    var syncBox = $('.sumi-compare-sync input', cmp);
+    var target = 0, started = false, lock = -1, lockTimer = null;
+    var heads = function (w) {
+      return Array.prototype.slice.call(w.document.querySelectorAll('.sumi-content :is(h1, h2, h3, h4, h5, h6)[id]'));
+    };
+    var topOf = function (w, el) { return el.getBoundingClientRect().top + w.scrollY; };
+    var maxY = function (w) { return Math.max(0, w.document.documentElement.scrollHeight - w.innerHeight); };
+    // Where a reader is: the last heading passed, and how far towards the next one.
+    var where = function (w) {
+      var hs = heads(w), y = w.scrollY + 8, i = -1;
+      for (var k = 0; k < hs.length && topOf(w, hs[k]) <= y; k++) i = k;
+      var a = i >= 0 ? topOf(w, hs[i]) : 0;
+      var b = i + 1 < hs.length ? topOf(w, hs[i + 1]) : maxY(w);
+      return {
+        id: i >= 0 ? hs[i].id : null,
+        f: b > a ? Math.min(1, Math.max(0, (w.scrollY - a) / (b - a))) : 0,
+        r: maxY(w) ? w.scrollY / maxY(w) : 0
+      };
+    };
+    var goTo = function (w, pos) {
+      var hs = heads(w), i = -1;
+      if (pos.id) for (var k = 0; k < hs.length; k++) if (hs[k].id === pos.id) { i = k; break; }
+      if (pos.id && i < 0) { w.scrollTo(0, pos.r * maxY(w)); return; }
+      var a = i >= 0 ? topOf(w, hs[i]) : 0;
+      var b = i + 1 < hs.length ? topOf(w, hs[i + 1]) : maxY(w);
+      w.scrollTo(0, a + pos.f * (b - a));
+    };
+    var ready = function (n) {
+      try { return !!frames[n].contentDocument.querySelector('.sumi-content'); } catch (e) { return false; }
+    };
+    var follow = function (from) {
+      var to = 1 - from;
+      if (!syncBox.checked || lock === from || !ready(0) || !ready(1)) return;
+      lock = to;
+      goTo(frames[to].contentWindow, where(frames[from].contentWindow));
+      clearTimeout(lockTimer);
+      lockTimer = setTimeout(function () { lock = -1; }, 150);
+    };
+    frames.forEach(function (f, n) {
+      f.addEventListener('load', function () {
+        var pane = f.parentNode, err = $('.sumi-compare-error', pane);
+        if (err) pane.removeChild(err);
+        if (!ready(n)) {
+          if (f.getAttribute('src')) {
+            err = doc.createElement('div');
+            err.className = 'sumi-compare-error';
+            err.textContent = t('compare_failed');
+            pane.appendChild(err);
+          }
+          return;
+        }
+        var ticking = false;
+        f.contentWindow.addEventListener('scroll', function () {
+          if (ticking) return;
+          ticking = true;
+          requestAnimationFrame(function () { ticking = false; follow(n); });
+        }, { passive: true });
+        // First open: start where the reader is on this page, then align the translation.
+        if (n === 0) goTo(f.contentWindow, where(window));
+        if (ready(0) && ready(1)) follow(0);
+      });
+    });
+    var load = function (n, href) {
+      // Replace the frame's page instead of adding a history entry.
+      if (frames[n].getAttribute('src') && frames[n].contentWindow) frames[n].contentWindow.location.replace(href);
+      else frames[n].src = href;
+    };
+    var setTarget = function (i) {
+      target = i;
+      var tr = S.translations[i];
+      $$('.sumi-compare-target-name', cmp).forEach(function (el) { el.textContent = tr.name; });
+      frames[1].title = tr.name;
+      frames[1].lang = tr.lang;
+      load(1, tr.href);
+    };
+    var show = function (n) {
+      cmp.dataset.show = String(n);
+      $$('.sumi-compare-switch button', cmp).forEach(function (b) { b.setAttribute('aria-pressed', String(+b.dataset.pane === n)); });
+    };
+    openCompare = function (restoring) {
+      if (cmp.open) return;
+      closeMenus();
+      cmp.showModal();
+      if (restoring !== true) history.pushState({ sumiCompare: true }, '');
+      if (!started) {
+        started = true;
+        load(0, location.pathname + location.search);
+        setTarget(target);
+      }
+    };
+    $$('[data-sumi-compare]').forEach(function (b) { b.addEventListener('click', function () { openCompare(); }); });
+    $('[data-close]', cmp).addEventListener('click', function () { cmp.close(); });
+    $$('.sumi-compare-switch button', cmp).forEach(function (b) { b.addEventListener('click', function () { show(+b.dataset.pane); }); });
+    if (langSel) langSel.addEventListener('change', function () { setTarget(+langSel.value); });
+    syncBox.addEventListener('change', function () { if (syncBox.checked) follow(+cmp.dataset.show || 0); });
+    // Back closes the reader, and closing it takes its history entry away.
+    cmp.addEventListener('close', function () { if (history.state && history.state.sumiCompare) history.back(); });
+    window.addEventListener('popstate', function () {
+      if (history.state && history.state.sumiCompare) openCompare(true);
+      else if (cmp.open) cmp.close();
+    });
+    if (history.state && history.state.sumiCompare) openCompare(true);
+  }
+
   /* ── Help dialog ───────────────────────────────────────────────────── */
   var help = $('.sumi-help');
   function openHelp() { if (help && !help.open) help.showModal(); }
@@ -801,6 +931,7 @@
       case '[': if (S.prev) location.href = S.prev; break;
       case ']': if (S.next) location.href = S.next; break;
       case '?': openHelp(); break;
+      case 'b': if (openCompare) openCompare(); break;
       case 'j': case 'k': {
         if (!headings.length) break;
         var y = (parseInt(getComputedStyle(root).getPropertyValue('--sumi-header-h'), 10) || 60) + 30;

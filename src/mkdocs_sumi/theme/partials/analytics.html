@@ -1,8 +1,15 @@
+{#- Pages shown inside the bilingual view (window.name "sumi-pane") are not counted. -#}
 {%- set a = config.extra.analytics or {} -%}
-{%- if a.provider == 'google' and a.property %}
-<script async src="https://www.googletagmanager.com/gtag/js?id={{ a.property }}"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config',{{ a.property | tojson }});</script>
-{%- elif config.google_analytics %}
-<script async src="https://www.googletagmanager.com/gtag/js?id={{ config.google_analytics[0] }}"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config',{{ config.google_analytics[0] | tojson }});</script>
+{%- set ga = a.property if a.provider == 'google' else (config.google_analytics[0] if config.google_analytics else None) -%}
+{%- if ga %}
+<script>
+  if (window.name !== 'sumi-pane') {
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { dataLayer.push(arguments); };
+    gtag('js', new Date()); gtag('config', {{ ga | tojson }});
+    var s = document.createElement('script'); s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent({{ ga | tojson }});
+    document.head.appendChild(s);
+  }
+</script>
 {%- endif %}

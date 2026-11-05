@@ -32,6 +32,7 @@ theme:
 | `toc_depth` | integer | `3` | The deepest heading level in the page table of contents. |
 | `hide` | list | `[]` | Parts to hide on every page: `toc`, `sidebar`, `breadcrumbs`, `actions`, `pager`, `footer`. |
 | `version_provider` | string | | `mike` to show a version menu. See [Navigation](navigation.md#versions). |
+| `bilingual_view` | boolean | `true` | On a multi-language site, offer a side-by-side view of a page and its translation. See [Languages](i18n.md#bilingual-view). |
 | `repo_icon` | string | | Override the repository icon, e.g. `brand-gitlab`. Detected from `repo_url` by default. |
 | `keyboard` | boolean | `true` | Enable single-key shortcuts. <kbd>⌘</kbd> <kbd>K</kbd> always works. |
 | `credit` | boolean | `true` | Show "Built with MkDocs and Sumi" in the footer. |

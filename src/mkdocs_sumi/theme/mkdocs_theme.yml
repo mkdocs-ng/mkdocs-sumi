@@ -29,6 +29,8 @@ announcement: null
 credit: true
 # Keyboard shortcuts (search, prev/next, theme...).
 keyboard: true
+# On a multi-language site, show a translated page side by side with this one.
+bilingual_view: true
 # Versions: "mike" reads the versions.json written by mike.
 version_provider: null
 # Hide parts of the page shell: any of toc, sidebar, breadcrumbs, pager, actions, footer.
