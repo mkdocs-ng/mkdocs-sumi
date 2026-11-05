@@ -67,3 +67,13 @@ stateDiagram-v2
 
 > [!NOTE]
 > If you use `pymdownx.superfences` with a custom fence for Mermaid, remove it: Sumi handles `mermaid` fences itself. To turn Sumi's handling off, set `mermaid: false` on the [plugin](../customize/plugin.md).
+
+## Reference
+
+| What | Details |
+| --- | --- |
+| Output | `<figure class="sumi-diagram">` holding the Mermaid source in `<pre class="mermaid">`, drawn as inline SVG. |
+| Without Sumi | A code block with the Mermaid source. GitHub draws it as a diagram too. |
+| JavaScript | Mermaid, bundled, loaded when a diagram nears the screen, split by diagram type. |
+| Limits | Readers without JavaScript see the source. Diagrams are drawn in the browser, so they are not in the search index. |
+{.compact}

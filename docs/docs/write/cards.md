@@ -49,3 +49,13 @@ Items without a link render as static cards — useful for a list of features:
 - :lucide-printer: **Printable**
   A whole-site print edition.
 {.cards}
+
+## Reference
+
+| What | Details |
+| --- | --- |
+| Output | `<ul class="sumi-cards">`, one `<li>` per card, with the whole card clickable. |
+| Without Sumi | A bullet list of links with descriptions. |
+| JavaScript | None. |
+| Limits | One link per card, used as its title. Keep descriptions to a sentence or two so the cards line up. |
+{.compact}

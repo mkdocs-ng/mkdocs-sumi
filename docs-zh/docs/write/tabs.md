@@ -85,3 +85,13 @@ markdown_extensions:
 ```
 
 打印时以及在 Markdown 副本中，所有标签页会依次显示在各自的标签下。
+
+## 参考 {#reference}
+
+| 项目 | 说明 |
+| --- | --- |
+| 输出 | `<div class="sumi-tabs">`，每个代码块一个带标签的 `<div class="sumi-tab">`。 |
+| 没有 Sumi 时 | 连续的几个代码块。 |
+| JavaScript | 切换标签时需要。没有它时，每个标签的内容都会显示在标签名下方。 |
+| 限制 | 代码块标签页只能放代码；要放文字请用 `pymdownx.tabbed`。 |
+{.compact}

@@ -79,3 +79,13 @@ Write inline code with single backticks: `mkdocs serve`. In prose, Sumi gives in
 
 > [!TIP]
 > To show tabs with one variant per operating system or language, see [Tabs](tabs.md).
+
+## Reference
+
+| What | Details |
+| --- | --- |
+| Output | Pygments HTML in `<div class="sumi-code">`, with a title bar when `title` is set. |
+| Without Sumi | A plain fenced code block. |
+| JavaScript | Only for the copy button. Highlighting happens at build time. |
+| Limits | Languages are the ones Pygments knows. Very long lines scroll sideways rather than wrap. |
+{.compact}

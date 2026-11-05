@@ -66,3 +66,13 @@ tests/
 ```
 
 The tree is built at build time from plain HTML `<details>` elements, so it needs no JavaScript and prints fully expanded.
+
+## Reference
+
+| What | Details |
+| --- | --- |
+| Output | `<div class="sumi-filetree">` built from nested `<details>` elements, with icons and comments. |
+| Without Sumi | A code block with the listing. |
+| JavaScript | None. |
+| Limits | Names are plain text: no links. Comments start with ` # `. |
+{.compact}

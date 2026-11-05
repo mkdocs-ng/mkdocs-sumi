@@ -73,3 +73,13 @@ Column alignment uses the standard colon syntax:
 
 > [!TIP]
 > For option and parameter references, use [fields](fields.md) instead of a wide table.
+
+## Reference
+
+| What | Details |
+| --- | --- |
+| Output | `<div class="sumi-table">` around the `<table>`, with the variants as classes. |
+| Without Sumi | A plain table. |
+| JavaScript | Only for the full-screen reader. |
+| Limits | Cells hold inline Markdown only. Very wide tables scroll sideways. |
+{.compact}

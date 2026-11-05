@@ -63,6 +63,10 @@ languages:
           - 发布与下载: docs/pages/releases.md
           - 打印版: docs/pages/print.md
         - 运营站点:
+          - 部署: docs/run/deploy.md
+          - 域名与预览: docs/run/domains.md
+          - 升级: docs/run/upgrade.md
+          - 常见问题: docs/run/troubleshooting.md
           - 访问统计与反馈: docs/run/analytics.md
           - 评论: docs/run/comments.md
         - 自定义:
@@ -122,6 +126,10 @@ nav:
       - Releases and downloads: docs/pages/releases.md
       - Print edition: docs/pages/print.md
     - Run your site:
+      - Deploy: docs/run/deploy.md
+      - Domains and previews: docs/run/domains.md
+      - Upgrade: docs/run/upgrade.md
+      - Troubleshooting: docs/run/troubleshooting.md
       - Analytics and feedback: docs/run/analytics.md
       - Comments: docs/run/comments.md
     - Customize:

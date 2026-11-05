@@ -50,3 +50,13 @@ With `attr_list`, set the width or float an image:
 
 > [!NOTE]
 > Images are lazy-loaded. Give large images explicit `width` and `height` attributes to avoid layout shift.
+
+## Reference
+
+| What | Details |
+| --- | --- |
+| Output | `<img loading="lazy">`, or `<figure class="sumi-figure">` with a `<figcaption>` when `caption` is set. |
+| Without Sumi | A normal image. `#only-light` and `#only-dark` images both show. |
+| JavaScript | Only for zoom. |
+| Limits | Zoom shows the image at its own size; it does not load a larger file. |
+{.compact}

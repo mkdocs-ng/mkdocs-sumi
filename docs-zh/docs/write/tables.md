@@ -73,3 +73,13 @@ description: 带图注的表格，以及全宽、紧凑和斑马纹等样式。
 
 > [!TIP]
 > 列出选项和参数时，请用[字段](fields.md)，而不是很宽的表格。
+
+## 参考 {#reference}
+
+| 项目 | 说明 |
+| --- | --- |
+| 输出 | `<table>` 外面包一层 `<div class="sumi-table">`，样式是类名。 |
+| 没有 Sumi 时 | 普通表格。 |
+| JavaScript | 只有全屏阅读需要。 |
+| 限制 | 单元格里只能写行内 Markdown。很宽的表格会横向滚动。 |
+{.compact}

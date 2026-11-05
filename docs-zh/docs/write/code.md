@@ -79,3 +79,13 @@ INFO    -  Documentation built in 0.42 seconds
 
 > [!TIP]
 > 如果要按操作系统或语言分别展示多个版本，请看[标签页](tabs.md)。
+
+## 参考 {#reference}
+
+| 项目 | 说明 |
+| --- | --- |
+| 输出 | `<div class="sumi-code">` 中的 Pygments HTML，设置 `title` 时带标题栏。 |
+| 没有 Sumi 时 | 普通的代码块。 |
+| JavaScript | 只有复制按钮需要。高亮在构建时完成。 |
+| 限制 | 支持的语言就是 Pygments 支持的语言。很长的行会横向滚动，不会自动换行。 |
+{.compact}

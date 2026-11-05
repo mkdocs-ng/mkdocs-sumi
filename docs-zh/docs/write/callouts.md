@@ -92,3 +92,13 @@ Sumi 也接受 Material for MkDocs 使用的类型名：`info`、`success`、`qu
     请改用 `theme.palette`。
 
 `pymdownx.details` 的 `??? note` 和 `???+ note` 会显示为可折叠的提示框。
+
+## 参考 {#reference}
+
+| 项目 | 说明 |
+| --- | --- |
+| 输出 | `<div class="sumi-callout">`，可折叠时是 `<details class="sumi-callout">`，带标题和图标。 |
+| 没有 Sumi 时 | GitHub 会画出同样的提示框。其他渲染器显示为第一行是 `[!NOTE]` 的引用块。 |
+| JavaScript | 不需要：折叠用的是浏览器自带的 `<details>`。 |
+| 限制 | GitHub 的五种类型，外加 Material 的类型名。折叠的提示框打印时会展开。 |
+{.compact}

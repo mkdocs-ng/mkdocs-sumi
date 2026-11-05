@@ -64,16 +64,7 @@ Create `overrides/main.html` and extend `base.html`:
 
 ## Analytics
 
-Google Analytics is supported with the same keys as Material:
-
-```yaml title="mkdocs.yml"
-extra:
-  analytics:
-    provider: google
-    property: G-XXXXXXXXXX
-```
-
-For another provider, add its snippet to the `analytics` block in `overrides/main.html`.
+Google Analytics, Plausible and Umami are built in, with the same keys as Material: see [Analytics and feedback](../run/analytics.md). For another provider, add its snippet to the `analytics` block in `overrides/main.html`.
 
 > [!NOTE]
-> Analytics is the one feature that contacts a third party. It is off unless configured.
+> Analytics and [comments](../run/comments.md) are the only features that contact a third party. Both are off unless configured.

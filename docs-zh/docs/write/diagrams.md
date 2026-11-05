@@ -67,3 +67,13 @@ stateDiagram-v2
 
 > [!NOTE]
 > 如果你在 `pymdownx.superfences` 中为 Mermaid 配置了自定义代码块，请删掉它：Sumi 会自己处理 `mermaid` 代码块。要关闭 Sumi 的处理，在[插件](../customize/plugin.md)上设置 `mermaid: false`。
+
+## 参考 {#reference}
+
+| 项目 | 说明 |
+| --- | --- |
+| 输出 | `<figure class="sumi-diagram">`，里面的 `<pre class="mermaid">` 保存 Mermaid 源码，绘制成内联 SVG。 |
+| 没有 Sumi 时 | 一个包含 Mermaid 源码的代码块。GitHub 也会把它画成图。 |
+| JavaScript | Mermaid，随主题打包，图表快进入屏幕时加载，按图表类型拆分。 |
+| 限制 | 没有 JavaScript 的读者看到的是源码。图在浏览器中绘制，所以不会进入搜索索引。 |
+{.compact}

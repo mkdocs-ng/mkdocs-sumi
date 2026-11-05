@@ -46,3 +46,13 @@ A badge in a heading shrinks to fit, and stays out of the table of contents text
 ```markdown
 ## Version 0.2 **Latest**{.badge .tip}
 ```
+
+## Reference
+
+| What | Details |
+| --- | --- |
+| Output | `<strong class="badge">` (or `<em>`, `<span>`, `<code>`) with the tone as a second class. |
+| Without Sumi | Bold or italic text: GitHub and editors drop the `{…}` line. |
+| JavaScript | None. |
+| Limits | One tone per badge. Badges are not links; wrap them in one if needed. |
+{.compact}

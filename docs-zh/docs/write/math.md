@@ -40,3 +40,13 @@ $$
 ## 兼容性 {#compatibility}
 
 如果配置了 `pymdownx.arithmatex` 并设置 `generic: true`，Sumi 会用同一个 KaTeX 渲染它的输出，并关闭自己的 `$` 解析。要完全关闭数学公式，在[插件](../customize/plugin.md)上设置 `math: false`。
+
+## 参考 {#reference}
+
+| 项目 | 说明 |
+| --- | --- |
+| 输出 | `<span class="sumi-math">` 和 `<div class="sumi-math">` 保存 TeX，在浏览器中排版。 |
+| 没有 Sumi 时 | 美元符号之间的 TeX。GitHub 也会排版。 |
+| JavaScript | KaTeX，随主题打包，只在有公式的页面加载。 |
+| 限制 | KaTeX 支持大部分 LaTeX 数学语法，但不是所有宏包。 |
+{.compact}

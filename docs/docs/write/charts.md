@@ -116,3 +116,13 @@ plugins:
       echarts: false
       markmap: false
 ```
+
+## Reference
+
+| What | Details |
+| --- | --- |
+| Output | `<figure class="sumi-chart">` with the option as JSON, and `<figure class="sumi-markmap">` with the outline as a nested list. |
+| Without Sumi | Code blocks with the YAML or the outline. |
+| JavaScript | ECharts or Markmap, bundled, loaded when a chart nears the screen. |
+| Limits | Chart options are data, so no callback functions. Mind maps take headings and lists only. |
+{.compact}

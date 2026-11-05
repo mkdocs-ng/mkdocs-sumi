@@ -55,3 +55,13 @@ extra:
     - icon: brand-github
       link: https://github.com/mkdocs-ng/mkdocs-sumi
 ```
+
+## Reference
+
+| What | Details |
+| --- | --- |
+| Output | `<kbd>` elements in `<span class="sumi-keys">`, and icons as inline `<svg class="sumi-icon">`. |
+| Without Sumi | The text as written: `++Ctrl+K++` and `:lucide-rocket:`. |
+| JavaScript | None: icons are inlined at build time. |
+| Limits | Lucide and the listed brand icons only. Unknown names stay as text. |
+{.compact}

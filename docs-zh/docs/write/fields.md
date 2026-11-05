@@ -47,3 +47,13 @@ description: 用于配置选项、参数和 API 字段的参考表。
 ```
 
 页面的 Markdown 副本保留原始表格。
+
+## 参考 {#reference}
+
+| 项目 | 说明 |
+| --- | --- |
+| 输出 | `<div class="sumi-fields">`，每一行一个 `<div class="sumi-field">`，元数据列显示为小标签。 |
+| 没有 Sumi 时 | 原始表格。 |
+| JavaScript | 不需要。 |
+| 限制 | 第一列总是名称。单元格里只能写行内 Markdown。 |
+{.compact}

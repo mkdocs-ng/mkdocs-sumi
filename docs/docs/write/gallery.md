@@ -63,3 +63,13 @@ Wrap an image in a link to open a page instead of the full-size image:
   Blog layout
 {.gallery}
 ```
+
+## Reference
+
+| What | Details |
+| --- | --- |
+| Output | `<ul class="sumi-gallery">`, one `<figure>` per image, with lazy-loaded images. |
+| Without Sumi | A list of images with captions. |
+| JavaScript | Only for full-size viewing. |
+| Limits | Images are cropped to the same shape, so keep important detail near the centre. |
+{.compact}

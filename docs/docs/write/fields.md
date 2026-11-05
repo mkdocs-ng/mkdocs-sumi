@@ -47,3 +47,13 @@ Each entry keeps the content of its name cell, so you can add an anchor with `at
 ```
 
 The Markdown copy of the page keeps the original table.
+
+## Reference
+
+| What | Details |
+| --- | --- |
+| Output | `<div class="sumi-fields">`, one `<div class="sumi-field">` per row, with chips for the metadata columns. |
+| Without Sumi | The original table. |
+| JavaScript | None. |
+| Limits | The first column is always the name. Cells hold inline Markdown only. |
+{.compact}
