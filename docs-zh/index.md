@@ -85,7 +85,7 @@ sections:
     items:
       - {value: "0", label: "运行时服务或 CDN"}
       - {value: "16", label: "原生 Markdown 组件"}
-      - {value: "16 KB", label: "核心脚本（gzip），不依赖框架"}
+      - {value: "17 KB", label: "核心脚本（gzip），不依赖框架"}
       - {value: "13", label: "种界面语言，支持从右到左"}
   - type: steps
     eyebrow: 三分钟

@@ -1345,6 +1345,10 @@ a.sumi-sidebar-title.is-current { color: var(--sumi-accent-ink); }
 .sumi-compare-lang { height: 32px; padding: 0 8px; border: 1px solid var(--sumi-line-2); border-radius: 8px; background: var(--sumi-bg-elev); color: var(--sumi-fg); font: inherit; font-size: 13.5px; }
 .sumi-compare-sync { display: inline-flex; align-items: center; gap: 6px; color: var(--sumi-fg-2); font-size: 13.5px; cursor: pointer; white-space: nowrap; }
 .sumi-compare-sync input { accent-color: var(--sumi-accent); }
+.sumi-compare-approx { display: inline-flex; align-items: center; gap: 6px; min-width: 0; color: var(--sumi-fg-3); font-size: 12.5px; }
+.sumi-compare-approx[hidden] { display: none; }
+.sumi-compare-approx b { display: inline-grid; flex: none; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--sumi-bg-soft); color: var(--sumi-fg-2); font-weight: 600; }
+.sumi-compare-approx span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sumi-compare-panes { position: relative; display: grid; flex: 1; grid-template-columns: 1fr 1fr; min-height: 0; }
 .sumi-compare-pane { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 .sumi-compare-pane + .sumi-compare-pane { border-inline-start: 1px solid var(--sumi-line); }
@@ -1353,7 +1357,7 @@ a.sumi-sidebar-title.is-current { color: var(--sumi-accent-ink); }
 .sumi-compare-error { position: absolute; inset: 40px 0 0; display: grid; place-items: center; padding: 24px; color: var(--sumi-fg-2); text-align: center; }
 @media (max-width: 899px) {
   .sumi-compare-bar { padding-inline-start: 12px; }
-  .sumi-compare-title span, .sumi-compare-sync span { display: none; }
+  .sumi-compare-title span, .sumi-compare-sync span, .sumi-compare-approx span { display: none; }
   .sumi-compare-switch { display: flex; margin-inline-end: auto; }
   .sumi-compare-title { margin-inline-end: 0; }
   .sumi-compare-panes { grid-template-columns: minmax(0, 1fr); }

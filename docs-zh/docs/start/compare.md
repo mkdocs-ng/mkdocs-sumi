@@ -26,8 +26,8 @@ Sumi 每个次版本都有新功能，并与 MkDocs NG 一起开发，所以它�
 | --- | --- | --- |
 | 请求数 | 5 | 8 |
 | 发往其他服务器的请求 | 0 | 3，发往 Google Fonts |
-| 传输量（压缩后） | 127 KB，其中字体 87 KB | 149 KB，其中字体 74 KB |
-| JavaScript | 16 KB | 46 KB，含搜索 Worker |
+| 传输量（压缩后） | 128 KB，其中字体 87 KB | 149 KB，其中字体 74 KB |
+| JavaScript | 17 KB | 46 KB，含搜索 Worker |
 {caption="测于 2026-11-06。设置 <code>theme.font: false</code> 后，Material 改用读者的系统字体：5 个请求，72 KB。"}
 
 ### 组件依然是 Markdown {#components-that-are-still-markdown}
