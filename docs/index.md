@@ -84,8 +84,8 @@ sections:
     items:
       - {value: "0", label: "runtime services or CDNs"}
       - {value: "16", label: "native-Markdown components"}
-      - {value: "11 KB", label: "core script, gzipped. No framework."}
-      - {value: "2", label: "interface languages: English, 中文"}
+      - {value: "16 KB", label: "core script, gzipped. No framework."}
+      - {value: "13", label: "interface languages, right to left included"}
   - type: steps
     eyebrow: Three minutes
     title: From empty folder to a published site.

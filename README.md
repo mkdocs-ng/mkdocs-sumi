@@ -53,6 +53,7 @@ mkdocs serve
 - **Components in native Markdown.** Callouts are `> [!NOTE]`, steps are a numbered list with `{.steps}`, tabs are fences with `{tab="…"}`. Your source still reads well on GitHub.
 - **Local-first.** Fonts, 2 000 icons, search, Mermaid and KaTeX ship with the theme. Mermaid and KaTeX load only on pages that use them.
 - **Search as a command palette.** <kbd>⌘</kbd> <kbd>K</kbd> searches every heading, including Chinese and Japanese, and runs commands.
+- **13 interface languages.** Arabic and Hebrew lay out right to left. With MkDocs NG, one `mkdocs.yml` builds every language, with a language menu and a side-by-side bilingual view.
 - **Written for agents too.** Every page has a Markdown twin announced in `<head>`, plus `llms.txt` and *Copy as Markdown*.
 - **One design for the whole project site.** Data-driven landing pages, a blog with tags and an Atom feed, a releases page with checksums, and a whole-site print edition.
 - **Keeps your MkDocs content.** Admonitions, `pymdownx` tabs and details, `mike` versions and Material's `extra` keys keep working.
