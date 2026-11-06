@@ -1,89 +1,26 @@
 ---
-description: How Sumi and Material for MkDocs differ — writing, features, plugins, speed, privacy, languages and maintenance — so you can choose between them.
+description: What Sumi does that Material for MkDocs doesn't, where Material is still ahead, and how to switch.
 ---
 
 # Sumi and Material for MkDocs
 
-[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) is the most widely used MkDocs theme, and many ideas in Sumi were first made popular by it. This page sets out where the two differ, so you can choose the one that fits your project. Both are MkDocs themes: your Markdown, `mkdocs.yml` and plugins work with either, and switching in either direction is a [two-line change](migrate.md).
+[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) is by far the most widely used MkDocs theme. Sumi is newer: it is built for [MkDocs NG](https://mkdocs-ng.org/) and does several things Material doesn't. This page shows where Sumi is ahead, where Material still is, and how to try Sumi on your site. Your Markdown, `mkdocs.yml` and plugins work with both, and switching is a [two-line change](migrate.md).
 
 Facts on this page were checked on 2026-11-06 against Sumi 0.3.1, Material for MkDocs 9.8.0 and `mkdocs-ng-material` 9.8.0. If something here is wrong or out of date, please [open an issue](https://github.com/mkdocs-ng/mkdocs-sumi/issues).
 
-## In short
+## Where Sumi is ahead
 
-- **Choose Material** if you need its breadth: more than 60 interface languages, about 14,000 icons, code annotations, instant navigation, generated social cards, and ten years of examples, answers and plugins built around it. It is in maintenance mode, with critical fixes until 2027-05-05.
-- **Choose Sumi** if you want a theme that is actively developed with [MkDocs NG](https://mkdocs-ng.org/), loads nothing from other servers, keeps components readable as plain Markdown, builds a whole project site — home page, blog, releases, print edition — in one design, and publishes every page for AI agents too.
-- **Not sure?** Try Sumi on a branch: change two lines, run `mkdocs serve` and compare. Your content doesn't need to change.
+### Actively developed
 
-## At a glance
+Sumi gets new features in every minor release and is developed together with MkDocs NG, so it is the first theme to use new MkDocs NG features such as one `mkdocs.yml` for every language. Material for MkDocs is in maintenance mode: its authors provide critical fixes until 2027-05-05 and now build a new generator, [Zensical](https://zensical.org/), instead.
 
-| | Sumi | Material for MkDocs |
-| --- | --- | --- |
-| Package | `mkdocs-sumi` | `mkdocs-material`, or the [`mkdocs-ng-material`](https://github.com/mkdocs-ng/mkdocs-material) fork maintained for MkDocs NG |
-| First release | 2026-10-31 | 2016-02-09 |
-| Development | Active: new features in every minor release | Maintenance mode: critical fixes until 2027-05-05, while its authors build [Zensical](https://zensical.org/) |
-| Runs on | MkDocs NG 1.9 or later | MkDocs 1.6, MkDocs NG, ProperDocs |
-| Python | 3.10+ | 3.11+ (`mkdocs-ng-material`: 3.10+) |
-| Components | Native Markdown: `> [!NOTE]`, numbered lists with `{.steps}`, fences with `{tab="…"}`. Also reads Material's syntax. | Python-Markdown extensions: `!!! note`, `=== "Tab"`, `<div class="grid cards" markdown>` |
-| Interface languages | 13, including Arabic and Hebrew right to left | More than 60, including right to left |
-| Icons | About 2,000 (Lucide and brand icons) | About 14,000 (Material Design, Font Awesome, Octicons, Simple Icons) |
-| Fonts | Inter and JetBrains Mono, bundled | Any Google Font, loaded from Google by default |
-| Diagrams and math | Mermaid, ECharts, mind maps and KaTeX, bundled and loaded only on pages that use them | Mermaid, loaded from `unpkg.com`; MathJax or KaTeX added by you, usually from a CDN |
-| Search | A command palette with CJK substring matching; the index loads when the palette opens | lunr.js in a web worker, with word stemming for many languages, optional Chinese word segmentation (jieba), suggestions and highlighting |
-| Page loads | Ordinary page loads | Optional instant navigation, which swaps pages without a full reload |
-| Code blocks | Build-time highlighting, titles, line numbers, copy button (console blocks copy only the commands) | The same, plus code annotations |
-| Project pages | Data-driven home page, blog with Atom feed, releases page with checksums, whole-site print edition | Blog and tags plugins; a home page through template overrides; print through the `print-site` plugin |
-| Link previews | One image for the site, or one per page | The social plugin draws a card for every page |
-| For AI agents | A Markdown copy of every page, linked from its HTML; *Copy as Markdown*; `llms.txt` | `llms.txt` through MkDocs NG's plugin, which works with any theme |
-| Multi-language sites | MkDocs NG `languages:` with a language menu, `hreflang` links, a note on untranslated pages and a side-by-side bilingual view | A language menu through `extra.alternate`, and MkDocs NG `languages:` |
-| Versions | `mike` | `mike` |
-| Users | A handful of sites so far, listed in the [showcase](../../showcase.md) | About 84,000 public GitHub repositories depend on it, according to its authors |
-{.wide}
+If you want to stay on Material, the MkDocs NG project maintains a fork, [`mkdocs-ng-material`](https://github.com/mkdocs-ng/mkdocs-material), which gets bug fixes and keeps working with new MkDocs NG releases, but no new features.
 
-## Writing
+### Nothing loaded from other servers
 
-Material adds components through Python-Markdown extensions, so a page uses syntax such as `!!! warning` and `=== "Tab"`. That syntax is compact, but on GitHub or in an editor preview it shows as plain text.
+Fonts, 2,000 icons, search, Mermaid, ECharts, mind maps and KaTeX are part of the theme and copied into your site. A Sumi site makes no requests to other servers unless you configure them, so it works the same behind a firewall, on an intranet or offline, and readers aren't seen by a font or script CDN. With default settings, Material loads its fonts from Google Fonts and Mermaid from `unpkg.com`, and its docs suggest a CDN for MathJax or KaTeX.
 
-Sumi writes components in Markdown's own vocabulary — a blockquote, a list, a table or a fence — with at most one line of `{…}` attributes. A callout in Sumi is a GitHub alert, so it also renders on GitHub:
-
-```markdown
-> [!WARNING]
-> Back up your data before upgrading.
-```
-
-Sumi also reads Material's syntax: admonitions, `pymdownx` tabs and details, grid cards and buttons render without changes. See [What keeps working](migrate.md#what-keeps-working).
-
-## Features only Material has
-
-- **Code annotations**: numbered markers in a code block that open notes.
-- **Instant navigation**: pages swap in place, with prefetching and a progress bar.
-- **Generated social cards**: an image with the page title for every page.
-- **Tags across the docs**: Sumi's tags are for blog posts only.
-- **Privacy and offline plugins**: they download external assets into the site, or make it browsable from the file system. Sumi has no privacy plugin because it loads nothing from other servers to begin with.
-- **More languages and icons**: more than 60 interface languages against Sumi's 13, about 14,000 icons against 2,000, and any Google Font.
-
-## Features only Sumi has
-
-- **A command palette**: <kbd>⌘</kbd> <kbd>K</kbd> searches every heading and runs commands such as switching language, toggling dark mode or copying the page as Markdown.
-- **Project pages**: a [home page](../pages/landing.md) described in front matter, a [releases page](../pages/releases.md) with downloads and checksums read from GitHub Releases or PyPI, and a [print edition](../pages/print.md) of the whole site.
-- **Docs for agents**: every page has a [Markdown copy](../ai.md) linked from its HTML, a *Copy as Markdown* button and links that open the page in an AI assistant.
-- **More diagrams, all local**: ECharts charts and Markmap mind maps next to Mermaid and KaTeX, each loaded only when a page needs it.
-- **Bilingual view**: a page and its translation side by side, scrolled together. See [Languages](../customize/i18n.md#bilingual-view).
-
-## Plugins
-
-Both themes run ordinary MkDocs plugins: mkdocstrings, macros, glightbox, awesome-nav, redirects, git-revision-date-localized and the rest.
-
-- Plugins that style their output with Material's `--md-*` colours or `[data-md-color-scheme]` follow Sumi's palette and dark mode.
-- Scripts that wait for Material's instant navigation (`document$`) need to run on `DOMContentLoaded` instead, because Sumi uses ordinary page loads.
-- Material's built-in plugins — `blog`, `tags`, `social`, `privacy`, `offline`, `optimize` and the others — are part of Material and don't run with Sumi. Sumi's plugin has its own [blog](../pages/blog.md), and it reads Material's blog posts and `.authors.yml` as they are.
-
-[For plugin authors](../customize/plugin-authors.md) explains how to support both themes.
-
-## Speed and page weight
-
-**Building.** In MkDocs NG's [build benchmark](https://mkdocs-ng.org/about/comparison/#build-speed), a 1,000-page site builds in 12.2 s with Sumi 0.2.0 and 11.1 s with Material. At 5,000 pages Sumi takes 67.6 s and Material 134.5 s, because Material writes the whole navigation into every page. `mkdocs serve` shows an edit after 1.8 s with Sumi and 2.7 s with Material.
-
-**Reading.** We built the same page — headings, a code block, tabs, a table and two callouts — with each theme's default settings and loaded it in Chromium:
+We built the same page — headings, a code block, tabs, a table and two callouts — with each theme's default settings and loaded it in Chromium:
 
 | | Sumi 0.3.1 | Material for MkDocs 9.8.0 |
 | --- | --- | --- |
@@ -93,15 +30,94 @@ Both themes run ordinary MkDocs plugins: mkdocstrings, macros, glightbox, awesom
 | JavaScript | 16 KB | 46 KB, including the search worker |
 {caption="Measured on 2026-11-06. With <code>theme.font: false</code>, Material uses the reader's system fonts instead: 5 requests, 72 KB."}
 
-Both are light. The difference that matters more is where the requests go: a Sumi site works the same behind a firewall or on an intranet, and readers aren't seen by a font or script CDN.
+### Components that are still Markdown
 
-## Maintenance
+Material adds components through Python-Markdown extensions, with syntax such as `!!! warning` and `=== "Tab"`. On GitHub or in an editor preview, that shows as plain text.
 
-Material for MkDocs is in maintenance mode: its authors have announced critical fixes until 2027-05-05 and recommend their new generator, Zensical, after that. The MkDocs NG project maintains [`mkdocs-ng-material`](https://github.com/mkdocs-ng/mkdocs-material), a fork that gets bug fixes and keeps working with new MkDocs NG releases, so existing Material sites can stay as they are.
+Sumi writes every component in Markdown's own vocabulary — a blockquote, a list, a table or a fence — with at most one line of `{…}` attributes. A callout is a GitHub alert, so it renders on GitHub too:
 
-Sumi is where new theme work in MkDocs NG happens, and it ships features that need MkDocs NG, such as one `mkdocs.yml` for every language. It is also young: it was first released on 2026-10-31 and is before 1.0, so pin the version you test with and read the [release notes](../../releases.md) before you upgrade.
+```markdown
+> [!WARNING]
+> Back up your data before upgrading.
+```
 
-## Trying Sumi
+Your pages stay readable wherever they are opened, and they don't lock you into Sumi. Sumi also reads Material's syntax, so existing pages render without changes.
+
+### A whole project site, not only docs
+
+Sumi's plugin builds the pages a project needs besides its docs, in the same design:
+
+- a [home page](../pages/landing.md) described in front matter: hero, features, code, stats, steps and FAQ, with no HTML;
+- a [blog](../pages/blog.md) with authors, tags, reading time, card layout and an Atom feed;
+- a [releases page](../pages/releases.md) with downloads and SHA-256 checksums, read from a YAML file, GitHub Releases or PyPI;
+- a [print edition](../pages/print.md) of the whole site.
+
+Material has a blog plugin; a home page needs template overrides, a feed needs the `mkdocs-rss-plugin`, and printing the whole site needs the `print-site` plugin.
+
+### Built for AI agents
+
+Every Sumi page is also published as Markdown, linked from the HTML page so agents can find it, with a *Copy as Markdown* button and links that open the page in an AI assistant. Together with `llms.txt`, coding agents and assistants read your docs without the navigation and scripts in their way. See [Docs for people and agents](../ai.md). Material has none of this built in; MkDocs NG's `llms_txt` plugin works with both.
+
+### Multi-language sites
+
+With MkDocs NG, one `mkdocs.yml` holds every language. Sumi adds a language menu that links to the same page in each language, `hreflang` links for search engines, a note on pages that aren't translated yet, and a [bilingual view](../customize/i18n.md#bilingual-view) that shows a page and its translation side by side, scrolled together. Chinese, Japanese and Korean get their own typography, and search matches them by substring.
+
+### Faster on large sites
+
+In MkDocs NG's [build benchmark](https://mkdocs-ng.org/about/comparison/#build-speed), a 5,000-page site builds in 67.6 s with Sumi and 134.5 s with Material, because Material writes the whole navigation into every page. At 1,000 pages the two are close: 12.2 s and 11.1 s. `mkdocs serve` shows an edit after 1.8 s with Sumi and 2.7 s with Material.
+
+### More diagrams, loaded only when needed
+
+Next to Mermaid and KaTeX, Sumi has [ECharts charts and Markmap mind maps](../write/charts.md). Each runtime is loaded only on pages that use it, Mermaid only when a diagram scrolls near the viewport, and only the code for that diagram type.
+
+### Search as a command palette
+
+<kbd>⌘</kbd> <kbd>K</kbd> searches every heading, including Chinese and Japanese text, and runs commands: switch language, toggle dark mode, copy the page as Markdown, open the bilingual view. The search index loads only when the palette opens.
+
+### Python 3.10
+
+Sumi supports Python 3.10 and later. Material for MkDocs 9.8.0 requires Python 3.11.
+
+## Where Material is ahead
+
+- **Users.** Material has many times more downloads, and about 84,000 public GitHub repositories depend on it, according to its authors. That means more examples, answers and plugins tested against it. Sumi was first released on 2026-10-31.
+- **Breadth.** More than 60 interface languages against Sumi's 13, about 14,000 icons against 2,000, and any Google Font.
+- **Features Sumi doesn't have:** code annotations, instant navigation without full page loads, a social card generated for every page, and tags across docs pages (Sumi's tags are for blog posts).
+
+If your site depends on these, Material, or `mkdocs-ng-material` on MkDocs NG, is the better fit today.
+
+## At a glance
+
+| | Sumi | Material for MkDocs |
+| --- | --- | --- |
+| Development | Active | Maintenance mode, critical fixes until 2027-05-05 |
+| Loads from other servers by default | Nothing | Google Fonts; Mermaid from `unpkg.com` |
+| Component syntax | Native Markdown, renders on GitHub; also reads Material's | Python-Markdown extensions |
+| Project pages | Home page, blog with feed, releases with checksums, print edition | Blog; the rest through overrides and plugins |
+| For AI agents | Markdown copy of every page, *Copy as Markdown*, `llms.txt` | `llms.txt` through MkDocs NG |
+| Multi-language | Language menu, `hreflang`, untranslated-page note, bilingual view | Language menu |
+| Diagrams | Mermaid, ECharts, mind maps, KaTeX, all bundled | Mermaid from a CDN; math added by you |
+| Search | Command palette, CJK substring matching | lunr.js with stemming, suggestions, optional Chinese segmentation |
+| 5,000-page build | 67.6 s | 134.5 s |
+| Python | 3.10+ | 3.11+ (`mkdocs-ng-material`: 3.10+) |
+| Interface languages | 13, including right to left | More than 60, including right to left |
+| Icons | About 2,000 | About 14,000 |
+| Code annotations, instant navigation, generated social cards | No | Yes |
+| Runs on | MkDocs NG 1.9+ | MkDocs 1.6, MkDocs NG, ProperDocs |
+| First release | 2026-10-31 | 2016-02-09 |
+{.wide}
+
+## Plugins
+
+Both themes run ordinary MkDocs plugins: mkdocstrings, macros, glightbox, awesome-nav, redirects, git-revision-date-localized and the rest.
+
+- Plugins that style their output with Material's `--md-*` colours or `[data-md-color-scheme]` follow Sumi's palette and dark mode.
+- Scripts that wait for Material's instant navigation (`document$`) need to run on `DOMContentLoaded` instead, because Sumi uses ordinary page loads.
+- Material's built-in plugins — `blog`, `tags`, `social`, `privacy`, `offline` and the others — are part of Material and don't run with Sumi. Sumi's own blog reads Material's blog posts and `.authors.yml` as they are, and Sumi doesn't need a privacy plugin because it loads nothing from other servers.
+
+[For plugin authors](../customize/plugin-authors.md) explains how to support both themes.
+
+## Try Sumi
 
 ```diff title="mkdocs.yml"
  theme:
@@ -112,4 +128,4 @@ Sumi is where new theme work in MkDocs NG happens, and it ships features that ne
 +  - sumi
 ```
 
-Run `mkdocs serve` and look through your site. [Migrate from Material](migrate.md) lists what keeps working and what changes. Switching back is the same two lines: Sumi's components are plain Markdown, so a page written for Sumi still reads well with Material.
+Run `mkdocs serve` and look through your site. [Migrate from Material](migrate.md) lists what keeps working and what changes. Sumi is before 1.0, so pin the version you test with and read the [release notes](../../releases.md) before you upgrade.

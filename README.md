@@ -57,7 +57,7 @@ mkdocs serve
 - **One design for the whole project site.** Data-driven landing pages, a blog with tags and an Atom feed, a releases page with checksums, and a whole-site print edition.
 - **Keeps your MkDocs content.** Admonitions, `pymdownx` tabs and details, `mike` versions and Material's `extra` keys keep working.
 
-Coming from Material for MkDocs? [Sumi and Material compared](https://sumi.mkdocs-ng.org/docs/start/compare/) shows how the two differ, and [Migrate from Material](https://sumi.mkdocs-ng.org/docs/start/migrate/) how to switch.
+Coming from Material for MkDocs? [Sumi and Material compared](https://sumi.mkdocs-ng.org/docs/start/compare/) shows what Sumi adds and where Material is still ahead, and [Migrate from Material](https://sumi.mkdocs-ng.org/docs/start/migrate/) how to switch.
 
 ## Showcase
 
