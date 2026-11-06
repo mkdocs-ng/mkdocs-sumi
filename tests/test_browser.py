@@ -232,6 +232,23 @@ def test_wide_table_opens_full_screen(base_url, page):
     assert not page.errors
 
 
+def test_wide_table_moves_the_toc_aside(base_url, page):
+    url, _ = base_url
+    page.set_viewport_size({'width': 1440, 'height': 900})
+    page.goto(url + 'docs/start/migrate/', wait_until='networkidle')
+    rail = page.locator('.sumi-rail')
+    sync_api.expect(rail).to_be_visible()
+    # The {.wide} table reaches into the table-of-contents column, so the
+    # table of contents steps aside while the table is beside it.
+    page.locator('.sumi-table--wide').evaluate(
+        'el => window.scrollTo(0, el.getBoundingClientRect().top + scrollY - 100)'
+    )
+    sync_api.expect(rail).to_be_hidden()
+    page.evaluate('window.scrollTo(0, 0)')
+    sync_api.expect(rail).to_be_visible()
+    assert not page.errors
+
+
 def test_diagram_view_pans_and_zooms(base_url, page):
     url, _ = base_url
     page.goto(url + 'docs/write/diagrams/', wait_until='networkidle')

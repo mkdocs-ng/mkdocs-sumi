@@ -282,6 +282,34 @@
   $$('.sumi-toc-inline .sumi-toc a').forEach(function (a) {
     a.addEventListener('click', function () { a.closest('details').open = false; });
   });
+  // A {.wide} table reaches into the table-of-contents column. While one passes
+  // beside the sticky table of contents, the table of contents steps aside.
+  var rail = $('.sumi-rail');
+  var wideTables = $$('.sumi-table--wide');
+  if (rail && wideTables.length) {
+    var railInner = $('.sumi-rail-inner', rail) || rail;
+    var railTicking = false;
+    var railCheck = function () {
+      railTicking = false;
+      var covered = false;
+      var box = rail.getBoundingClientRect();
+      if (box.width) {
+        var inner = railInner.getBoundingClientRect();
+        var top = Math.max(box.top, inner.top), bottom = Math.min(box.bottom, inner.bottom);
+        covered = wideTables.some(function (w) {
+          var r = w.getBoundingClientRect();
+          return r.left < box.right && r.right > box.left && r.top < bottom && r.bottom > top;
+        });
+      }
+      rail.classList.toggle('is-covered', covered);
+    };
+    var railSchedule = function () {
+      if (!railTicking) { railTicking = true; requestAnimationFrame(railCheck); }
+    };
+    window.addEventListener('scroll', railSchedule, { passive: true });
+    window.addEventListener('resize', railSchedule);
+    railCheck();
+  }
   var topLink = $('.sumi-rail-top');
   if (topLink) topLink.addEventListener('click', function (e) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); history.replaceState(null, '', location.pathname); });
 
