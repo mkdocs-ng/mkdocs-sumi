@@ -4,7 +4,7 @@ description: Move an existing site from Material for MkDocs or another theme to 
 
 # Migrate from Material
 
-Sumi reads the content and most of the configuration written for Material for MkDocs. Switching is usually a two-line change.
+Sumi reads the content and most of the configuration written for Material for MkDocs. Switching is usually a two-line change. Still deciding? See [Sumi and Material for MkDocs](compare.md) for how the two differ.
 
 ```diff title="mkdocs.yml"
  theme:

@@ -353,6 +353,9 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 
 /* Rail */
 .sumi-rail { position: sticky; top: var(--sumi-header-h); align-self: start; max-height: calc(100vh - var(--sumi-header-h)); overflow-y: auto; scrollbar-width: none; }
+/* Hidden while a {.wide} table passes beside it (sumi.js), so the two never overlap. */
+.sumi-rail { transition: opacity .2s, visibility .2s; }
+.sumi-rail.is-covered { opacity: 0; visibility: hidden; }
 .sumi-rail-inner { padding: 30px 0 40px; }
 .sumi-rail-title { margin-bottom: 10px; color: var(--sumi-fg); font-size: 13px; font-weight: 650; letter-spacing: .02em; }
 .sumi-toc ul { list-style: none; margin: 0; padding: 0; }
