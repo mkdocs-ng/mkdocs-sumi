@@ -54,6 +54,7 @@
       {%- for tr in sumi.translations %}<option value="{{ loop.index0 }}" lang="{{ tr.lang }}">{{ tr.name }}</option>{% endfor %}
     </select>
     {%- endif %}
+    <span class="sumi-compare-approx" role="note" title="{{ t('compare_approx') }}" hidden><b aria-hidden="true">≈</b><span>{{ t('compare_approx') }}</span></span>
     <label class="sumi-compare-sync" title="{{ t('compare_sync') }}"><input type="checkbox" checked aria-label="{{ t('compare_sync') }}"><span>{{ t('compare_sync') }}</span></label>
     <button type="button" class="sumi-icon-btn" data-close aria-label="{{ t('close') }}" title="{{ t('close') }}">{{ icon('x') }}</button>
   </div>

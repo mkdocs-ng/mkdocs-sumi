@@ -26,8 +26,8 @@ We built the same page — headings, a code block, tabs, a table and two callout
 | --- | --- | --- |
 | Requests | 5 | 8 |
 | Requests to other servers | 0 | 3, to Google Fonts |
-| Transferred, compressed | 127 KB, of which fonts 87 KB | 149 KB, of which fonts 74 KB |
-| JavaScript | 16 KB | 46 KB, including the search worker |
+| Transferred, compressed | 128 KB, of which fonts 87 KB | 149 KB, of which fonts 74 KB |
+| JavaScript | 17 KB | 46 KB, including the search worker |
 {caption="Measured on 2026-11-06. With <code>theme.font: false</code>, Material uses the reader's system fonts instead: 5 requests, 72 KB."}
 
 ### Components that are still Markdown
