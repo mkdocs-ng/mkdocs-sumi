@@ -63,7 +63,10 @@ def landing_markdown(meta: dict[str, Any], body: str, h1: str | None) -> str:
         if kind == 'features':
             for f in items:
                 name = _link(f'**{_text(f.get("title"))}**', f.get('link'))
-                out.append(f'- {name}: {_text(f.get("text"))}')
+                text = _text(f.get('text'))
+                out.append(f'- {name}: {text}' if text else f'- {name}')
+                out += [f'  - {_text(b)}' for b in f.get('bullets') or []]
+                out += ['  ' + a for a in _actions(f.get('actions'))]
             out.append('')
         elif kind == 'stats':
             out += [f'- **{_text(st.get("value"))}** {_text(st.get("label"))}' for st in items] + ['']
@@ -75,8 +78,8 @@ def landing_markdown(meta: dict[str, Any], body: str, h1: str | None) -> str:
         elif kind == 'split':
             out += [f'- {_text(b)}' for b in s.get('bullets') or []] + ([''] if s.get('bullets') else [])
             out += _code(s.get('code'))
-            if s.get('markdown'):
-                out += [str(s['markdown']).strip(), '']
+        if s.get('markdown'):
+            out += [str(s['markdown']).strip(), '']
         if s.get('actions'):
             out += [*_actions(s['actions']), '']
     if not any((s or {}).get('type', 'content') == 'content' for s in meta.get('sections') or []) and body.strip():

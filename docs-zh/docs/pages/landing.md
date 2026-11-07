@@ -43,20 +43,23 @@ sections:
 | `install` | string | 显示在点击即可复制的框中的命令。 |
 | `code` | object | 文字旁边的代码卡片：`title`、`lang`、`content`。 |
 | `image` | string | 没有 `code` 时，显示在文字旁边的图片。 |
+| `badges` | list | 文字下方的小标签：字符串，或 `text` 加 `tone`（`tip`、`note`、`warning`、`caution`、`important`、`accent`）。 |
 {.fields}
 
 ## 区块 {#sections}
 
-`sections` 中的每个条目都有一个 `type`，以及可选的 `eyebrow`、`title`、`text`、`id` 和 `tone: soft`（带底色的背景）。
+`sections` 中的每个条目都有一个 `type`，以及可选的 `eyebrow`、`title`、`text`、`id` 和 `tone`：`soft` 是带底色的背景，`dark` 是深色色带。任何区块还可以加 `markdown`（显示在区块下方）和 `actions`（再下方的按钮）。
 
 | 类型 | 键 | 说明 |
 | --- | --- | --- |
-| `features` | `items`、`columns` | 功能网格，每项有 `icon`、`title`、`text` 和可选的 `link`。 |
+| `features` | `items`、`columns` | 功能网格，每项有 `icon`、`title`、`text` 和可选的 `link`。标签、清单和按钮见[产品卡片](#product-cards)。 |
 | `split` | `bullets`、`actions`、`code` 或 `image` 或 `markdown`、`reverse` | 一侧是文字，另一侧是插图。 |
-| `stats` | `items` | 醒目的数字：`value` 和 `label`。 |
+| `stats` | `items` | 醒目的数字：`value`、`label` 和可选的 `link`。 |
 | `steps` | `items` | 带编号的步骤：`title` 和 `text`。 |
 | `faq` | `items` | 问题与回答：`q` 和 `a`（Markdown）。 |
 | `cta` | `actions` | 收尾的行动号召。 |
+| `posts` | `limit` | [博客](blog.md)的最新文章，默认 3 篇。 |
+| `markdown` | `markdown` | 任意 Markdown：表格、图片、提示框。 |
 | `content` | `toc`、`aside` | 页面的 Markdown 正文。如果省略 `sections`，正文显示在主视觉下方。设 `toc: true` 时按文档页排版，旁边是页面目录；`aside` 在目录下方加入 `custom_dir` 中的一个模板。 |
 | `include` | `template` | `custom_dir` 中你自己的模板，例如 `partials/demo.html`，显示在区块标题下方。它和其他覆盖模板一样，能用页面变量和主题的辅助函数。 |
 {.fields meta="键"}
@@ -79,6 +82,47 @@ sections:
   - {type: include, template: partials/playground.html, title: 试一试}
 ---
 ```
+
+## 产品卡片 {#product-cards}
+
+产品或服务网站的卡片，往往不止一个图标加一句话。`features` 的条目还可以有：
+
+| 键 | 说明 |
+| --- | --- |
+| `mark` | 图标位置显示的短文字，代替图标，例如 `"8"` 或 `AIX`。 |
+| `meta` | 标题下方的一行等宽文字，例如仓库名和许可证。 |
+| `badges` | 状态标签，写法同主视觉的 `badges`。 |
+| `bullets` | 勾选清单。 |
+| `actions` | 按钮。有按钮的卡片本身不再是链接。 |
+{.fields}
+
+```yaml
+sections:
+  - type: features
+    columns: 2
+    items:
+      - title: Agent8 for Jenkins
+        mark: "8"
+        meta: keelinfra/agent8 · MIT
+        badges: [{text: Available, tone: tip}, Free]
+        text: Run Jenkins agents on hosts stuck on Java 8.
+        bullets: [Tested in CI on Linux, One install script]
+        actions:
+          - {text: Explore, link: jenkins/index.md, primary: true}
+          - {text: GitHub, link: "https://github.com/keelinfra/agent8", icon: brand-github}
+  - type: steps
+    tone: dark
+    title: How every product works
+    items:
+      - {title: Open source first, text: The code and tests are public.}
+  - type: posts
+    title: From the blog
+    actions: [{text: All posts, link: blog/index.md}]
+```
+
+[keelinfra.io](https://keelinfra.io/) 就是这样搭建的。
+
+Sumi 没有的区块类型（比如价格方案）可以写成你自己的模板，用 `type: include` 引入；其中 `items` 及其 `actions` 的链接会像主题自带区块一样被解析。
 
 > [!TIP]
 > 希望智能体和搜索引擎看到的内容，请写在页面正文里。front matter 中的区块是视觉呈现；首页的 Markdown 副本只包含标题、文字和正文。

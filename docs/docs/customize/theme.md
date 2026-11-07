@@ -39,6 +39,7 @@ theme:
 | `repo_icon` | string | | Override the repository icon, e.g. `brand-gitlab`. Detected from `repo_url` by default. |
 | `keyboard` | boolean | `true` | Enable single-key shortcuts. <kbd>⌘</kbd> <kbd>K</kbd> always works. |
 | `credit` | boolean | `true` | Show "Built with MkDocs NG and Sumi" in the footer. |
+| `footer_links` | list | | Columns of links above the footer, as on a product site. See [Footer and social links](#footer-and-social-links). |
 {.fields}
 
 ## Accent colours
@@ -67,6 +68,7 @@ Front matter on a page can change its layout:
 | `comments` | `false` turns comments off on the page; `true` turns them on when `comments.opt_in` is set. |
 | `template` | `landing.html`, `blog.html` or `releases.html`. See [Pages](../pages/landing.md). |
 | `description` | Used for the `<meta name="description">`, link previews, cards and the blog index. |
+| `subtitle` | A line under the page title, such as "First answer free · in writing". Inline Markdown works. |
 {.fields}
 
 ## Footer and social links
@@ -80,6 +82,22 @@ extra:
       name: GitHub
     - icon: fontawesome/brands/x-twitter   # Material names work too
       link: https://x.com/mkdocs
+```
+
+A product site often wants columns of links in the footer. Each column has a `title` and `links`; a link is `text` and `link`, and a plain string is shown as text:
+
+```yaml title="mkdocs.yml"
+theme:
+  name: sumi
+  footer_links:
+    - title: Product
+      links:
+        - {text: Pricing, link: pricing/}
+        - {text: Source, link: "https://github.com/me/project"}
+    - title: Contact
+      links:
+        - {text: hello@example.com, link: "mailto:hello@example.com"}
+        - Based in the EU
 ```
 
 ## Custom CSS

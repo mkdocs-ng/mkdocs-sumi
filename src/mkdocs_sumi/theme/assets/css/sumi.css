@@ -929,6 +929,13 @@ a.sumi-meta:hover { color: var(--sumi-fg); }
 .sumi-footer-left a { text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); text-underline-offset: 3px; }
 .sumi-footer-left a:hover { text-decoration-color: currentColor; }
 .sumi-footer-right { display: flex; align-items: center; gap: 2px; }
+.sumi-footer-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 28px 32px; max-width: 1480px; margin: 0 auto; padding: 44px 20px 32px; border-bottom: 1px solid var(--sumi-line); font-size: 14px; }
+.sumi-footer-head { margin-bottom: 12px; color: var(--sumi-fg); font-weight: 650; }
+.sumi-footer-col ul { margin: 0; padding: 0; list-style: none; color: var(--sumi-fg-3); }
+.sumi-footer-col li { margin: 0 0 8px; }
+.sumi-footer-col a { color: var(--sumi-fg-2); text-decoration: none; }
+.sumi-footer-col a:hover { color: var(--sumi-fg); }
+.sumi-subtitle { margin: -0.3em 0 1.6em; color: var(--sumi-fg-2); font-size: 1.15rem; line-height: 1.55; }
 .sumi-footer-right .sumi-icon-btn { width: 34px; height: 34px; }
 .sumi-footer-right .sumi-icon-btn .sumi-icon { width: 17px; height: 17px; }
 
@@ -1181,6 +1188,58 @@ a.sumi-feature:hover .sumi-feature-more .sumi-icon { transform: translateX(3px);
 .sumi-land-docs { padding: 12px 0 24px; }
 .sumi-land-docs .sumi-rail { top: var(--sumi-header-h); }
 .sumi-land-section:last-child { border-bottom: 0; }
+/* Badges, cards with buttons, recent posts, dark bands. */
+.sumi-landing .badge {
+  --c: var(--sumi-fg-2);
+  display: inline-block; padding: 1px 9px; border: 1px solid color-mix(in srgb, var(--c) 28%, transparent); border-radius: 999px;
+  background: color-mix(in srgb, var(--c) 9%, transparent); color: var(--c); font-size: 12px; font-weight: 600; line-height: 1.6; white-space: nowrap;
+}
+.sumi-landing .badge.note, .sumi-landing .badge.info { --c: var(--c-note); }
+.sumi-landing .badge.tip, .sumi-landing .badge.success { --c: var(--c-tip); }
+.sumi-landing .badge.important, .sumi-landing .badge.new { --c: var(--c-important); }
+.sumi-landing .badge.warning { --c: var(--c-warning); }
+.sumi-landing .badge.caution, .sumi-landing .badge.danger, .sumi-landing .badge.deprecated { --c: var(--c-caution); }
+.sumi-landing .badge.accent { --c: var(--sumi-accent-ink); }
+.sumi-land-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; }
+.sumi-hero .sumi-land-badges { margin: -12px 0 28px; }
+.sumi-features--cards { gap: 16px; overflow: visible; border: 0; border-radius: 0; background: none; }
+.sumi-features--cards .sumi-feature { border: 1px solid var(--sumi-line); border-radius: 16px; }
+.sumi-feature-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.sumi-feature-head .sumi-feature-icon { flex: none; margin: 0; }
+.sumi-feature-head h3 { margin: 0; }
+.sumi-feature-meta { margin-top: 2px; color: var(--sumi-fg-3); font: 400 12.5px var(--sumi-font-mono); }
+.sumi-feature-mark { font: 700 15px var(--sumi-font-mono); letter-spacing: -0.02em; }
+.sumi-feature > p + .sumi-check-list { margin-top: 16px; }
+.sumi-feature .sumi-check-list { margin-bottom: 0; font-size: 14.5px; }
+.sumi-feature .sumi-check-list li { margin-bottom: 6px; }
+.sumi-feature .sumi-actions-row { gap: 8px; margin-top: auto; padding-top: 20px; }
+.sumi-feature .sumi-btn { height: 38px; padding: 0 14px; font-size: 14px; }
+.sumi-features--cards .sumi-feature > p { color: var(--sumi-fg); font-size: 15.5px; }
+.sumi-stat-link dt a { display: inline-flex; align-items: center; gap: 4px; color: inherit; text-decoration: none; }
+.sumi-stat-link dt a::after { content: ""; position: absolute; inset: 0; }
+.sumi-stat-link { position: relative; transition: background .15s; }
+.sumi-stat-link:hover { background: color-mix(in srgb, var(--sumi-bg-elev) 85%, var(--sumi-bg-soft)); }
+.sumi-stat-link dt .sumi-icon { width: 14px; height: 14px; transition: transform .15s; }
+.sumi-stat-link:hover dt .sumi-icon { transform: translateX(3px); }
+.sumi-land-postlist { margin: 0; padding: 0; border-top: 1px solid var(--sumi-line); list-style: none; }
+.sumi-land-postlist li { border-bottom: 1px solid var(--sumi-line); }
+.sumi-land-postlist a { display: flex; flex-direction: column; gap: 6px; padding: 18px 0; color: var(--sumi-fg); text-decoration: none; }
+.sumi-land-postlist a:hover .sumi-land-post-title { color: var(--sumi-accent); }
+.sumi-land-post-meta { display: flex; align-items: center; gap: 10px; color: var(--sumi-fg-3); font: 400 13px var(--sumi-font-mono); }
+.sumi-land-post-title { font-size: 17px; font-weight: 650; transition: color .15s; }
+.sumi-land-md { max-width: var(--sumi-content-w); }
+.sumi-land-after { margin-top: 32px; }
+.sumi-land--dark {
+  --sumi-bg-elev: color-mix(in srgb, #fff 6%, transparent); --sumi-bg-soft: color-mix(in srgb, #fff 9%, transparent);
+  --sumi-fg: #f1f4f7; --sumi-fg-2: #c1ccd6; --sumi-fg-3: #93a2b0; --sumi-line: rgba(255, 255, 255, 0.12); --sumi-line-2: rgba(255, 255, 255, 0.22);
+  --sumi-code-bg: rgba(0, 0, 0, 0.22); --sumi-code-head: rgba(0, 0, 0, 0.3); --sumi-code-inline: rgba(255, 255, 255, 0.1);
+  --sumi-accent-ink: color-mix(in srgb, var(--sumi-accent) 60%, #fff);
+  --sumi-link: color-mix(in srgb, var(--sumi-accent) 55%, #fff); --sumi-link-hover: #fff;
+  background: var(--sumi-band-bg, #1d1c1a); color: var(--sumi-fg-2); color-scheme: dark;
+}
+.sumi-land--dark .sumi-steplist li { border-top-color: var(--sumi-line-2); }
+.sumi-land--dark .sumi-steplist li::before { color: var(--sumi-accent-ink); }
+[data-theme="dark"] .sumi-land--dark { background: var(--sumi-band-bg-dark, var(--sumi-bg-sunken)); }
 
 /* ── Blog ───────────────────────────────────────────────────────────────── */
 .sumi-blog { max-width: 52rem; margin: 0 auto; }

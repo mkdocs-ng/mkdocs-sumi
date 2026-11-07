@@ -39,6 +39,7 @@ theme:
 | `repo_icon` | string | | 覆盖仓库图标，例如 `brand-gitlab`。默认根据 `repo_url` 识别。 |
 | `keyboard` | boolean | `true` | 启用单键快捷键。<kbd>⌘</kbd> <kbd>K</kbd> 始终可用。 |
 | `credit` | boolean | `true` | 在页脚显示“由 MkDocs NG 与 Sumi 构建”。 |
+| `footer_links` | list | | 页脚上方的多栏链接，适合产品网站。见[页脚与社交链接](#footer-and-social-links)。 |
 {.fields}
 
 ## 强调色 {#accent-colours}
@@ -67,6 +68,7 @@ theme:
 | `comments` | `false` 关闭本页的评论；设置了 `comments.opt_in` 时，`true` 为本页打开评论。 |
 | `template` | `landing.html`、`blog.html` 或 `releases.html`。见[页面类型](../pages/landing.md)。 |
 | `description` | 用于 `<meta name="description">`、链接预览、卡片和博客首页。 |
+| `subtitle` | 页面标题下方的一行副标题，例如“首次答复免费 · 书面答复”。支持行内 Markdown。 |
 {.fields}
 
 ## 页脚与社交链接 {#footer-and-social-links}
@@ -80,6 +82,22 @@ extra:
       name: GitHub
     - icon: fontawesome/brands/x-twitter   # Material 的图标名也可以用
       link: https://x.com/mkdocs
+```
+
+产品网站常在页脚放几栏链接。每栏有 `title` 和 `links`；链接写成 `text` 加 `link`，普通字符串显示为文字：
+
+```yaml title="mkdocs.yml"
+theme:
+  name: sumi
+  footer_links:
+    - title: Product
+      links:
+        - {text: Pricing, link: pricing/}
+        - {text: Source, link: "https://github.com/me/project"}
+    - title: Contact
+      links:
+        - {text: hello@example.com, link: "mailto:hello@example.com"}
+        - Based in the EU
 ```
 
 ## 自定义 CSS {#custom-css}

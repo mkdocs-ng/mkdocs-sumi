@@ -864,4 +864,91 @@ def test_navigation_tabs_always(tmp_path):
         html = (site / path).read_text()
         assert 'class="sumi-tabs-nav"' in html, path
         # The header tabs are hidden on small screens, so the drawer lists them.
-        assert 'sumi-sidebar--tabs-only' in html and 'aria-controls="sumi-sidebar"' in html, path
+        # (sumi.js points the menu button at it once the page loads.)
+        assert 'sumi-sidebar--tabs-only' in html and 'id="sumi-sidebar"' in html, path
+
+
+def test_landing_product_sections(tmp_path):
+    """Cards with badges and buttons, recent posts, dark bands and markdown sections."""
+    site = _site(tmp_path, {
+        'index.md': """
+            ---
+            template: landing.html
+            hero:
+              title: Product
+              badges: [Free, {text: Stable, tone: tip}]
+            sections:
+              - type: features
+                id: product
+                columns: 2
+                items:
+                  - title: Agent
+                    mark: "8"
+                    meta: org/agent · MIT
+                    badges: [{text: Available, tone: tip}]
+                    text: Runs on old hosts.
+                    bullets: [Keeps its Java]
+                    actions:
+                      - {text: Explore, link: guide.md, primary: true}
+                      - {text: GitHub, link: "https://github.com/x/y"}
+              - type: stats
+                items:
+                  - {value: CentOS 6, label: tested in CI, link: guide.md}
+              - type: steps
+                tone: dark
+                items: [{title: One, text: First.}]
+                markdown: "Run `make`."
+              - type: posts
+                title: From the blog
+                actions: [{text: All posts, link: blog/index.md}]
+              - type: markdown
+                title: Notes
+                markdown: "See the [guide](guide.md)."
+            ---
+            """,
+        'guide.md': '# Guide\n',
+        'blog/2026-11-01-hello.md': '---\ntags: [News]\n---\n\n# Hello post\n\nText.\n',
+    }, BASIC)
+    html = (site / 'index.html').read_text()
+    # A card with its own buttons is a <div>, not a link around links.
+    assert '<div class="sumi-feature">' in html
+    assert 'sumi-features--cards' in html and 'sumi-feature-mark' in html and 'org/agent · MIT' in html
+    assert '<span class="badge tip">Available</span>' in html and '<span class="badge">Free</span>' in html
+    assert 'href="guide/"' in html
+    assert 'sumi-stat-link' in html
+    assert 'sumi-land--dark' in html and '<code>make</code>' in html
+    assert 'Hello post' in html and 'href="blog/2026/11/01/hello/"' in html and 'href="blog/"' in html
+    assert 'href="guide/">guide</a>' in html
+    md = (site / 'index.md').read_text()
+    # The Markdown copy keeps `.md` links, which lead to the other Markdown copies.
+    assert '  - Keeps its Java' in md and '  - [Explore](guide.md)' in md
+    assert 'See the [guide](guide.md).' in md
+
+
+def test_footer_links_and_subtitle(tmp_path):
+    site = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'about.md': '---\nsubtitle: Who we are, in *one* line.\n---\n\n# About\n\nText.\n',
+    }, BASIC.replace("      announcement: 'New: <a href=\"blog/\">the blog</a>'\n", """      footer_links:
+        - title: Company
+          links:
+            - {text: About, link: about/}
+            - {text: Mail, link: "mailto:a@b.c"}
+            - Based in the EU
+""") + '    not_in_nav: /about.md\n')
+    about = (site / 'about' / 'index.html').read_text()
+    assert '</h1><p class="sumi-subtitle">Who we are, in <em>one</em> line.</p>' in about
+    assert '<div class="sumi-footer-head">Company</div>' in about
+    assert '<a href="./">About</a>' in about and '<a href="mailto:a@b.c">Mail</a>' in about
+    assert '<li>Based in the EU</li>' in about
+
+
+def test_print_edition_keeps_label_targets(tmp_path):
+    """Ids are prefixed in the print edition; label[for] must follow them."""
+    site = _site(tmp_path, {
+        'index.md': '# Home\n',
+        'form.md': '# Form\n\n<form><label for="f-name">Name</label>\n<input id="f-name"></form>\n',
+    }, BASIC)
+    html = (site / 'print' / 'index.html').read_text()
+    m = re.search(r'<label for="([^"]+)">Name', html)
+    assert m and f'id="{m.group(1)}"' in html
