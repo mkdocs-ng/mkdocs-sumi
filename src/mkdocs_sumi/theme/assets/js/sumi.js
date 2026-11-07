@@ -282,6 +282,34 @@
   $$('.sumi-toc-inline .sumi-toc a').forEach(function (a) {
     a.addEventListener('click', function () { a.closest('details').open = false; });
   });
+  // A {.wide} table reaches into the table-of-contents column. While one passes
+  // beside the sticky table of contents, the table of contents steps aside.
+  var rail = $('.sumi-rail');
+  var wideTables = $$('.sumi-table--wide');
+  if (rail && wideTables.length) {
+    var railInner = $('.sumi-rail-inner', rail) || rail;
+    var railTicking = false;
+    var railCheck = function () {
+      railTicking = false;
+      var covered = false;
+      var box = rail.getBoundingClientRect();
+      if (box.width) {
+        var inner = railInner.getBoundingClientRect();
+        var top = Math.max(box.top, inner.top), bottom = Math.min(box.bottom, inner.bottom);
+        covered = wideTables.some(function (w) {
+          var r = w.getBoundingClientRect();
+          return r.left < box.right && r.right > box.left && r.top < bottom && r.bottom > top;
+        });
+      }
+      rail.classList.toggle('is-covered', covered);
+    };
+    var railSchedule = function () {
+      if (!railTicking) { railTicking = true; requestAnimationFrame(railCheck); }
+    };
+    window.addEventListener('scroll', railSchedule, { passive: true });
+    window.addEventListener('resize', railSchedule);
+    railCheck();
+  }
   var topLink = $('.sumi-rail-top');
   if (topLink) topLink.addEventListener('click', function (e) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); history.replaceState(null, '', location.pathname); });
 
@@ -883,48 +911,95 @@
     var frames = $$('iframe', cmp);
     var langSel = $('.sumi-compare-lang', cmp);
     var syncBox = $('.sumi-compare-sync input', cmp);
-    var target = 0, started = false, lock = -1, lockTimer = null;
-    var heads = function (w) {
-      return Array.prototype.slice.call(w.document.querySelectorAll('.sumi-content :is(h1, h2, h3, h4, h5, h6)[id]'));
-    };
-    var topOf = function (w, el) { return el.getBoundingClientRect().top + w.scrollY; };
+    var approx = $('.sumi-compare-approx', cmp);
+    var target = 0, started = false, owner = 0, map = null, expect = [null, null], pending = 0;
+    if (store.get('compare-sync') === '0') syncBox.checked = false;
+    var win = function (n) { return frames[n].contentWindow; };
     var maxY = function (w) { return Math.max(0, w.document.documentElement.scrollHeight - w.innerHeight); };
-    // Where a reader is: the last heading passed, and how far towards the next one.
-    var where = function (w) {
-      var hs = heads(w), y = w.scrollY + 8, i = -1;
-      for (var k = 0; k < hs.length && topOf(w, hs[k]) <= y; k++) i = k;
-      var a = i >= 0 ? topOf(w, hs[i]) : 0;
-      var b = i + 1 < hs.length ? topOf(w, hs[i + 1]) : maxY(w);
-      return {
-        id: i >= 0 ? hs[i].id : null,
-        f: b > a ? Math.min(1, Math.max(0, (w.scrollY - a) / (b - a))) : 0,
-        r: maxY(w) ? w.scrollY / maxY(w) : 0
-      };
+    // Sync maps one side's scroll position to the other's. Its fixed points are
+    // places both pages share: headings with the same id and, in a section
+    // whose blocks line up one to one, every paragraph, list, code block and
+    // table. Each is matched where the eye reads, a third of the way down.
+    var kind = function (el) { return el.tagName + '.' + (el.classList[0] || ''); };
+    var sig = function (els) { return els.map(kind).join(); };
+    var prose = function (el) { return !/^(P|UL|OL|DL|BLOCKQUOTE)\./.test(kind(el)); };
+    var sections = function (w) {
+      var c = w.document.querySelector('.sumi-content'), out = [], cur = { id: '', items: [] };
+      Array.prototype.forEach.call(c ? c.children : [], function (el) {
+        if (!el.offsetHeight) return;
+        if (/^H[1-6]$/.test(el.tagName)) {
+          out.push(cur);
+          cur = { id: el.tagName === 'H1' ? ':h1' : el.id || null, head: el, items: [] };
+        } else cur.items.push(el);
+      });
+      out.push(cur);
+      return out;
     };
-    var goTo = function (w, pos) {
-      var hs = heads(w), i = -1;
-      if (pos.id) for (var k = 0; k < hs.length; k++) if (hs[k].id === pos.id) { i = k; break; }
-      if (pos.id && i < 0) { w.scrollTo(0, pos.r * maxY(w)); return; }
-      var a = i >= 0 ? topOf(w, hs[i]) : 0;
-      var b = i + 1 < hs.length ? topOf(w, hs[i + 1]) : maxY(w);
-      w.scrollTo(0, a + pos.f * (b - a));
+    var makeMap = function (a, b) {
+      var sa = sections(a), sb = sections(b), at = {}, pairs = [], last = -1, shared = 0;
+      sb.forEach(function (s, j) { if (s.id !== null) at[s.id] = j; });
+      sa.forEach(function (s) {
+        var j = s.id === null ? undefined : at[s.id], x = s.items, y;
+        if (j === undefined || j <= last) return;
+        last = j; shared++;
+        y = sb[j].items;
+        if (s.head) pairs.push([s.head, sb[j].head]);
+        // A paragraph split or merged in translation: match the other blocks only.
+        if (sig(x) !== sig(y)) { x = x.filter(prose); y = y.filter(prose); }
+        if (sig(x) === sig(y)) x.forEach(function (el, k) { pairs.push([el, y[k]]); });
+      });
+      var ma = maxY(a), mb = maxY(b), la = a.innerHeight / 3, lb = b.innerHeight / 3, k = [[0, 0]];
+      pairs.forEach(function (p) {
+        var x = p[0].getBoundingClientRect().top + a.scrollY - la;
+        var y = p[1].getBoundingClientRect().top + b.scrollY - lb;
+        var q = k[k.length - 1];
+        if (x > q[0] && y > q[1] && x < ma && y < mb) k.push([x, y]);
+      });
+      k.push([ma, mb]);
+      // Between fixed points the curve is a monotone cubic, so the follower
+      // changes speed gradually instead of at each paragraph.
+      var slopes = function (from) {
+        var to = 1 - from, d = [], m = [], i;
+        for (i = 0; i + 1 < k.length; i++) d[i] = k[i + 1][from] > k[i][from] ? (k[i + 1][to] - k[i][to]) / (k[i + 1][from] - k[i][from]) : 0;
+        for (i = 0; i < k.length; i++) m[i] = i === 0 ? d[0] : i === k.length - 1 ? d[i - 1] : d[i - 1] + d[i] ? 2 * d[i - 1] * d[i] / (d[i - 1] + d[i]) : 0;
+        return m;
+      };
+      return { k: k, m: [slopes(0), slopes(1)], approx: shared < Math.max(sa.length, sb.length) };
+    };
+    var project = function (mp, v, from) {
+      var k = mp.k, m = mp.m[from], to = 1 - from, i = 1;
+      while (i < k.length - 1 && k[i][from] <= v) i++;
+      var p = k[i - 1], q = k[i], h = q[from] - p[from];
+      if (!(h > 0)) return p[to];
+      var s = Math.min(1, Math.max(0, (v - p[from]) / h)), s2 = s * s, s3 = s2 * s;
+      return (2 * s3 - 3 * s2 + 1) * p[to] + (s3 - 2 * s2 + s) * h * m[i - 1] + (3 * s2 - 2 * s3) * q[to] + (s3 - s2) * h * m[i];
+    };
+    var scrollPane = function (n, y) {
+      var w = win(n);
+      y = Math.round(Math.min(maxY(w), Math.max(0, y)));
+      if (Math.abs(w.scrollY - y) < 1) return;
+      expect[n] = y;
+      w.scrollTo({ top: y, behavior: 'instant' });
     };
     var ready = function (n) {
       try { return !!frames[n].contentDocument.querySelector('.sumi-content'); } catch (e) { return false; }
     };
-    var follow = function (from) {
-      var to = 1 - from;
-      if (!syncBox.checked || lock === from || !ready(0) || !ready(1)) return;
-      lock = to;
-      goTo(frames[to].contentWindow, where(frames[from].contentWindow));
-      clearTimeout(lockTimer);
-      lockTimer = setTimeout(function () { lock = -1; }, 150);
+    // The side being read leads; the other follows in the same frame.
+    var follow = function () {
+      if (map && syncBox.checked) scrollPane(1 - owner, project(map, win(owner).scrollY, owner));
     };
+    var measure = function () {
+      map = ready(0) && ready(1) ? makeMap(win(0), win(1)) : null;
+      if (approx) approx.hidden = !(map && map.approx);
+      follow();
+    };
+    var remeasure = function () { cancelAnimationFrame(pending); pending = requestAnimationFrame(measure); };
     frames.forEach(function (f, n) {
       f.addEventListener('load', function () {
         var pane = f.parentNode, err = $('.sumi-compare-error', pane);
         if (err) pane.removeChild(err);
         if (!ready(n)) {
+          map = null;
           if (f.getAttribute('src')) {
             err = doc.createElement('div');
             err.className = 'sumi-compare-error';
@@ -933,24 +1008,38 @@
           }
           return;
         }
-        var ticking = false;
-        f.contentWindow.addEventListener('scroll', function () {
+        var w = f.contentWindow, d = w.document, ticking = false;
+        var lead = function () { owner = n; expect[n] = null; };
+        ['wheel', 'touchstart', 'pointerdown', 'keydown'].forEach(function (type) {
+          d.addEventListener(type, lead, { capture: true, passive: true });
+        });
+        w.addEventListener('scroll', function () {
+          // Ignore the scroll this side made because it was following.
+          if (expect[n] !== null && Math.abs(w.scrollY - expect[n]) < 2) { expect[n] = null; return; }
+          lead();
           if (ticking) return;
           ticking = true;
-          requestAnimationFrame(function () { ticking = false; follow(n); });
+          requestAnimationFrame(function () { ticking = false; follow(); });
         }, { passive: true });
-        // First open: start where the reader is on this page, then align the translation.
-        if (n === 0) goTo(f.contentWindow, where(window));
-        if (ready(0) && ready(1)) follow(0);
+        // Late images, fonts, opened details and tabs move the fixed points.
+        if ('ResizeObserver' in window) new ResizeObserver(remeasure).observe(d.querySelector('.sumi-content'));
+        d.addEventListener('load', remeasure, true);
+        d.addEventListener('toggle', remeasure, true);
+        if (d.fonts) d.fonts.ready.then(remeasure);
+        // First open: start where the reader is on this page.
+        if (n === 0) scrollPane(0, project(makeMap(window, w), window.scrollY, 0));
+        measure();
       });
     });
     var load = function (n, href) {
+      map = null;
       // Replace the frame's page instead of adding a history entry.
       if (frames[n].getAttribute('src') && frames[n].contentWindow) frames[n].contentWindow.location.replace(href);
       else frames[n].src = href;
     };
     var setTarget = function (i) {
       target = i;
+      owner = 0;
       var tr = S.translations[i];
       $$('.sumi-compare-target-name', cmp).forEach(function (el) { el.textContent = tr.name; });
       frames[1].title = tr.name;
@@ -976,7 +1065,10 @@
     $('[data-close]', cmp).addEventListener('click', function () { cmp.close(); });
     $$('.sumi-compare-switch button', cmp).forEach(function (b) { b.addEventListener('click', function () { show(+b.dataset.pane); }); });
     if (langSel) langSel.addEventListener('change', function () { setTarget(+langSel.value); });
-    syncBox.addEventListener('change', function () { if (syncBox.checked) follow(+cmp.dataset.show || 0); });
+    syncBox.addEventListener('change', function () {
+      store.set('compare-sync', syncBox.checked ? '1' : '0');
+      follow();
+    });
     // Back closes the reader, and closing it takes its history entry away.
     cmp.addEventListener('close', function () { if (history.state && history.state.sumiCompare) history.back(); });
     window.addEventListener('popstate', function () {

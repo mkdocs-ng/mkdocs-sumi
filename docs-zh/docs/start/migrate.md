@@ -4,7 +4,7 @@ description: 把现有站点从 Material for MkDocs 或其他主题迁移到 Sum
 
 # 从 Material 迁移
 
-Sumi 能读取为 Material for MkDocs 编写的内容和大部分配置。切换通常只需改两行。
+Sumi 能读取为 Material for MkDocs 编写的内容和大部分配置。切换通常只需改两行。还在犹豫？看看 [Sumi 与 Material for MkDocs 对比](compare.md)。
 
 ```diff title="mkdocs.yml"
  theme:

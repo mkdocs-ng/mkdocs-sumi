@@ -65,7 +65,7 @@ Sumi 不认识的类名会原样保留，你可以在 `extra_css` 中自己给�
 
 | 选项 | 类型 | 说明 |
 | --- | --- | --- |
-| `locale` | string | 界面语言：`en`、`zh`、`zh_TW` |
+| `locale` | string | 界面语言：`en`、`zh`、`ja` 等 15 种 |
 | `palette` | string | `auto`、`light` 或 `dark` |
 {.fields}
 

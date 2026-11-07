@@ -217,6 +217,63 @@ def test_bilingual_view_scrolls_both_languages_together(base_url, page):
     assert not page.errors
 
 
+def test_bilingual_view_lines_up_blocks_and_follows_either_side(base_url, page):
+    url, _ = base_url
+    page.goto(url + 'docs/write/tables/', wait_until='networkidle')
+    page.keyboard.press('b')
+    sync_api.expect(page.locator('.sumi-compare')).to_be_visible()
+    frames = page.locator('.sumi-compare iframe')
+    right = page.frame_locator('.sumi-compare iframe').nth(1)
+    sync_api.expect(right.locator('html.sumi-pane')).to_be_attached()
+    page.wait_for_timeout(500)
+    # Headings and blocks match, so no "approximate" note.
+    sync_api.expect(page.locator('.sumi-compare-approx')).to_be_hidden()
+
+    def blocks(n):
+        return frames.nth(n).evaluate(
+            """f => [...f.contentDocument.querySelectorAll('.sumi-content > *')]
+                 .filter(e => e.offsetHeight).map(e => e.getBoundingClientRect().top)"""
+        )
+
+    # Scroll the right side with the wheel: the left side follows it, and the
+    # block at the reading line (a third of the way down) is the same block.
+    box = frames.nth(1).bounding_box()
+    page.mouse.move(box['x'] + box['width'] / 2, box['y'] + box['height'] / 2)
+    for _ in range(12):
+        page.mouse.wheel(0, 120)
+        page.wait_for_timeout(50)
+    page.wait_for_timeout(300)
+    line = box['height'] / 3
+    left, right_tops = blocks(0), blocks(1)
+    assert len(left) == len(right_tops)
+    k = min(range(len(right_tops)), key=lambda i: abs(right_tops[i] - line))
+    assert abs(left[k] - right_tops[k]) < 40
+    # Both sides reach the end together.
+    for _ in range(80):
+        page.mouse.wheel(0, 400)
+    page.wait_for_timeout(500)
+    ends = [
+        frames.nth(n).evaluate(
+            'f => f.contentDocument.documentElement.scrollHeight - f.contentWindow.innerHeight - f.contentWindow.scrollY'
+        )
+        for n in (0, 1)
+    ]
+    assert ends[0] < 2 and ends[1] < 2
+    # Turning sync off is remembered.
+    page.locator('.sumi-compare-sync input').uncheck()
+    assert page.evaluate("localStorage.getItem('sumi.compare-sync')") == '0'
+    assert not page.errors
+
+
+def test_bilingual_view_notes_sections_that_differ(base_url, page):
+    url, _ = base_url
+    # The Chinese page has a section the English one lacks.
+    page.goto(url + 'docs/customize/i18n/', wait_until='networkidle')
+    page.keyboard.press('b')
+    sync_api.expect(page.locator('.sumi-compare-approx')).to_be_visible()
+    assert not page.errors
+
+
 def test_wide_table_opens_full_screen(base_url, page):
     url, _ = base_url
     page.goto(url + 'docs/write/tables/', wait_until='networkidle')
@@ -229,6 +286,23 @@ def test_wide_table_opens_full_screen(base_url, page):
     sync_api.expect(view.locator('table th').first).to_have_text('Option')
     page.keyboard.press('Escape')
     sync_api.expect(view).to_be_hidden()
+    assert not page.errors
+
+
+def test_wide_table_moves_the_toc_aside(base_url, page):
+    url, _ = base_url
+    page.set_viewport_size({'width': 1440, 'height': 900})
+    page.goto(url + 'docs/start/migrate/', wait_until='networkidle')
+    rail = page.locator('.sumi-rail')
+    sync_api.expect(rail).to_be_visible()
+    # The {.wide} table reaches into the table-of-contents column, so the
+    # table of contents steps aside while the table is beside it.
+    page.locator('.sumi-table--wide').evaluate(
+        'el => window.scrollTo(0, el.getBoundingClientRect().top + scrollY - 100)'
+    )
+    sync_api.expect(rail).to_be_hidden()
+    page.evaluate('window.scrollTo(0, 0)')
+    sync_api.expect(rail).to_be_visible()
     assert not page.errors
 
 
