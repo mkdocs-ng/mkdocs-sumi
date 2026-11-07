@@ -358,7 +358,7 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         for s in page.meta.get('sections') or []:
             if isinstance(s, dict):
                 groups += [s.get('actions'), s.get('items')]
-                # Cards and price plans carry buttons of their own.
+                # Cards, and items of a section of your own (type: include), carry buttons too.
                 groups += [i.get('actions') for i in s.get('items') or [] if isinstance(i, dict)]
         for group in groups:
             for item in group if isinstance(group, list) else []:

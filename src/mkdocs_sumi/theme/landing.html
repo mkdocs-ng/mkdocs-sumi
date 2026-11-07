@@ -20,7 +20,6 @@
       - {type: steps, title, items: [{title, text}]}
       - {type: faq, title, items: [{q, a}]}
       - {type: cta, title, text, actions}
-      - {type: pricing, title, items: [{name, price, note, text, bullets, actions, featured}]}
       - {type: posts, title, limit: 3}   # the latest blog posts
       - {type: markdown, title, markdown: "..."}
       - {type: content}   # the page's Markdown body
@@ -209,21 +208,6 @@
       <div class="sumi-cta">
         {{ section_head(s) }}
         {{ actions(s.actions) }}
-      </div>
-      {%- elif type == 'pricing' %}
-      {{ section_head(s) }}
-      <div class="sumi-pricing">
-        {%- for p in s['items'] or [] %}
-        <div class="sumi-price{% if p.featured %} sumi-price--featured{% endif %}">
-          <h3>{{ p.name }}</h3>
-          {%- if p.price %}<div class="sumi-price-amount">{{ p.price }}{% if p.note %} <small>{{ p.note | sumi_md }}</small>{% endif %}</div>{% endif %}
-          {%- if p.text %}<p>{{ p.text | sumi_md }}</p>{% endif %}
-          {%- if p.bullets %}
-          <ul class="sumi-check-list">{% for b in p.bullets %}<li>{{ icon('check') }}<span>{{ b | sumi_md }}</span></li>{% endfor %}</ul>
-          {%- endif %}
-          {%- if p.actions %}{{ actions(p.actions) }}{% endif %}
-        </div>
-        {%- endfor %}
       </div>
       {%- elif type == 'posts' %}
       {{ section_head(s) }}

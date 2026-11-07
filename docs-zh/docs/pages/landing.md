@@ -58,7 +58,6 @@ sections:
 | `steps` | `items` | 带编号的步骤：`title` 和 `text`。 |
 | `faq` | `items` | 问题与回答：`q` 和 `a`（Markdown）。 |
 | `cta` | `actions` | 收尾的行动号召。 |
-| `pricing` | `items` | 套餐或服务：`name`、`price`、`note`、`text`、`bullets`、`actions`，`featured: true` 用来突出其中一个。 |
 | `posts` | `limit` | [博客](blog.md)的最新文章，默认 3 篇。 |
 | `markdown` | `markdown` | 任意 Markdown：表格、图片、提示框。 |
 | `content` | `toc`、`aside` | 页面的 Markdown 正文。如果省略 `sections`，正文显示在主视觉下方。设 `toc: true` 时按文档页排版，旁边是页面目录；`aside` 在目录下方加入 `custom_dir` 中的一个模板。 |
@@ -111,14 +110,6 @@ sections:
         actions:
           - {text: Explore, link: jenkins/index.md, primary: true}
           - {text: GitHub, link: "https://github.com/keelinfra/agent8", icon: brand-github}
-  - type: pricing
-    title: Find out before you roll out
-    items:
-      - name: Plugin check
-        price: $1,500
-        note: fixed price
-        bullets: [A written report within ten business days]
-        actions: [{text: Ask for a check, link: "mailto:hello@example.com"}]
   - type: steps
     tone: dark
     title: How every product works
@@ -130,6 +121,8 @@ sections:
 ```
 
 [keelinfra.io](https://keelinfra.io/) 就是这样搭建的。
+
+Sumi 没有的区块类型（比如价格方案）可以写成你自己的模板，用 `type: include` 引入；其中 `items` 及其 `actions` 的链接会像主题自带区块一样被解析。
 
 > [!TIP]
 > 希望智能体和搜索引擎看到的内容，请写在页面正文里。front matter 中的区块是视觉呈现；首页的 Markdown 副本只包含标题、文字和正文。

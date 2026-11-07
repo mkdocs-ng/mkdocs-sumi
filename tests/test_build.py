@@ -869,7 +869,7 @@ def test_navigation_tabs_always(tmp_path):
 
 
 def test_landing_product_sections(tmp_path):
-    """Cards with badges and buttons, pricing, recent posts, dark bands and markdown sections."""
+    """Cards with badges and buttons, recent posts, dark bands and markdown sections."""
     site = _site(tmp_path, {
         'index.md': """
             ---
@@ -898,9 +898,6 @@ def test_landing_product_sections(tmp_path):
                 tone: dark
                 items: [{title: One, text: First.}]
                 markdown: "Run `make`."
-              - type: pricing
-                items:
-                  - {name: Check, price: "$1,500", note: fixed price, bullets: [A report], actions: [{text: Ask, link: "mailto:a@b.c"}]}
               - type: posts
                 title: From the blog
                 actions: [{text: All posts, link: blog/index.md}]
@@ -920,11 +917,9 @@ def test_landing_product_sections(tmp_path):
     assert 'href="guide/"' in html
     assert 'sumi-stat-link' in html
     assert 'sumi-land--dark' in html and '<code>make</code>' in html
-    assert 'sumi-price-amount">$1,500 <small>fixed price</small>' in html
     assert 'Hello post' in html and 'href="blog/2026/11/01/hello/"' in html and 'href="blog/"' in html
     assert 'href="guide/">guide</a>' in html
     md = (site / 'index.md').read_text()
-    assert '### Check' in md and '**$1,500 fixed price**' in md
     # The Markdown copy keeps `.md` links, which lead to the other Markdown copies.
     assert '  - Keeps its Java' in md and '  - [Explore](guide.md)' in md
     assert 'See the [guide](guide.md).' in md

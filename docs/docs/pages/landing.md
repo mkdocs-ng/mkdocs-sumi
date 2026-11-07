@@ -58,7 +58,6 @@ Every entry in `sections` has a `type` and optional `eyebrow`, `title`, `text`, 
 | `steps` | `items` | A numbered sequence: `title` and `text`. |
 | `faq` | `items` | Questions and answers: `q` and `a` (Markdown). |
 | `cta` | `actions` | A closing call to action. |
-| `pricing` | `items` | Plans or services: `name`, `price`, `note`, `text`, `bullets`, `actions` and `featured: true` for the one to highlight. |
 | `posts` | `limit` | The latest posts of the [blog](blog.md), 3 by default. |
 | `markdown` | `markdown` | Any Markdown: a table, a picture, a callout. |
 | `content` | `toc`, `aside` | The Markdown body of the page. If `sections` is omitted, the body is shown under the hero. With `toc: true` it is laid out like a docs page, beside its table of contents; `aside` adds a template from your `custom_dir` under that table of contents. |
@@ -111,14 +110,6 @@ sections:
         actions:
           - {text: Explore, link: jenkins/index.md, primary: true}
           - {text: GitHub, link: "https://github.com/keelinfra/agent8", icon: brand-github}
-  - type: pricing
-    title: Find out before you roll out
-    items:
-      - name: Plugin check
-        price: $1,500
-        note: fixed price
-        bullets: [A written report within ten business days]
-        actions: [{text: Ask for a check, link: "mailto:hello@example.com"}]
   - type: steps
     tone: dark
     title: How every product works
@@ -130,6 +121,8 @@ sections:
 ```
 
 [keelinfra.io](https://keelinfra.io/) is built this way.
+
+A section Sumi has no type for, such as price plans, is a template of your own: `type: include` renders it, and its `items` and their `actions` links are resolved like the theme's own.
 
 > [!TIP]
 > Keep the page body for content that agents and search should see. The front-matter sections are visual; the Markdown copy of a landing page contains its title, text and body.

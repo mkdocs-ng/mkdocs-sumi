@@ -68,16 +68,6 @@ def landing_markdown(meta: dict[str, Any], body: str, h1: str | None) -> str:
                 out += [f'  - {_text(b)}' for b in f.get('bullets') or []]
                 out += ['  ' + a for a in _actions(f.get('actions'))]
             out.append('')
-        elif kind == 'pricing':
-            for p in items:
-                price = ' '.join(x for x in (_text(p.get('price')), _text(p.get('note'))) if x)
-                out += [f'### {_text(p.get("name"))}', '']
-                if price:
-                    out += [f'**{price}**', '']
-                if p.get('text'):
-                    out += [_text(p['text']), '']
-                out += [f'- {_text(b)}' for b in p.get('bullets') or []] + ([''] if p.get('bullets') else [])
-                out += [*_actions(p.get('actions')), ''] if p.get('actions') else []
         elif kind == 'stats':
             out += [f'- **{_text(st.get("value"))}** {_text(st.get("label"))}' for st in items] + ['']
         elif kind == 'steps':

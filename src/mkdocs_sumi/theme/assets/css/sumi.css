@@ -453,22 +453,6 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
   font: 500 .86em/1.4 var(--sumi-font-mono); overflow-wrap: anywhere; -webkit-box-decoration-break: clone; box-decoration-break: clone;
 }
 .sumi-prose a > code { color: inherit; }
-/* Forms written as HTML in a page: a contact or sign-up form looks like the rest of the theme. */
-.sumi-prose form { display: flex; flex-direction: column; margin: 1.2em 0; padding: 22px 22px 24px; border: 1px solid var(--sumi-line); border-radius: var(--sumi-radius); background: var(--sumi-bg-elev); }
-.sumi-prose form label { margin: 16px 0 6px; color: var(--sumi-fg); font-size: 15px; font-weight: 600; }
-.sumi-prose form label:first-child { margin-top: 0; }
-.sumi-prose form label:has(> input[type="checkbox"], > input[type="radio"]) { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; }
-.sumi-prose form :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="button"]), textarea, select) {
-  width: 100%; padding: 9px 12px; border: 1px solid var(--sumi-line-2); border-radius: 8px; background: var(--sumi-bg); color: var(--sumi-fg); font: inherit; font-size: 15px;
-}
-.sumi-prose form textarea { resize: vertical; }
-.sumi-prose form :is(input, textarea, select):focus-visible { border-color: var(--sumi-accent); outline: 2px solid color-mix(in srgb, var(--sumi-accent) 30%, transparent); outline-offset: 0; }
-.sumi-prose form :is(button[type="submit"], input[type="submit"]) {
-  align-self: flex-start; margin-top: 18px; height: 42px; padding: 0 18px; border: 1px solid var(--sumi-fg); border-radius: 10px;
-  background: var(--sumi-fg); color: var(--sumi-bg); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
-}
-.sumi-prose form :is(button[type="submit"], input[type="submit"]):hover { background: color-mix(in srgb, var(--sumi-fg) 88%, var(--sumi-accent)); }
-.sumi-prose form > p { margin: 14px 0 0; color: var(--sumi-fg-3); font-size: 13.5px; }
 
 /* Code blocks */
 .sumi-prose pre {
@@ -1204,7 +1188,7 @@ a.sumi-feature:hover .sumi-feature-more .sumi-icon { transform: translateX(3px);
 .sumi-land-docs { padding: 12px 0 24px; }
 .sumi-land-docs .sumi-rail { top: var(--sumi-header-h); }
 .sumi-land-section:last-child { border-bottom: 0; }
-/* Badges, cards with buttons, pricing, recent posts, dark bands. */
+/* Badges, cards with buttons, recent posts, dark bands. */
 .sumi-landing .badge {
   --c: var(--sumi-fg-2);
   display: inline-block; padding: 1px 9px; border: 1px solid color-mix(in srgb, var(--c) 28%, transparent); border-radius: 999px;
@@ -1229,7 +1213,7 @@ a.sumi-feature:hover .sumi-feature-more .sumi-icon { transform: translateX(3px);
 .sumi-feature .sumi-check-list { margin-bottom: 0; font-size: 14.5px; }
 .sumi-feature .sumi-check-list li { margin-bottom: 6px; }
 .sumi-feature .sumi-actions-row { gap: 8px; margin-top: auto; padding-top: 20px; }
-.sumi-feature .sumi-btn, .sumi-price .sumi-btn { height: 38px; padding: 0 14px; font-size: 14px; }
+.sumi-feature .sumi-btn { height: 38px; padding: 0 14px; font-size: 14px; }
 .sumi-features--cards .sumi-feature > p { color: var(--sumi-fg); font-size: 15.5px; }
 .sumi-stat-link dt a { display: inline-flex; align-items: center; gap: 4px; color: inherit; text-decoration: none; }
 .sumi-stat-link dt a::after { content: ""; position: absolute; inset: 0; }
@@ -1237,15 +1221,6 @@ a.sumi-feature:hover .sumi-feature-more .sumi-icon { transform: translateX(3px);
 .sumi-stat-link:hover { background: color-mix(in srgb, var(--sumi-bg-elev) 85%, var(--sumi-bg-soft)); }
 .sumi-stat-link dt .sumi-icon { width: 14px; height: 14px; transition: transform .15s; }
 .sumi-stat-link:hover dt .sumi-icon { transform: translateX(3px); }
-.sumi-pricing { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-.sumi-price { display: flex; flex-direction: column; padding: 28px 26px; border: 1px solid var(--sumi-line); border-radius: 16px; background: var(--sumi-bg-elev); }
-.sumi-price--featured { border-color: var(--sumi-accent); box-shadow: 0 0 0 1px var(--sumi-accent), var(--sumi-shadow-md); }
-.sumi-price h3 { margin: 0 0 10px; color: var(--sumi-fg); font-size: 17px; font-weight: 650; }
-.sumi-price-amount { margin: 0 0 16px; color: var(--sumi-fg); font-size: 2rem; font-weight: 740; letter-spacing: -0.03em; line-height: 1.15; font-variant-numeric: tabular-nums; }
-.sumi-price-amount small { display: block; margin-top: 4px; color: var(--sumi-fg-3); font-size: 13.5px; font-weight: 500; letter-spacing: 0; }
-.sumi-price > p { margin: 0 0 16px; color: var(--sumi-fg-2); font-size: 14.5px; }
-.sumi-price .sumi-check-list { font-size: 14.5px; }
-.sumi-price .sumi-actions-row { margin-top: auto; }
 .sumi-land-postlist { margin: 0; padding: 0; border-top: 1px solid var(--sumi-line); list-style: none; }
 .sumi-land-postlist li { border-bottom: 1px solid var(--sumi-line); }
 .sumi-land-postlist a { display: flex; flex-direction: column; gap: 6px; padding: 18px 0; color: var(--sumi-fg); text-decoration: none; }
