@@ -792,3 +792,76 @@ def test_releases_unknown_source_is_a_clear_error(tmp_path, caplog):
     with pytest.raises(Abort):
         _site(tmp_path, {'index.md': '---\ntemplate: releases.html\nreleases:\n  gitlab: o/r\n---\n# R\n'}, BASIC)
     assert "Unknown 'releases' keys in 'index.md': gitlab" in caplog.text
+
+
+def test_landing_docs_and_include_sections(tmp_path):
+    (tmp_path / 'overrides' / 'partials').mkdir(parents=True)
+    (tmp_path / 'overrides' / 'partials' / 'checker.html').write_text('<div class="my-checker">{{ page.title }}</div>')
+    (tmp_path / 'overrides' / 'partials' / 'tools.html').write_text('<p class="my-tools">spec.json</p>')
+    site = _site(tmp_path, {
+        'index.md': """
+            ---
+            template: landing.html
+            hero: {title: Spec, text: A specification.}
+            sections:
+              - {type: content, toc: true, id: spec, aside: partials/tools.html}
+              - {type: include, template: partials/checker.html, title: Try it, class: is-dark}
+            ---
+            # Spec 1.0
+
+            ## Summary
+
+            Text.
+
+            ## Rules
+
+            More.
+            """,
+    }, BASIC.replace('  name: sumi\n', '  name: sumi\n      custom_dir: overrides\n'))
+    html = (site / 'index.html').read_text()
+    docs = html[html.index('sumi-land-docs'):html.index('sumi-land-include')]
+    assert 'id="spec"' in html
+    assert 'sumi-rail' in docs and 'sumi-toc-inline' in docs and 'href="#rules"' in docs
+    assert '<p class="my-tools">spec.json</p>' in docs
+    assert '<h2 id="rules">' in docs and 'data-pagefind-body' in docs
+    include = html[html.index('sumi-land-include'):]
+    assert 'is-dark' in include and 'Try it' in include
+    assert '<div class="my-checker">Spec 1.0</div>' in include
+
+
+def test_versions_in_folders(tmp_path):
+    site = _site(tmp_path, {
+        'index.md': '# Latest\n',
+        'v1/index.md': '# Old\n',
+    }, BASIC.replace('  name: sumi\n', '  name: sumi\n      versions:\n        - {title: "2.0", path: ""}\n        - {title: "1.0", path: v1/}\n'))
+    latest = (site / 'index.html').read_text()
+    assert 'sumi-version-current">2.0<' in latest
+    assert '<div class="sumi-version-banner" hidden></div>' in latest
+    old = (site / 'v1' / 'index.html').read_text()
+    assert 'sumi-version-current">1.0<' in old
+    assert re.search(r'<div class="sumi-version-banner">You are reading [^<]*<a href="\.\./">', old)
+    assert 'href="./" aria-current="true">1.0' in old
+
+
+def test_main_html_override_reaches_every_template(tmp_path):
+    (tmp_path / 'overrides').mkdir()
+    (tmp_path / 'overrides' / 'main.html').write_text(
+        '{% extends "base.html" %}{% block extrahead %}<meta name="x-test" content="1">{% endblock %}')
+    site = _site(tmp_path, {
+        'index.md': '---\ntemplate: landing.html\nhero: {title: Hi}\n---\n',
+        'page.md': '# Page\n',
+    }, BASIC.replace('  name: sumi\n', '  name: sumi\n      custom_dir: overrides\n'))
+    for path in ('index.html', 'page/index.html', '404.html'):
+        assert '<meta name="x-test" content="1">' in (site / path).read_text(), path
+
+
+def test_navigation_tabs_always(tmp_path):
+    site = _site(tmp_path, {
+        'index.md': '---\ntemplate: landing.html\nhero: {title: Hi}\n---\n',
+        'guide.md': '# Guide\n',
+    }, BASIC.replace('  name: sumi\n', '  name: sumi\n      navigation_tabs: always\n'))
+    for path in ('index.html', 'guide/index.html'):
+        html = (site / path).read_text()
+        assert 'class="sumi-tabs-nav"' in html, path
+        # The header tabs are hidden on small screens, so the drawer lists them.
+        assert 'sumi-sidebar--tabs-only' in html and 'aria-controls="sumi-sidebar"' in html, path

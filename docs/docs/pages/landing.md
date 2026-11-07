@@ -57,8 +57,28 @@ Every entry in `sections` has a `type` and optional `eyebrow`, `title`, `text`, 
 | `steps` | `items` | A numbered sequence: `title` and `text`. |
 | `faq` | `items` | Questions and answers: `q` and `a` (Markdown). |
 | `cta` | `actions` | A closing call to action. |
-| `content` | | The Markdown body of the page. If `sections` is omitted, the body is shown under the hero. |
+| `content` | `toc`, `aside` | The Markdown body of the page. If `sections` is omitted, the body is shown under the hero. With `toc: true` it is laid out like a docs page, beside its table of contents; `aside` adds a template from your `custom_dir` under that table of contents. |
+| `include` | `template` | A template of your own from `custom_dir`, such as `partials/demo.html`, under the section's heading. It sees the page and the theme's helpers, like any override. |
 {.fields meta="keys"}
+
+Every section also takes `class`, extra CSS classes for its `<section>`, to style one section from your own stylesheet.
+
+### A specification on the home page
+
+A project whose home page is its document, such as a specification, keeps the hero and gets the docs layout for the body:
+
+```yaml title="docs/index.md"
+---
+template: landing.html
+hero:
+  title: My Spec
+  actions:
+    - {text: Read the specification, link: "#spec", primary: true}
+sections:
+  - {type: content, toc: true, id: spec}
+  - {type: include, template: partials/playground.html, title: Try it}
+---
+```
 
 > [!TIP]
 > Keep the page body for content that agents and search should see. The front-matter sections are visual; the Markdown copy of a landing page contains its title, text and body.

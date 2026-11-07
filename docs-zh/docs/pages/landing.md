@@ -57,8 +57,28 @@ sections:
 | `steps` | `items` | 带编号的步骤：`title` 和 `text`。 |
 | `faq` | `items` | 问题与回答：`q` 和 `a`（Markdown）。 |
 | `cta` | `actions` | 收尾的行动号召。 |
-| `content` | | 页面的 Markdown 正文。如果省略 `sections`，正文显示在主视觉下方。 |
+| `content` | `toc`、`aside` | 页面的 Markdown 正文。如果省略 `sections`，正文显示在主视觉下方。设 `toc: true` 时按文档页排版，旁边是页面目录；`aside` 在目录下方加入 `custom_dir` 中的一个模板。 |
+| `include` | `template` | `custom_dir` 中你自己的模板，例如 `partials/demo.html`，显示在区块标题下方。它和其他覆盖模板一样，能用页面变量和主题的辅助函数。 |
 {.fields meta="键"}
+
+每个区块还可以设 `class`，给它的 `<section>` 加 CSS 类，方便在自己的样式表里单独调整。
+
+### 首页就是规范 {#a-specification-on-the-home-page}
+
+如果项目的首页就是文档本身（比如一份规范），可以保留主视觉，正文用文档页排版：
+
+```yaml title="docs/index.md"
+---
+template: landing.html
+hero:
+  title: My Spec
+  actions:
+    - {text: 阅读规范, link: "#spec", primary: true}
+sections:
+  - {type: content, toc: true, id: spec}
+  - {type: include, template: partials/playground.html, title: 试一试}
+---
+```
 
 > [!TIP]
 > 希望智能体和搜索引擎看到的内容，请写在页面正文里。front matter 中的区块是视觉呈现；首页的 Markdown 副本只包含标题、文字和正文。

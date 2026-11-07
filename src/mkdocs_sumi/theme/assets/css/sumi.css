@@ -246,6 +246,7 @@ button { font: inherit; color: inherit; }
   color: var(--sumi-fg-2); font-size: 14px; text-align: start; cursor: pointer; white-space: nowrap;
 }
 .sumi-menu-list a:hover, .sumi-menu-list button:hover { background: var(--sumi-bg-soft); color: var(--sumi-fg); }
+.sumi-menu-note { margin-inline-start: auto; padding-inline-start: 12px; color: var(--sumi-fg-3); font-size: 12px; }
 .sumi-menu-list .sumi-icon { width: 16px; height: 16px; color: var(--sumi-fg-3); }
 .sumi-menu-list [aria-current="true"] { color: var(--sumi-accent-ink); font-weight: 600; }
 
@@ -1176,6 +1177,9 @@ a.sumi-feature:hover .sumi-feature-more .sumi-icon { transform: translateX(3px);
 .sumi-cta .sumi-btn { background: transparent; color: var(--sumi-bg); border-color: color-mix(in srgb, var(--sumi-bg) 35%, transparent); box-shadow: none; }
 .sumi-cta .sumi-btn--primary { background: var(--sumi-bg); color: var(--sumi-fg); border-color: var(--sumi-bg); }
 .sumi-land-content .sumi-land-prose { max-width: var(--sumi-content-w); margin: 0 auto; }
+/* A landing section that is a docs page: the article beside its table of contents. */
+.sumi-land-docs { padding: 12px 0 24px; }
+.sumi-land-docs .sumi-rail { top: var(--sumi-header-h); }
 .sumi-land-section:last-child { border-bottom: 0; }
 
 /* ── Blog ───────────────────────────────────────────────────────────────── */

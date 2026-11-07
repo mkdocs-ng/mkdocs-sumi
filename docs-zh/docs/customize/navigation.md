@@ -53,6 +53,18 @@ mike deploy --push --update-aliases 0.2 latest
 mike set-default --push latest
 ```
 
+### 放在文件夹里的版本 {#versions-in-folders}
+
+如果旧版本就是同一站点里的普通页面，比如 `v1.0/`，把它们列在 `theme.versions` 下，最新的放在第一个。Sumi 会显示版本菜单，并在旧版本上显示提示，不需要 `versions.json`，也不需要 JavaScript。`path` 是该版本在 `docs/` 中的文件夹，最新版本通常留空。
+
+```yaml title="mkdocs.yml"
+theme:
+  name: sumi
+  versions:
+    - {title: "1.1", path: ""}
+    - {title: "1.0", path: v1.0/}
+```
+
 ## 语言 {#languages}
 
 在多语言站点上，页眉会显示语言菜单，命令面板也会为每种语言加一条“切换语言：……”命令。使用 MkDocs NG 1.11 或更高版本时，把各语言列在 `languages` 下，菜单就会把每个页面链接到其他语言中的同一页面；见[语言](i18n.md#multilingual-sites)。

@@ -81,7 +81,7 @@ Sumi supports Python 3.10 and later. Material for MkDocs 9.8.0 requires Python 3
 ## Where Material is ahead
 
 - **Users.** Material has many times more downloads, and about 84,000 public GitHub repositories depend on it, according to its authors. That means more examples, answers and plugins tested against it. Sumi was first released on 2026-10-31.
-- **Breadth.** More than 60 interface languages against Sumi's 13, about 14,000 icons against 2,000, and any Google Font.
+- **Breadth.** More than 60 interface languages against Sumi's 15, about 14,000 icons against 2,000, and any Google Font.
 - **Features Sumi doesn't have:** code annotations, instant navigation without full page loads, a social card generated for every page, and tags across docs pages (Sumi's tags are for blog posts).
 
 If your site depends on these, Material, or `mkdocs-ng-material` on MkDocs NG, is the better fit today.
@@ -100,7 +100,7 @@ If your site depends on these, Material, or `mkdocs-ng-material` on MkDocs NG, i
 | Search | Command palette, CJK substring matching | lunr.js with stemming, suggestions, optional Chinese segmentation |
 | 5,000-page build | 67.6 s | 134.5 s |
 | Python | 3.10+ | 3.11+ (`mkdocs-ng-material`: 3.10+) |
-| Interface languages | 13, including right to left | More than 60, including right to left |
+| Interface languages | 15, including right to left | More than 60, including right to left |
 | Icons | About 2,000 | About 14,000 |
 | Code annotations, instant navigation, generated social cards | No | Yes |
 | Runs on | MkDocs NG 1.9+ | MkDocs 1.6, MkDocs NG, ProperDocs |

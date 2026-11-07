@@ -53,6 +53,18 @@ mike deploy --push --update-aliases 0.2 latest
 mike set-default --push latest
 ```
 
+### Versions in folders
+
+When old versions are ordinary pages of the same site, such as `v1.0/`, list them under `theme.versions`, the latest first. Sumi shows the menu and, on the older ones, the notice, without `versions.json` or JavaScript. `path` is the folder of the version in `docs/`; the latest one usually has none.
+
+```yaml title="mkdocs.yml"
+theme:
+  name: sumi
+  versions:
+    - {title: "1.1", path: ""}
+    - {title: "1.0", path: v1.0/}
+```
+
 ## Languages
 
 On a site with several languages, the header shows a language menu, and the command palette gets a *Switch to …* command for each language. With MkDocs NG 1.11 or later, list the languages under `languages` and the menu links each page to the same page in the other languages; see [Languages](i18n.md#multilingual-sites).
