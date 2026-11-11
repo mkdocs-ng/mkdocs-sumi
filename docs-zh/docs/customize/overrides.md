@@ -38,7 +38,9 @@ overrides/
 | `styles` | 样式表 |
 | `analytics` | 统计分析代码 |
 | `extrahead` | 空块，用来放你自己的标签 |
+| `announce` | 公告栏的文字；不为空时显示公告栏。默认是 `theme.announcement` |
 | `header` | 站点页眉 |
+| `outdated` | 旧版本页面上提示条的文字；为空时用 Sumi 的默认文字 |
 | `layout` | 侧边栏、正文和目录 |
 | `content` | 正文 |
 | `page_content` | 渲染后的 Markdown |

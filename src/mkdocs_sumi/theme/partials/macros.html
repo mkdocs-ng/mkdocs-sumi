@@ -52,7 +52,12 @@
     'ink': ['#2a2926', '#e8e4dc'],
   } -%}
   {%- if accent != 'vermilion' -%}
-    {%- set pair = named[accent] if accent in named else [accent, accent] -%}
+    {#- `{light: …, dark: …}` sets each mode; a single CSS colour is used in both. -#}
+    {%- if accent is mapping -%}
+      {%- set pair = [accent.light or accent.dark, accent.dark or accent.light] -%}
+    {%- else -%}
+      {%- set pair = named[accent] if accent in named else [accent, accent] -%}
+    {%- endif -%}
 <style>:root{--sumi-accent:{{ pair[0] }}}[data-theme="dark"]{--sumi-accent:{{ pair[1] }}}</style>
   {%- endif -%}
 {%- endmacro -%}

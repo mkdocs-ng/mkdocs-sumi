@@ -38,7 +38,9 @@ Create `overrides/main.html` and extend `base.html`:
 | `styles` | Stylesheets |
 | `analytics` | The analytics snippet |
 | `extrahead` | Empty; for your own tags |
+| `announce` | The text of the announcement bar; the bar is shown when it isn't empty. Defaults to `theme.announcement` |
 | `header` | The site header |
+| `outdated` | The text of the banner on an old version; Sumi's default text when empty |
 | `layout` | Sidebar, article and table of contents |
 | `content` | The article |
 | `page_content` | The rendered Markdown |

@@ -55,7 +55,15 @@ theme:
 | `ink` | `#2a2926` | `#e8e4dc` |
 {.compact}
 
-具名强调色在深色模式下有专门调过的版本。自定义的 CSS 颜色在两种模式下都一样。
+具名强调色在深色模式下有专门调过的版本。自定义的 CSS 颜色在两种模式下都一样，除非分别给出：
+
+```yaml title="mkdocs.yml"
+theme:
+  name: sumi
+  accent: {light: "#283593", dark: "#7986cb"}
+```
+
+从 Material 迁移过来、保留了 `palette` 列表的站点，会用它的 `primary` 颜色作为强调色。
 
 ## 单页选项 {#per-page-options}
 

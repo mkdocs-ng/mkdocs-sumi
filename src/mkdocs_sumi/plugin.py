@@ -37,6 +37,7 @@ from mkdocs.structure.files import File, Files
 from mkdocs.structure.nav import Navigation, Section
 from mkdocs.structure.pages import Page
 
+from mkdocs_sumi import material as material_config
 from mkdocs_sumi.i18n import STRINGS, format_date, is_rtl, og_locale, translator
 from mkdocs_sumi.icons import has_icon, icon
 
@@ -142,6 +143,9 @@ class SumiPlugin(BasePlugin[SumiConfig]):
     def on_config(self, config: MkDocsConfig) -> MkDocsConfig:
         if config.theme.name != 'sumi':
             log.warning("The 'sumi' plugin is meant to be used with 'theme: sumi'.")
+        else:
+            # A site that comes from Material keeps its palette, tabs and versions.
+            material_config.adapt_theme(config.theme, config.extra)
         # `theme.language` is what Material calls it: honour it so a site that
         # switches themes keeps its interface language. On a multi-language
         # site MkDocs NG sets `locale` for each language, so that one wins.

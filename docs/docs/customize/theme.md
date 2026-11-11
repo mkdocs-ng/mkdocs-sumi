@@ -55,7 +55,15 @@ theme:
 | `ink` | `#2a2926` | `#e8e4dc` |
 {.compact}
 
-A named accent has a tuned variant for dark mode. A custom CSS colour is used in both modes.
+A named accent has a tuned variant for dark mode. A custom CSS colour is used in both modes, unless you give one for each:
+
+```yaml title="mkdocs.yml"
+theme:
+  name: sumi
+  accent: {light: "#283593", dark: "#7986cb"}
+```
+
+A site that comes from Material and keeps its `palette` list gets the accent of its `primary` colour.
 
 ## Per-page options
 

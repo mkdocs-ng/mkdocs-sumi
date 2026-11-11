@@ -952,3 +952,96 @@ def test_print_edition_keeps_label_targets(tmp_path):
     html = (site / 'print' / 'index.html').read_text()
     m = re.search(r'<label for="([^"]+)">Name', html)
     assert m and f'id="{m.group(1)}"' in html
+
+
+MATERIAL = """
+    site_name: Test
+    theme:
+      name: sumi
+      palette:
+        - media: "(prefers-color-scheme: light)"
+          scheme: default
+          primary: deep purple
+        - media: "(prefers-color-scheme: dark)"
+          scheme: slate
+          primary: deep purple
+      features:
+        - content.code.copy
+    plugins:
+      - search
+      - sumi
+    extra:
+      version:
+        provider: mike
+    nav:
+      - Home: index.md
+      - Guide:
+        - guide/index.md
+        - guide/setup.md
+"""
+
+
+def test_material_palette_features_and_versions(tmp_path):
+    """A Material `mkdocs.yml` keeps its colour, dark mode, sidebar and versions."""
+    site = _site(tmp_path, {'index.md': '# Home\n', 'guide/index.md': '# Guide\n', 'guide/setup.md': '# Setup\n'},
+                 MATERIAL)
+    html = (site / 'guide' / 'setup' / 'index.html').read_text()
+    assert 'data-palette="auto"' in html
+    assert '<style>:root{--sumi-accent:#4527a0}[data-theme="dark"]{--sumi-accent:#9575cd}</style>' in html
+    # No `navigation.tabs` in Material's features: the whole nav is in the sidebar.
+    assert 'class="sumi-tabs-nav"' not in html
+    assert '<li class="sumi-nav-page"><a href="../..">Home</a></li>' in html
+    assert 'versions: "mike"' in html
+
+
+@pytest.mark.parametrize('palette, mode, accent', [
+    ('{scheme: slate, primary: teal}', 'dark', '--sumi-accent:#00695c'),
+    ('{scheme: default, primary: white, accent: Blue Grey}', 'light', '--sumi-accent:#37474f'),
+    ('[{scheme: default, primary: amber}]', 'light', '--sumi-accent:#9a6512'),
+    ('[{scheme: default, primary: custom}]', 'light', None),
+])
+def test_material_palette_entries(tmp_path, palette, mode, accent):
+    config = BASIC.replace('      name: sumi\n', f'      name: sumi\n      palette: {palette}\n')
+    html = (_site(tmp_path, {'index.md': '# Home\n'}, config) / 'index.html').read_text()
+    assert f'data-palette="{mode}"' in html
+    if accent:
+        assert accent in html
+    else:
+        assert '--sumi-accent:' not in html
+
+
+def test_own_accent_wins_over_material_palette(tmp_path):
+    config = BASIC.replace('      name: sumi\n', '      name: sumi\n      accent: moss\n      palette: {primary: red}\n')
+    html = (_site(tmp_path, {'index.md': '# Home\n'}, config) / 'index.html').read_text()
+    assert '--sumi-accent:#4b6b2f' in html
+
+
+def test_material_announce_and_outdated_blocks(tmp_path):
+    """Material's `announce` and `outdated` blocks in `main.html` work as they did."""
+    (tmp_path / 'overrides').mkdir()
+    (tmp_path / 'overrides' / 'main.html').write_text(
+        '{% extends "base.html" %}'
+        '{% block announce %}<strong>Logfire</strong> is out{% endblock %}'
+        '{% block outdated %}Old docs. <a href="{{ base_url }}/../">Latest</a>{% endblock %}')
+    config = BASIC.replace("      announcement: 'New: <a href=\"blog/\">the blog</a>'\n", '').replace(
+        '  name: sumi\n', '  name: sumi\n      custom_dir: overrides\n'
+        '      versions:\n        - {title: "2.0", path: ""}\n        - {title: "1.0", path: v1/}\n')
+    site = _site(tmp_path, {'index.md': '# Latest\n', 'v1/index.md': '# Old\n'}, config)
+    latest = (site / 'index.html').read_text()
+    assert '<div class="sumi-announce" data-key="Logfire is out">' in latest
+    assert '<div class="sumi-announce-inner"><strong>Logfire</strong> is out</div>' in latest
+    # Kept for mike, which shows the banner on an old version.
+    assert '<div class="sumi-version-banner" hidden>Old docs. <a href="./../">Latest</a></div>' in latest
+    old = (site / 'v1' / 'index.html').read_text()
+    assert '<div class="sumi-version-banner">Old docs. <a href="../../">Latest</a></div>' in old
+
+
+def test_no_announcement_bar_without_text(tmp_path):
+    config = BASIC.replace("      announcement: 'New: <a href=\"blog/\">the blog</a>'\n", '')
+    html = (_site(tmp_path, {'index.md': '# Home\n'}, config) / 'index.html').read_text()
+    assert 'sumi-announce' not in html
+
+
+def test_material_document_observable_is_available(site):
+    html = (site / 'guide' / 'index.html').read_text()
+    assert 'if (!window.document$) window.document$ = { subscribe:' in html
