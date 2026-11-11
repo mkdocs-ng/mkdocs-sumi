@@ -4,7 +4,7 @@ description: What Sumi does that Material for MkDocs doesn't, where Material is 
 
 # Sumi and Material for MkDocs
 
-[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) is by far the most widely used MkDocs theme. Sumi is newer: it is built for [MkDocs NG](https://mkdocs-ng.org/) and does several things Material doesn't. This page shows where Sumi is ahead, where Material still is, and how to try Sumi on your site. Your Markdown, `mkdocs.yml` and plugins work with both, and switching is a [two-line change](migrate.md).
+[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) is by far the most widely used MkDocs theme. Sumi is newer: it is built for [MkDocs NG](https://mkdocs-ng.org/) and does several things Material doesn't. This page shows where Sumi is ahead, where Material still is, and how to try Sumi on your site. Your Markdown, `mkdocs.yml` and plugins work with both, and switching [starts with a two-line change](migrate.md).
 
 Facts on this page were checked on 2026-11-06 against Sumi 0.3.1, Material for MkDocs 9.8.0 and `mkdocs-ng-material` 9.8.0. If something here is wrong or out of date, please [open an issue](https://github.com/mkdocs-ng/mkdocs-sumi/issues).
 

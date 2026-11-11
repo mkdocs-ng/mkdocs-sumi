@@ -25,7 +25,7 @@
 {%- set vns = namespace(current=versions[0] if versions else None) -%}
 {%- for v in versions if v.path and page and page.url.startswith(v.path) %}{% set vns.current = v %}{% endfor -%}
 <!doctype html>
-<html lang="{{ sumi_language | replace('_', '-') }}"{% if sumi_dir == 'rtl' %} dir="rtl"{% endif %} data-palette="{{ theme.palette }}" data-layout="{{ layout }}" class="no-js">
+<html lang="{{ sumi_language | replace('_', '-') }}"{% if sumi_dir == 'rtl' %} dir="rtl"{% endif %} data-palette="{{ theme.palette if theme.palette is string else 'auto' }}" data-layout="{{ layout }}" class="no-js">
 <head>
   {%- block site_meta %}
   <meta charset="utf-8">
@@ -84,6 +84,16 @@
       d.classList.replace('no-js', 'js');
       // A page opened inside the bilingual view shows its content only.
       if (window.name === 'sumi-pane') d.classList.add('sumi-pane');
+      // Material's `document$`, for scripts written as `document$.subscribe(fn)`:
+      // Sumi loads whole pages, so it calls `fn` once the page is ready.
+      if (!window.document$) window.document$ = { subscribe: function (fn) {
+        var f = typeof fn === 'function' ? fn : fn && fn.next;
+        if (f) {
+          if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { f(document); });
+          else f(document);
+        }
+        return { unsubscribe: function () {} };
+      } };
     })();
   </script>
   {%- block styles %}
@@ -98,17 +108,21 @@
 </head>
 <body>
   <a class="sumi-skip" href="#content">{{ t('skip_to_content') }}</a>
-  {%- if theme.announcement %}
-  <div class="sumi-announce" data-key="{{ theme.announcement | striptags | truncate(40, True, '') }}">
-    <div class="sumi-announce-inner">{{ theme.announcement | sumi_links }}</div>
+  {#- `announce` and `outdated` are Material's block names, so a Material `main.html` override keeps working. -#}
+  {%- set announce = self.announce() | trim %}
+  {%- if announce %}
+  <div class="sumi-announce" data-key="{{ announce | striptags | trim | truncate(40, True, '') }}">
+    <div class="sumi-announce-inner">{% block announce %}{% if theme.announcement %}{{ theme.announcement | sumi_links }}{% endif %}{% endblock %}</div>
     <button class="sumi-icon-btn sumi-announce-close" type="button" aria-label="{{ t('close') }}">{{ icon('x') }}</button>
   </div>
   {%- endif %}
   {%- block header %}{% include "partials/header.html" %}{% endblock %}
+  {%- set outdated = self.outdated() | trim %}
   {%- if versions and vns.current is not sameas versions[0] %}
-  <div class="sumi-version-banner">{{ t('old_version') }} <a href="{{ (versions[0].path or './') | url }}">{{ t('go_latest') }}</a></div>
+  <div class="sumi-version-banner">{% if outdated %}{{ outdated }}{% else %}{{ t('old_version') }} <a href="{{ (versions[0].path or './') | url }}">{{ t('go_latest') }}</a>{% endif %}</div>
   {%- else %}
-  <div class="sumi-version-banner" hidden></div>
+  {#- With `version_provider: mike`, sumi.js shows this on an old version; empty, it writes the default text. -#}
+  <div class="sumi-version-banner" hidden>{% block outdated %}{% endblock %}</div>
   {%- endif %}
   {%- block layout %}
   <div class="sumi-shell{% if not side_items %} sumi-shell--no-side{% endif %}{% if not show_toc %} sumi-shell--no-toc{% endif %}">

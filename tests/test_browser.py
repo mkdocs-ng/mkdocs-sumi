@@ -362,3 +362,32 @@ def test_feedback_widget_sends_the_rating(tmp_path, page):
     sync_api.expect(form.get_by_role('button', name='No')).to_be_disabled()
     assert not page.errors
     server.shutdown()
+
+
+def test_material_site_scripts_and_dark_mode(tmp_path, browser):
+    """A Material palette toggle follows the OS, and `document$.subscribe` scripts run."""
+    docs = tmp_path / 'docs'
+    (docs / 'js').mkdir(parents=True)
+    (docs / 'index.md').write_text('# Home\n\nText.\n', encoding='utf-8')
+    (docs / 'js' / 'extra.js').write_text(
+        'document$.subscribe(function (doc) { doc.body.dataset.ran = "yes"; });\n', encoding='utf-8')
+    (tmp_path / 'mkdocs.yml').write_text(
+        'site_name: Test\ntheme:\n  name: sumi\n  palette:\n'
+        '    - {media: "(prefers-color-scheme: light)", scheme: default, primary: indigo}\n'
+        '    - {media: "(prefers-color-scheme: dark)", scheme: slate, primary: indigo}\n'
+        'plugins: [sumi]\nextra_javascript: [js/extra.js]\n', encoding='utf-8')
+    build.build(load_config(str(tmp_path / 'mkdocs.yml')))
+    handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(tmp_path / 'site'))
+    handler.log_message = lambda *a: None
+    server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    ctx = browser.new_context(color_scheme='dark')
+    pg = ctx.new_page()
+    errors = []
+    pg.on('pageerror', lambda e: errors.append(str(e)))
+    pg.goto(f'http://127.0.0.1:{server.server_address[1]}/', wait_until='networkidle')
+    assert pg.evaluate('document.documentElement.dataset.theme') == 'dark'
+    assert pg.evaluate('document.body.dataset.ran') == 'yes'
+    assert not errors
+    ctx.close()
+    server.shutdown()

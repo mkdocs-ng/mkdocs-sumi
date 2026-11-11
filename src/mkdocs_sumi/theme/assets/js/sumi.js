@@ -691,7 +691,8 @@
       var latest = versions[0];
       if (cur !== latest && (latest.aliases || []).indexOf(here) < 0) {
         var banner = $('.sumi-version-banner');
-        banner.innerHTML = esc(t('old_version')) + ' <a href="' + esc(new URL((latest.aliases && latest.aliases[0] || latest.version) + '/', siteRoot).href) + '">' + esc(t('go_latest')) + '</a>';
+        // A site's own `outdated` block wins over the default text.
+        if (!banner.innerHTML.trim()) banner.innerHTML = esc(t('old_version')) + ' <a href="' + esc(new URL((latest.aliases && latest.aliases[0] || latest.version) + '/', siteRoot).href) + '">' + esc(t('go_latest')) + '</a>';
         banner.hidden = false;
       }
       S.versionList = versions;

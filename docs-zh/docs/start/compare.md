@@ -4,7 +4,7 @@ description: Sumi 能做到哪些 Material for MkDocs 做不到的事，Material
 
 # Sumi 与 Material for MkDocs 对比
 
-[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) 是目前使用最广的 MkDocs 主题，遥遥领先。Sumi 更年轻：它为 [MkDocs NG](https://mkdocs-ng.org/) 打造，能做到不少 Material 做不到的事。本页介绍 Sumi 领先的地方、Material 仍然领先的地方，以及如何在你的站点上试用 Sumi。你的 Markdown、`mkdocs.yml` 和插件在两边都能用，切换只需[改两行](migrate.md)。
+[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) 是目前使用最广的 MkDocs 主题，遥遥领先。Sumi 更年轻：它为 [MkDocs NG](https://mkdocs-ng.org/) 打造，能做到不少 Material 做不到的事。本页介绍 Sumi 领先的地方、Material 仍然领先的地方，以及如何在你的站点上试用 Sumi。你的 Markdown、`mkdocs.yml` 和插件在两边都能用，切换[从改两行开始](migrate.md)。
 
 本页内容于 2026-11-06 对照 Sumi 0.3.1、Material for MkDocs 9.8.0 和 `mkdocs-ng-material` 9.8.0 核实。如有错误或过时之处，请[提交 issue](https://github.com/mkdocs-ng/mkdocs-sumi/issues)。
 
