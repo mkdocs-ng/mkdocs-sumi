@@ -943,6 +943,23 @@ def test_footer_links_and_subtitle(tmp_path):
     assert '<li>Based in the EU</li>' in about
 
 
+def test_header_and_footer_line_up_with_centred_content(tmp_path):
+    """Nothing beside the content: the header and footer take the content's width, not the window's."""
+    site = _site(tmp_path, {
+        'index.md': '---\ntemplate: landing.html\nhero: {title: Hi}\n---\n',
+        'spec.md': '---\ntemplate: landing.html\nhero: {title: Spec}\nsections:\n  - {type: content, toc: true}\n---\n\n# Spec\n\n## Rules\n\nText.\n',
+        'guide.md': '# Guide\n\n## Part\n\nText.\n',
+        'bare.md': '---\nhide: [sidebar, toc]\n---\n\n# Bare\n\n## Part\n\nText.\n',
+        'wide.md': '---\nlayout: wide\n---\n\n# Wide\n',
+    }, BASIC)
+    narrow = 'data-chrome="narrow"'
+    assert narrow in (site / 'index.html').read_text()
+    assert narrow in (site / 'bare' / 'index.html').read_text()
+    # A sidebar, a table of contents or a full-width page keeps the header at the window's edges.
+    for path in ('guide/index.html', 'wide/index.html', 'spec/index.html'):
+        assert narrow not in (site / path).read_text(), path
+
+
 def test_print_edition_keeps_label_targets(tmp_path):
     """Ids are prefixed in the print edition; label[for] must follow them."""
     site = _site(tmp_path, {
