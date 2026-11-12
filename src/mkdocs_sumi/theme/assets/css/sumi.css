@@ -264,6 +264,12 @@ button { font: inherit; color: inherit; }
   border-bottom: 1px solid var(--sumi-line);
 }
 .sumi-header-inner { display: flex; align-items: center; gap: 8px; height: 100%; max-width: 1480px; margin: 0 auto; padding: 0 20px; }
+/* Nothing beside the content (a landing page, a blog, a page without sidebar and table of contents):
+   the header and footer line up with the centred content instead of the window. */
+@media (min-width: 921px) {
+  html[data-chrome="narrow"] :is(.sumi-header-inner, .sumi-footer-inner, .sumi-footer-links) { max-width: 1200px; padding-inline: 28px; }
+  html[data-chrome="narrow"] .sumi-footer-links::after { inset-inline: 28px; }
+}
 .sumi-brand { display: inline-flex; min-width: 0; align-items: center; gap: 10px; margin-inline-end: 18px; color: var(--sumi-fg); font-weight: 650; font-size: 16.5px; letter-spacing: -0.01em; white-space: nowrap; }
 .sumi-brand-name { overflow: hidden; text-overflow: ellipsis; }
 .sumi-brand:hover { color: var(--sumi-fg); }
@@ -925,11 +931,13 @@ a.sumi-meta:hover { color: var(--sumi-fg); }
 .sumi-footer-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; max-width: 1480px; margin: 0 auto; padding: 22px 20px; color: var(--sumi-fg-3); font-size: 13.5px; }
 .sumi-footer a { color: var(--sumi-fg-2); }
 .sumi-footer a:hover { color: var(--sumi-fg); }
-.sumi-footer-left { display: flex; flex-direction: column; gap: 2px; }
+.sumi-footer-left { display: flex; flex: 1 1 0; flex-direction: column; gap: 2px; min-width: min(100%, 260px); }
 .sumi-footer-left a { text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); text-underline-offset: 3px; }
 .sumi-footer-left a:hover { text-decoration-color: currentColor; }
-.sumi-footer-right { display: flex; align-items: center; gap: 2px; }
-.sumi-footer-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 28px 32px; max-width: 1480px; margin: 0 auto; padding: 44px 20px 32px; border-bottom: 1px solid var(--sumi-line); font-size: 14px; }
+.sumi-footer-right { display: flex; flex: none; align-items: center; gap: 2px; }
+.sumi-footer-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 28px 32px; max-width: 1480px; margin: 0 auto; padding: 44px 20px 32px; font-size: 14px; position: relative; }
+/* The rule under the link columns is as wide as their text, not their padding. */
+.sumi-footer-links::after { content: ""; position: absolute; inset: auto 20px 0; border-bottom: 1px solid var(--sumi-line); }
 .sumi-footer-head { margin-bottom: 12px; color: var(--sumi-fg); font-weight: 650; }
 .sumi-footer-col ul { margin: 0; padding: 0; list-style: none; color: var(--sumi-fg-3); }
 .sumi-footer-col li { margin: 0 0 8px; }
@@ -1135,6 +1143,7 @@ dialog { color: inherit; }
 .sumi-land-section { padding: 88px 0; border-bottom: 1px solid var(--sumi-line); }
 .sumi-land--soft { background: var(--sumi-bg-soft); }
 .sumi-land-head { max-width: 760px; margin-bottom: 44px; }
+.sumi-hero-title, .sumi-land-head h2 { text-wrap: balance; }
 .sumi-land-head h2 { margin: 0 0 14px; color: var(--sumi-fg); font-size: clamp(1.9rem, 3.4vw, 2.7rem); font-weight: 720; line-height: 1.12; letter-spacing: -0.035em; }
 .sumi-land-lead { margin: 0; color: var(--sumi-fg-2); font-size: 1.12rem; line-height: 1.65; }
 .sumi-features { display: grid; grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); gap: 1px; overflow: hidden; border: 1px solid var(--sumi-line); border-radius: 16px; background: var(--sumi-line); }
@@ -1214,7 +1223,9 @@ a.sumi-feature:hover .sumi-feature-more .sumi-icon { transform: translateX(3px);
 .sumi-feature .sumi-check-list li { margin-bottom: 6px; }
 .sumi-feature .sumi-actions-row { gap: 8px; margin-top: auto; padding-top: 20px; }
 .sumi-feature .sumi-btn { height: 38px; padding: 0 14px; font-size: 14px; }
-.sumi-features--cards .sumi-feature > p { color: var(--sumi-fg); font-size: 15.5px; }
+.sumi-features--cards .sumi-feature > p { color: var(--sumi-fg); font-size: 16px; font-weight: 500; line-height: 1.55; }
+.sumi-features--cards .sumi-feature h3 { font-size: 19px; }
+.sumi-features--cards .sumi-feature-head .sumi-feature-icon { width: 44px; height: 44px; }
 .sumi-stat-link dt a { display: inline-flex; align-items: center; gap: 4px; color: inherit; text-decoration: none; }
 .sumi-stat-link dt a::after { content: ""; position: absolute; inset: 0; }
 .sumi-stat-link { position: relative; transition: background .15s; }

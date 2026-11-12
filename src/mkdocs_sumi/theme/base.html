@@ -20,12 +20,15 @@
 {%- set toc_list = page.toc.items if page and page.toc else [] -%}
 {%- if toc_list | length == 1 and toc_list[0].level == 1 -%}{%- set toc_list = toc_list[0].children -%}{%- endif -%}
 {%- set show_toc = toc_list | length > 0 and 'toc' not in hide and layout not in ('wide', 'landing', 'blog') -%}
+{#- A page with nothing beside its content (no sidebar, no table of contents): the header and footer line up with the content. -#}
+{%- set land_toc = page and page.meta and page.meta.sections is iterable and page.meta.sections is not string and (page.meta.sections | selectattr('toc', 'defined') | selectattr('toc') | list) -%}
+{%- set narrow = not side_items and not show_toc and not land_toc and layout != 'wide' -%}
 {#- Versions kept in folders of the site (`theme.versions`): the first is the latest. -#}
 {%- set versions = theme.versions if theme.versions is iterable and theme.versions is not string else [] -%}
 {%- set vns = namespace(current=versions[0] if versions else None) -%}
 {%- for v in versions if v.path and page and page.url.startswith(v.path) %}{% set vns.current = v %}{% endfor -%}
 <!doctype html>
-<html lang="{{ sumi_language | replace('_', '-') }}"{% if sumi_dir == 'rtl' %} dir="rtl"{% endif %} data-palette="{{ theme.palette if theme.palette is string else 'auto' }}" data-layout="{{ layout }}" class="no-js">
+<html lang="{{ sumi_language | replace('_', '-') }}"{% if sumi_dir == 'rtl' %} dir="rtl"{% endif %} data-palette="{{ theme.palette if theme.palette is string else 'auto' }}" data-layout="{{ layout }}"{% if narrow %} data-chrome="narrow"{% endif %} class="no-js">
 <head>
   {%- block site_meta %}
   <meta charset="utf-8">
