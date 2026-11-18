@@ -37,6 +37,10 @@ jobs:
       - if: matrix.mkdocs == 'main'
         run: pip install "mkdocs-ng @ git+https://github.com/mkdocs-ng/mkdocs@main"
       - run: pytest tests --ignore=tests/test_browser.py
+        env:
+          # The docs-site test reads GitHub Releases; without a token, the eight
+          # jobs share the runner's 60 requests an hour and some hit the limit.
+          GITHUB_TOKEN: ${{ github.token }}
 
   browser:
     runs-on: ubuntu-latest
