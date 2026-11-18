@@ -199,7 +199,9 @@
 /* ── Base ───────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: calc(var(--sumi-header-h) + 20px); }
-:is(code, kbd, pre, samp) { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+/* No ligatures in code: a reader who types `!=` from the screen must not see ≠. `!important`, because the
+   `font` shorthand in later code rules (code blocks, inline code, the landing page) resets font-variant-ligatures. */
+:is(code, kbd, pre, samp) { font-variant-ligatures: none !important; font-feature-settings: "liga" 0, "calt" 0 !important; }
 body {
   margin: 0; background: var(--sumi-bg); color: var(--sumi-fg);
   font: 400 16px/1.7 var(--sumi-font); font-feature-settings: "cv11", "ss01", "ss03";
@@ -328,8 +330,8 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
   height: 100%; overflow-y: auto; overscroll-behavior: contain; padding-block: 26px 40px; padding-inline: 0 10px; margin-inline-end: -10px;
   scrollbar-width: thin; scrollbar-color: var(--sumi-line-2) transparent;
 }
-/* Only the small-screen drawer shows the top-level tabs. */
-.sumi-sidebar-tabs, .sumi-sidebar--tabs-only { display: none; }
+/* Only the small-screen drawer shows the top-level tabs, and the nav of pages without a sidebar. */
+.sumi-sidebar-tabs, .sumi-sidebar--drawer-only { display: none; }
 .sumi-sidebar-title { padding: 0 10px 10px; color: var(--sumi-fg); font-weight: 650; font-size: 15px; letter-spacing: -0.005em; }
 .sumi-nav-list { list-style: none; margin: 0; padding: 0; }
 .sumi-nav-list .sumi-nav-list { margin-block: 2px 6px; margin-inline: 10px 0; padding-inline-start: 10px; border-inline-start: 1px solid var(--sumi-line); }
@@ -456,7 +458,10 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 /* Inline code */
 .sumi-prose :not(pre) > code {
   padding: .14em .38em; border-radius: 5px; background: var(--sumi-code-inline); color: var(--sumi-fg);
-  font: 500 .86em/1.4 var(--sumi-font-mono); overflow-wrap: anywhere; -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  font: 500 .86em/1.4 var(--sumi-font-mono);
+  /* break-word, not anywhere: a long value still wraps, but a table column of short names keeps
+     its width instead of breaking each name mid-word. */
+  overflow-wrap: break-word; -webkit-box-decoration-break: clone; box-decoration-break: clone;
 }
 .sumi-prose a > code { color: inherit; }
 
@@ -1029,7 +1034,7 @@ dialog { color: inherit; }
   .sumi-sidebar.is-open { transform: none; visibility: visible; }
   .sumi-sidebar-tabs { display: block; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--sumi-line); }
   .sumi-sidebar-tabs a.is-active { color: var(--sumi-fg); font-weight: 600; }
-  .sumi-sidebar--tabs-only { display: block; }
+  .sumi-sidebar--drawer-only { display: block; }
   body.sumi-locked { overflow: hidden; }
   .sumi-scrim { position: fixed; inset: var(--sumi-header-h) 0 0; z-index: 34; background: rgba(15, 14, 12, .35); }
   .sumi-search-btn { flex: none; width: 36px; padding: 0; justify-content: center; border: 0; background: none; margin: 0; }

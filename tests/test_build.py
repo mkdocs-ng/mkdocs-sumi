@@ -868,6 +868,27 @@ def test_navigation_tabs_always(tmp_path):
         assert 'sumi-sidebar--tabs-only' in html and 'id="sumi-sidebar"' in html, path
 
 
+def test_pages_without_a_sidebar_keep_the_nav_in_the_drawer(tmp_path):
+    """With `navigation_tabs: false`, landing, wide and blog pages have no sidebar, but phones keep a menu."""
+    site = _site(tmp_path, {
+        'index.md': '---\ntemplate: landing.html\nhero: {title: Hi}\n---\n',
+        'wide.md': '---\nlayout: wide\n---\n# Wide\n',
+        'guide.md': '# Guide\n',
+        'bare.md': '---\nhide: [navigation]\n---\n# Bare\n',
+    }, BASIC.replace('  name: sumi\n', '  name: sumi\n      navigation_tabs: false\n'))
+    for path in ('index.html', 'wide/index.html'):
+        html = (site / path).read_text()
+        assert 'sumi-menu-btn' in html, path
+        # The aside is only the small-screen drawer, and it lists the whole nav.
+        aside = html.split('id="sumi-sidebar"')[0].rsplit('<aside', 1)[1]
+        assert 'sumi-sidebar--drawer-only' in aside and 'sumi-sidebar--tabs-only' not in aside, path
+        assert 'class="sumi-nav"' in html and 'href="' in html.split('class="sumi-nav"')[1].split('</nav>')[0], path
+    guide = (site / 'guide/index.html').read_text()
+    assert '<aside class="sumi-sidebar" id="sumi-sidebar"' in guide
+    # A page that hides its navigation still has no menu.
+    assert 'sumi-menu-btn' not in (site / 'bare/index.html').read_text()
+
+
 def test_landing_product_sections(tmp_path):
     """Cards with badges and buttons, recent posts, dark bands and markdown sections."""
     site = _site(tmp_path, {

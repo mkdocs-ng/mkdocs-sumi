@@ -1,0 +1,34 @@
+{#-
+  The sidebar, which is also the small-screen drawer that the menu button opens.
+  `side_items`: the nav shown beside the content on wide screens.
+  `drawer_items`: the nav for pages without a sidebar (wide, landing, blog), shown only in the drawer.
+  `drawer_tabs`: the top-level tabs, which the drawer lists because the header hides them on small screens.
+-#}
+{%- import "partials/macros.html" as m with context -%}
+{%- if side_items or drawer_items or drawer_tabs %}
+{%- set drawer_only = not side_items %}
+<aside class="sumi-sidebar{% if drawer_only %} sumi-sidebar--drawer-only{% if not drawer_items %} sumi-sidebar--tabs-only{% endif %}{% endif %}" id="sumi-sidebar" aria-label="{{ t('navigation') }}">
+  <div class="sumi-sidebar-inner">
+    {%- if drawer_tabs %}
+    <ul class="sumi-nav-list sumi-sidebar-tabs">
+      {%- for item in nav.items if not (item.is_page and item.is_homepage) %}
+      <li class="sumi-nav-page"><a{% if item.active %} class="is-active"{% endif %} href="{{ m.first_url(item) | trim }}"{% if item.is_link and item.url.startswith('http') %} target="_blank" rel="noopener"{% endif %}>{{ item.title }}</a></li>
+      {%- endfor %}
+    </ul>
+    {%- endif %}
+    {%- set items = side_items or drawer_items %}
+    {%- if items %}
+    {%- if tabs_on and active_top and active_top.is_section %}
+    {%- set top_index = items[0] if items[0].is_page and items[0].file.name == 'index' else None %}
+    {%- if top_index %}
+    <a class="sumi-sidebar-title{% if top_index.active %} is-current{% endif %}" href="{{ top_index.url | url }}"{% if top_index.active %} aria-current="page"{% endif %}>{{ active_top.title }}</a>
+    {%- set items = items[1:] %}
+    {%- else %}
+    <div class="sumi-sidebar-title">{{ active_top.title }}</div>
+    {%- endif %}
+    {%- endif %}
+    <nav class="sumi-nav">{{ m.nav_tree(items, 1) }}</nav>
+    {%- endif %}
+  </div>
+</aside>
+{%- endif %}

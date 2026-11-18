@@ -232,7 +232,7 @@ def test_bilingual_view_lines_up_blocks_and_follows_either_side(base_url, page):
     def blocks(n):
         return frames.nth(n).evaluate(
             """f => [...f.contentDocument.querySelectorAll('.sumi-content > *')]
-                 .filter(e => e.offsetHeight).map(e => e.getBoundingClientRect().top)"""
+                 .filter(e => e.offsetHeight).map(e => [e.getBoundingClientRect().top, e.offsetHeight])"""
         )
 
     # Scroll the right side with the wheel: the left side follows it, and the
@@ -244,10 +244,11 @@ def test_bilingual_view_lines_up_blocks_and_follows_either_side(base_url, page):
         page.wait_for_timeout(50)
     page.wait_for_timeout(300)
     line = box['height'] / 3
-    left, right_tops = blocks(0), blocks(1)
-    assert len(left) == len(right_tops)
-    k = min(range(len(right_tops)), key=lambda i: abs(right_tops[i] - line))
-    assert abs(left[k] - right_tops[k]) < 40
+    left, right = blocks(0), blocks(1)
+    assert len(left) == len(right)
+    # The two sides wrap differently, so compare how far into that block the line is.
+    k = next(i for i, (top, height) in enumerate(right) if top <= line < top + height)
+    assert abs((line - left[k][0]) / left[k][1] - (line - right[k][0]) / right[k][1]) < 0.1
     # Both sides reach the end together.
     for _ in range(80):
         page.mouse.wheel(0, 400)
@@ -389,5 +390,78 @@ def test_material_site_scripts_and_dark_mode(tmp_path, browser):
     assert pg.evaluate('document.documentElement.dataset.theme') == 'dark'
     assert pg.evaluate('document.body.dataset.ran') == 'yes'
     assert not errors
+    ctx.close()
+    server.shutdown()
+
+
+def _serve(tmp_path, files, config='site_name: Test\ntheme:\n  name: sumi\nplugins: [sumi]\n'):
+    """Build a small site from `files` and serve it; returns its URL and the server."""
+    for name, text in files.items():
+        path = tmp_path / 'docs' / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding='utf-8')
+    (tmp_path / 'mkdocs.yml').write_text(config, encoding='utf-8')
+    build.build(load_config(str(tmp_path / 'mkdocs.yml')))
+    handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(tmp_path / 'site'))
+    handler.log_message = lambda *a: None
+    server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    return f'http://127.0.0.1:{server.server_address[1]}/', server
+
+
+CODE_PAGE = """# Inputs
+
+| Input | Default | What it does |
+|---|---|---|
+| `message` | `true` | Check every commit message of the pull request, plus a long description that makes this column wide |
+| `branch` | `false` | Another long description so the table has to share its width between columns |
+
+```bash
+test "$X" != "true" || exit 1
+```
+"""
+
+
+@pytest.mark.parametrize('width', [1280, 390])
+def test_inline_code_in_a_table_keeps_its_words_whole(tmp_path, browser, width):
+    url, server = _serve(tmp_path, {'index.md': CODE_PAGE})
+    ctx = browser.new_context(viewport={'width': width, 'height': 900})
+    page = ctx.new_page()
+    page.goto(url, wait_until='networkidle')
+    # One line box per code value: the column is not squeezed to break `message` into `messag` / `e`.
+    lines = page.evaluate("[...document.querySelectorAll('.sumi-prose td code')].map(c => c.getClientRects().length)")
+    assert lines == [1, 1, 1, 1]
+    ctx.close()
+    server.shutdown()
+
+
+def test_code_has_no_ligatures(tmp_path, page):
+    url, server = _serve(tmp_path, {'index.md': CODE_PAGE})
+    page.goto(url, wait_until='networkidle')
+    # The `font` shorthand of code blocks and inline code would turn ligatures back on, so `!=` read as ≠.
+    for selector in ('.sumi-prose pre', '.sumi-prose pre code', '.sumi-prose td code'):
+        style = page.locator(selector).first.evaluate('e => getComputedStyle(e).fontVariantLigatures')
+        assert style == 'none', selector
+    server.shutdown()
+
+
+def test_mobile_drawer_on_a_landing_page_without_tabs(tmp_path, browser):
+    url, server = _serve(tmp_path, {
+        'index.md': '---\ntemplate: landing.html\nhero: {title: Hi}\n---\n',
+        'guide.md': '# Guide\n',
+    }, 'site_name: Test\ntheme:\n  name: sumi\n  navigation_tabs: false\nplugins: [sumi]\n')
+    ctx = browser.new_context(viewport={'width': 390, 'height': 844})
+    page = ctx.new_page()
+    page.goto(url, wait_until='networkidle')
+    page.locator('.sumi-menu-btn').click()
+    page.wait_for_timeout(400)
+    sync_api.expect(page.locator('#sumi-sidebar .sumi-nav a', has_text='Guide')).to_be_visible()
+    ctx.close()
+    # On a wide screen the landing page still has no sidebar.
+    ctx = browser.new_context(viewport={'width': 1280, 'height': 900})
+    page = ctx.new_page()
+    page.goto(url, wait_until='networkidle')
+    assert not page.locator('#sumi-sidebar').is_visible()
+    assert not page.locator('.sumi-menu-btn').is_visible()
     ctx.close()
     server.shutdown()
