@@ -456,7 +456,10 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
 /* Inline code */
 .sumi-prose :not(pre) > code {
   padding: .14em .38em; border-radius: 5px; background: var(--sumi-code-inline); color: var(--sumi-fg);
-  font: 500 .86em/1.4 var(--sumi-font-mono); overflow-wrap: anywhere; -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  font: 500 .86em/1.4 var(--sumi-font-mono);
+  /* break-word, not anywhere: a long value still wraps, but a table column of short names keeps
+     its width instead of breaking each name mid-word. */
+  overflow-wrap: break-word; -webkit-box-decoration-break: clone; box-decoration-break: clone;
 }
 .sumi-prose a > code { color: inherit; }
 
