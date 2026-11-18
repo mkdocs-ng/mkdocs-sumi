@@ -26,7 +26,7 @@ nav:
 - A section whose first entry is an `index.md` without a title uses that page as its landing: the tab, the sidebar heading and the section name all link to it.
 - Nested sections are collapsible. The section containing the current page is open.
 
-On small screens, the tabs and the sidebar move into a drawer opened from the menu button.
+On small screens, the tabs and the sidebar move into a drawer opened from the menu button. Pages without a sidebar, such as a landing page or a `wide` or `blog` page, still list the navigation in the drawer.
 
 With `navigation_tabs: false`, the whole navigation is shown in the sidebar.
 

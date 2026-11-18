@@ -66,18 +66,7 @@
 {% block layout %}
 {%- set hero = page.meta.hero or {} -%}
 {%- set sections = page.meta.sections or [{'type': 'content'}] -%}
-{%- if drawer_tabs %}
-{#- On small screens the header tabs are hidden: the menu button opens them in a drawer. -#}
-<aside class="sumi-sidebar sumi-sidebar--tabs-only" id="sumi-sidebar" aria-label="{{ t('navigation') }}">
-  <div class="sumi-sidebar-inner">
-    <ul class="sumi-nav-list sumi-sidebar-tabs">
-      {%- for item in nav.items if not (item.is_page and item.is_homepage) %}
-      <li class="sumi-nav-page"><a{% if item.active %} class="is-active"{% endif %} href="{{ m.first_url(item) | trim }}"{% if item.is_link and item.url.startswith('http') %} target="_blank" rel="noopener"{% endif %}>{{ item.title }}</a></li>
-      {%- endfor %}
-    </ul>
-  </div>
-</aside>
-{%- endif %}
+{%- include "partials/sidebar.html" %}
 <main class="sumi-landing" id="content">
   <section class="sumi-hero{% if hero.code or hero.image %} sumi-hero--split{% endif %}">
     <div class="sumi-hero-bg" aria-hidden="true"></div>

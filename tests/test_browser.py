@@ -443,3 +443,25 @@ def test_code_has_no_ligatures(tmp_path, page):
         style = page.locator(selector).first.evaluate('e => getComputedStyle(e).fontVariantLigatures')
         assert style == 'none', selector
     server.shutdown()
+
+
+def test_mobile_drawer_on_a_landing_page_without_tabs(tmp_path, browser):
+    url, server = _serve(tmp_path, {
+        'index.md': '---\ntemplate: landing.html\nhero: {title: Hi}\n---\n',
+        'guide.md': '# Guide\n',
+    }, 'site_name: Test\ntheme:\n  name: sumi\n  navigation_tabs: false\nplugins: [sumi]\n')
+    ctx = browser.new_context(viewport={'width': 390, 'height': 844})
+    page = ctx.new_page()
+    page.goto(url, wait_until='networkidle')
+    page.locator('.sumi-menu-btn').click()
+    page.wait_for_timeout(400)
+    sync_api.expect(page.locator('#sumi-sidebar .sumi-nav a', has_text='Guide')).to_be_visible()
+    ctx.close()
+    # On a wide screen the landing page still has no sidebar.
+    ctx = browser.new_context(viewport={'width': 1280, 'height': 900})
+    page = ctx.new_page()
+    page.goto(url, wait_until='networkidle')
+    assert not page.locator('#sumi-sidebar').is_visible()
+    assert not page.locator('.sumi-menu-btn').is_visible()
+    ctx.close()
+    server.shutdown()

@@ -330,8 +330,8 @@ html[data-layout="wide"] .sumi-article { max-width: none; }
   height: 100%; overflow-y: auto; overscroll-behavior: contain; padding-block: 26px 40px; padding-inline: 0 10px; margin-inline-end: -10px;
   scrollbar-width: thin; scrollbar-color: var(--sumi-line-2) transparent;
 }
-/* Only the small-screen drawer shows the top-level tabs. */
-.sumi-sidebar-tabs, .sumi-sidebar--tabs-only { display: none; }
+/* Only the small-screen drawer shows the top-level tabs, and the nav of pages without a sidebar. */
+.sumi-sidebar-tabs, .sumi-sidebar--drawer-only { display: none; }
 .sumi-sidebar-title { padding: 0 10px 10px; color: var(--sumi-fg); font-weight: 650; font-size: 15px; letter-spacing: -0.005em; }
 .sumi-nav-list { list-style: none; margin: 0; padding: 0; }
 .sumi-nav-list .sumi-nav-list { margin-block: 2px 6px; margin-inline: 10px 0; padding-inline-start: 10px; border-inline-start: 1px solid var(--sumi-line); }
@@ -1034,7 +1034,7 @@ dialog { color: inherit; }
   .sumi-sidebar.is-open { transform: none; visibility: visible; }
   .sumi-sidebar-tabs { display: block; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--sumi-line); }
   .sumi-sidebar-tabs a.is-active { color: var(--sumi-fg); font-weight: 600; }
-  .sumi-sidebar--tabs-only { display: block; }
+  .sumi-sidebar--drawer-only { display: block; }
   body.sumi-locked { overflow: hidden; }
   .sumi-scrim { position: fixed; inset: var(--sumi-header-h) 0 0; z-index: 34; background: rgba(15, 14, 12, .35); }
   .sumi-search-btn { flex: none; width: 36px; padding: 0; justify-content: center; border: 0; background: none; margin: 0; }
