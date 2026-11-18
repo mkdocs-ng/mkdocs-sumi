@@ -433,3 +433,13 @@ def test_inline_code_in_a_table_keeps_its_words_whole(tmp_path, browser, width):
     assert lines == [1, 1, 1, 1]
     ctx.close()
     server.shutdown()
+
+
+def test_code_has_no_ligatures(tmp_path, page):
+    url, server = _serve(tmp_path, {'index.md': CODE_PAGE})
+    page.goto(url, wait_until='networkidle')
+    # The `font` shorthand of code blocks and inline code would turn ligatures back on, so `!=` read as ≠.
+    for selector in ('.sumi-prose pre', '.sumi-prose pre code', '.sumi-prose td code'):
+        style = page.locator(selector).first.evaluate('e => getComputedStyle(e).fontVariantLigatures')
+        assert style == 'none', selector
+    server.shutdown()

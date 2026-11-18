@@ -199,7 +199,9 @@
 /* ── Base ───────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: calc(var(--sumi-header-h) + 20px); }
-:is(code, kbd, pre, samp) { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+/* No ligatures in code: a reader who types `!=` from the screen must not see ≠. `!important`, because the
+   `font` shorthand in later code rules (code blocks, inline code, the landing page) resets font-variant-ligatures. */
+:is(code, kbd, pre, samp) { font-variant-ligatures: none !important; font-feature-settings: "liga" 0, "calt" 0 !important; }
 body {
   margin: 0; background: var(--sumi-bg); color: var(--sumi-fg);
   font: 400 16px/1.7 var(--sumi-font); font-feature-settings: "cv11", "ss01", "ss03";
