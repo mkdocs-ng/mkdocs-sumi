@@ -10,20 +10,28 @@ hero:
     - {text: 开始使用, link: docs/start/install/, icon: rocket, primary: true}
     - {text: 查看组件, link: docs/write/, icon: blocks}
   install: pip install mkdocs-sumi
-  code:
-    title: mkdocs.yml
-    lang: yaml
-    content: |
-      site_name: 我的项目
+  demo:
+    title: docs/deploy.md
+    url: my-project.dev/zh/deploy/
+    brand: 我的项目
+    nav: [简介, 安装, 配置, 部署, 参考]
+    current: 部署
+    markdown: |
+      # 部署
 
-      theme:
-        name: sumi          # 纸、墨与一方朱印
-        locale: zh          # 中文界面
+      每次推送到 `main`，CI 自动发布站点。
 
-      plugins:
-        - search            # ⌘K 搜索，支持中文
-        - llms_txt          # 每页一份 Markdown 副本
-        - sumi              # 组件、博客、打印版
+      > [!TIP]
+      > 先用 `mkdocs serve` 本地预览。
+
+      1. 构建站点
+
+          运行 `mkdocs build`。
+
+      2. 上传 `site/`
+
+          任何静态托管都可以。
+      {.steps}
 sections:
   - type: features
     eyebrow: 为什么选 Sumi

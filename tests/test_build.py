@@ -110,6 +110,38 @@ def test_landing_page(site):
     assert '[**Fast**](guide/): Very fast.' in md
 
 
+def test_landing_hero_demo(tmp_path):
+    """`hero.demo` shows the Markdown source beside the page built from it."""
+    site = _site(tmp_path, {
+        'index.md': """
+            ---
+            template: landing.html
+            hero:
+              title: Hi
+              demo:
+                title: docs/deploy.md
+                brand: Demo Co
+                nav: [Intro, Deploy]
+                current: Deploy
+                markdown: |
+                  # Deploy
+
+                  > [!TIP]
+                  > Preview first.
+            ---
+            """,
+    }, BASIC)
+    html = (site / 'index.html').read_text()
+    assert 'sumi-hero--demo' in html and 'sumi-hero--split' not in html
+    demo = html[html.index('<div class="sumi-hero-demo"'):]
+    assert 'aria-hidden="true" inert' in demo[:80]
+    assert 'docs/deploy.md' in demo and 'Demo Co' in demo
+    assert '<li class="is-current">Deploy</li>' in demo
+    assert 'sumi-callout' in demo or 'callout' in demo
+    md = (site / 'index.md').read_text()
+    assert '```markdown title="docs/deploy.md"' in md and '> [!TIP]' in md
+
+
 def test_landing_links_to_markdown_files(tmp_path, caplog):
     """`link: page.md` in front matter leads to the built page, as in Markdown."""
     site = _site(tmp_path, {

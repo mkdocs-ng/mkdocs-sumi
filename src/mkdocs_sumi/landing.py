@@ -45,6 +45,9 @@ def landing_markdown(meta: dict[str, Any], body: str, h1: str | None) -> str:
     if hero.get('install'):
         out += ['```sh', str(hero['install']), '```', '']
     out += _code(hero.get('code'))
+    demo = hero.get('demo')
+    if isinstance(demo, dict) and demo.get('markdown'):
+        out += _code({'content': demo['markdown'], 'lang': 'markdown', 'title': demo.get('title')})
     if hero.get('actions'):
         out += [*_actions(hero['actions']), '']
     for s in meta.get('sections') or []:

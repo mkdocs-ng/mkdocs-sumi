@@ -11,6 +11,13 @@
       install: pip install mkdocs-sumi
       code: {title: mkdocs.yml, lang: yaml, content: "..."}
       image: assets/hero.png
+      demo:   # a Markdown file beside the page it builds (shown under the copy)
+        title: docs/deploy.md
+        url: example.com/deploy/
+        nav: [Introduction, Install, Deploy]   # the mini sidebar; `current` marks one
+        current: Deploy
+        brand: My Project   # the demo site's name; then the logo is Sumi's mark
+        markdown: "..."
       badges: [Free, {text: Stable, tone: tip}]
     sections:
       - {type: features, eyebrow, title, text, columns: 3, items: [{icon, title, text, link}]}
@@ -53,6 +60,35 @@
   {{ ('`````' ~ (code.lang or 'text') ~ '\n' ~ code.content ~ '\n`````') | sumi_md(true) }}
 </div>
 {%- endmacro -%}
+{%- macro hero_demo(demo) -%}
+{%- set items = demo.nav or ['Introduction', 'Install', 'Configure', 'Deploy', 'Reference'] -%}
+<div class="sumi-hero-demo" aria-hidden="true" inert>
+  <div class="sumi-demo-src">
+    <div class="sumi-land-code-bar"><span></span><span></span><span></span><em>{{ demo.title or 'docs/index.md' }}</em></div>
+    {{ ('`````md\n' ~ demo.markdown ~ '\n`````') | sumi_md(true) }}
+  </div>
+  <div class="sumi-demo-build"><span>mkdocs build</span>{{ icon('arrow-right') }}</div>
+  <div class="sumi-demo-page">
+    <div class="sumi-demo-bar"><span></span><span></span><span></span><em>{{ demo.url or (config.site_url or 'example.com/') | replace('https://', '') | replace('http://', '') }}</em></div>
+    <div class="sumi-demo-site">
+      <div class="sumi-demo-head">
+        {%- if demo.brand %}{% include "partials/logo.html" %}
+        {%- elif config.theme.logo and config.theme.logo_dark %}<img class="sumi-logo sumi-when-light" src="{{ config.theme.logo | url }}" alt=""><img class="sumi-logo sumi-when-dark" src="{{ config.theme.logo_dark | url }}" alt="">
+        {%- elif config.theme.logo %}<img class="sumi-logo" src="{{ config.theme.logo | url }}" alt="">
+        {%- else %}{% include "partials/logo.html" %}{% endif %}
+        <b>{{ demo.brand or config.theme.brand or config.site_name }}</b>
+        <i class="sumi-demo-search">{{ icon('search') }}</i>
+      </div>
+      <div class="sumi-demo-body">
+        <ul class="sumi-demo-nav">
+          {%- for item in items %}<li{% if item == (demo.current or items[-2] if items | length > 1 else items[0]) %} class="is-current"{% endif %}>{{ item }}</li>{% endfor %}
+        </ul>
+        <div class="sumi-prose sumi-demo-prose">{{ demo.markdown | sumi_md(true) }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+{%- endmacro -%}
 {%- macro section_head(s) -%}
   {%- if s.eyebrow or s.title or s.text %}
   <header class="sumi-land-head">
@@ -68,12 +104,14 @@
 {%- set sections = page.meta.sections or [{'type': 'content'}] -%}
 {%- include "partials/sidebar.html" %}
 <main class="sumi-landing" id="content">
-  <section class="sumi-hero{% if hero.code or hero.image %} sumi-hero--split{% endif %}">
+  <section class="sumi-hero{% if hero.demo %} sumi-hero--demo{% elif hero.code or hero.image %} sumi-hero--split{% endif %}">
     <div class="sumi-hero-bg" aria-hidden="true"></div>
     <div class="sumi-land-inner sumi-hero-inner">
       <div class="sumi-hero-copy">
+        <div class="sumi-hero-head">
         {%- if hero.eyebrow %}<div class="sumi-eyebrow"><span class="sumi-eyebrow-dot"></span>{{ hero.eyebrow }}</div>{% endif %}
         <h1 class="sumi-hero-title">{{ (hero.title or page.title or config.site_name) | sumi_md }}</h1>
+        </div>
         {%- if hero.text or config.site_description %}<p class="sumi-hero-text">{{ (hero.text or config.site_description) | sumi_md }}</p>{% endif %}
         {{ badges(hero.badges) }}
         {{ actions(hero.actions) }}
@@ -81,7 +119,9 @@
         <button class="sumi-install" type="button" data-copy="{{ hero.install }}" title="{{ t('copy') }}"><span class="sumi-install-prompt">$</span><code>{{ hero.install }}</code>{{ icon('copy') }}</button>
         {%- endif %}
       </div>
-      {%- if hero.code %}
+      {%- if hero.demo %}
+      {{ hero_demo(hero.demo) }}
+      {%- elif hero.code %}
       <div class="sumi-hero-art">{{ code_card(hero.code) }}</div>
       {%- elif hero.image %}
       <div class="sumi-hero-art"><img src="{{ hero.image | url }}" alt=""></div>

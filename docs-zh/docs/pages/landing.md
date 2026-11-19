@@ -43,6 +43,7 @@ sections:
 | `install` | string | 显示在点击即可复制的框中的命令。 |
 | `code` | object | 文字旁边的代码卡片：`title`、`lang`、`content`。 |
 | `image` | string | 没有 `code` 时，显示在文字旁边的图片。 |
+| `demo` | object | 一个 Markdown 文件和 Sumi 用它生成的页面并排展示，放在文字下方：`markdown`，可选 `title`（文件名）、`url`、`brand`、`nav`（侧栏条目）和 `current`。设置后不再显示 `code` 和 `image`。 |
 | `badges` | list | 文字下方的小标签：字符串，或 `text` 加 `tone`（`tip`、`note`、`warning`、`caution`、`important`、`accent`）。 |
 {.fields}
 
