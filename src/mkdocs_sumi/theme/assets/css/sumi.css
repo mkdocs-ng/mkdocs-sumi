@@ -1145,6 +1145,64 @@ dialog { color: inherit; }
 .sumi-land-code :is(.highlight, .codehilite) { margin: 0; }
 .sumi-land-code pre { margin: 0; padding: 18px 20px; border: 0; border-radius: 0; background: transparent; font: 400 13.5px/1.7 var(--sumi-font-mono); overflow-x: auto; }
 .sumi-land-code .sumi-copy { display: none; }
+/* Hero demo: a Markdown file beside the page Sumi builds from it. The page is the
+   real theme (same components, colours and type), scaled down. */
+.sumi-hero--demo { padding: 80px 0 0; }
+/* Title on the left, the pitch and buttons on the right, so the demo starts above the fold. */
+@media (min-width: 921px) {
+  .sumi-hero--demo .sumi-hero-copy { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); column-gap: 64px; align-items: end; }
+  .sumi-hero--demo .sumi-hero-copy > * { grid-column: 2; }
+  .sumi-hero--demo .sumi-hero-head { grid-column: 1; grid-row: 1 / span 4; align-self: end; }
+  .sumi-hero--demo .sumi-hero-title { margin: 0; }
+  .sumi-hero--demo .sumi-install { margin-top: 16px; }
+  .sumi-hero--demo .sumi-hero-text { margin-bottom: 26px; font-size: 1.08rem; }
+  .sumi-hero--demo .sumi-install { justify-self: start; }
+}
+.sumi-hero-demo {
+  position: relative; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7.4fr); align-items: start;
+  margin-top: 56px; padding-bottom: 72px;
+}
+.sumi-hero-demo :is(.sumi-copy, .sumi-code-lang, .headerlink) { display: none !important; }
+.sumi-demo-src, .sumi-demo-page { border: 1px solid var(--sumi-line-2); border-radius: 14px; overflow: hidden; box-shadow: var(--sumi-shadow-lg); }
+.sumi-demo-src { margin-top: 48px; margin-inline-end: -28px; background: var(--sumi-code-bg); }
+.sumi-demo-src :is(.highlight, .codehilite) { margin: 0; border: 0; border-radius: 0; background: transparent; }
+.sumi-demo-src pre { margin: 0; padding: 18px 20px 22px; border: 0; background: transparent; font: 400 13px/1.75 var(--sumi-font-mono); white-space: pre-wrap; }
+.sumi-demo-page { position: relative; z-index: 1; background: var(--sumi-bg); }
+.sumi-demo-bar { display: flex; align-items: center; gap: 7px; height: 40px; padding: 0 14px; border-bottom: 1px solid var(--sumi-line); background: var(--sumi-bg-soft); }
+.sumi-demo-bar span { width: 11px; height: 11px; border-radius: 50%; background: var(--sumi-line-2); }
+.sumi-demo-bar em {
+  flex: 0 1 340px; margin-inline: auto; padding: 4px 12px; border: 1px solid var(--sumi-line); border-radius: 7px; background: var(--sumi-bg-elev);
+  color: var(--sumi-fg-3); font: 500 12px var(--sumi-font-mono); font-style: normal; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sumi-demo-head { display: flex; align-items: center; gap: 9px; height: 46px; padding: 0 18px; border-bottom: 1px solid var(--sumi-line); color: var(--sumi-fg); font-size: 14px; }
+.sumi-demo-head :is(.sumi-logo, .sumi-mark) { width: auto; height: 20px; }
+.sumi-demo-search { display: grid; place-items: center; width: 150px; height: 26px; margin-inline-start: auto; border: 1px solid var(--sumi-line-2); border-radius: 7px; color: var(--sumi-fg-3); justify-items: start; padding-inline: 8px; }
+.sumi-demo-search .sumi-icon { width: 13px; height: 13px; }
+.sumi-demo-body { display: grid; grid-template-columns: 150px minmax(0, 1fr); min-height: 380px; }
+.sumi-demo-nav { margin: 0; padding: 18px 10px; list-style: none; border-inline-end: 1px solid var(--sumi-line); color: var(--sumi-fg-2); font-size: 12.5px; }
+.sumi-demo-nav li { padding: 5px 10px; border-radius: 6px; }
+.sumi-demo-nav .is-current { background: color-mix(in srgb, var(--sumi-accent) 9%, transparent); color: var(--sumi-accent-ink); font-weight: 600; }
+.sumi-demo-prose { padding: 26px 34px 30px; zoom: .8; }
+.sumi-demo-prose h1 { font-size: 2rem; margin-bottom: .45em; }
+.sumi-demo-prose > * { animation: sumi-demo-in .6s var(--sumi-ease) both; }
+.sumi-demo-prose > :nth-child(2) { animation-delay: .15s; } .sumi-demo-prose > :nth-child(3) { animation-delay: .3s; }
+.sumi-demo-prose > :nth-child(4) { animation-delay: .45s; } .sumi-demo-prose > :nth-child(5) { animation-delay: .6s; }
+.sumi-demo-prose > :nth-child(n+6) { animation-delay: .75s; }
+@keyframes sumi-demo-in { from { opacity: 0; transform: translateY(8px); } }
+.sumi-demo-build {
+  position: absolute; z-index: 2; inset-inline-start: calc(5 / 12.4 * 100% - 74px); top: 10px; display: inline-flex; align-items: center; gap: 7px;
+  padding: 6px 12px; border-radius: 999px; background: var(--sumi-fg); color: var(--sumi-bg); font: 500 12.5px var(--sumi-font-mono); box-shadow: var(--sumi-shadow-md);
+}
+.sumi-demo-build .sumi-icon { width: 14px; height: 14px; }
+@media (max-width: 920px) {
+  .sumi-hero-demo { grid-template-columns: minmax(0, 1fr); margin-top: 44px; padding-bottom: 48px; }
+  .sumi-demo-src { display: none; }
+  .sumi-demo-build { display: none; }
+  .sumi-demo-body { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .sumi-demo-nav { display: none; }
+  .sumi-demo-search { width: 28px; }
+  .sumi-demo-prose { padding: 20px 22px 24px; }
+}
 .sumi-land-section { padding: 88px 0; border-bottom: 1px solid var(--sumi-line); }
 .sumi-land--soft { background: var(--sumi-bg-soft); }
 .sumi-land-head { max-width: 760px; margin-bottom: 44px; }

@@ -43,6 +43,7 @@ A link to a Markdown file, such as `guide.md` or `guide/speed.md#cache`, leads t
 | `install` | string | A command shown in a click-to-copy box. |
 | `code` | object | A code card beside the text: `title`, `lang`, `content`. |
 | `image` | string | An image beside the text, if there is no `code`. |
+| `demo` | object | A Markdown file beside the page Sumi builds from it, shown under the text: `markdown`, and optionally `title` (the file name), `url`, `brand`, `nav` (the sidebar entries) and `current`. Takes the place of `code` and `image`. |
 | `badges` | list | Small labels under the text: a string, or `text` and `tone` (`tip`, `note`, `warning`, `caution`, `important`, `accent`). |
 {.fields}
 

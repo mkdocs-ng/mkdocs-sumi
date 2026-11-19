@@ -167,6 +167,8 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         toc.setdefault('permalink', '#')
         if 'mkdocs_sumi.markdown.extension' not in exts:
             exts.append('mkdocs_sumi.markdown.extension')
+        global _MD_LANGUAGE
+        _MD_LANGUAGE = self.language
         config.mdx_configs['mkdocs_sumi.markdown.extension'] = {
             'language': self.language, 'math': self.config.math, 'mermaid': self.config.mermaid,
             'echarts': self.config.echarts, 'markmap': self.config.markmap}
@@ -887,6 +889,9 @@ def _format_date(value: Any, language: str = 'en', short: bool = False) -> str:
     return format_date(d.year, d.month, d.day, language, short)
 
 
+_MD_LANGUAGE = 'en'  # the interface language of the build, for callout titles in front-matter Markdown
+
+
 def _inline_markdown(text: Any, block: bool = False) -> Markup:
     """Render a short Markdown string from front matter (hero text, feature blurbs)."""
     import markdown as md_lib
@@ -894,7 +899,8 @@ def _inline_markdown(text: Any, block: bool = False) -> Markup:
     html = md_lib.markdown(
         str(text or ''),
         extensions=['attr_list', 'tables', 'fenced_code', 'codehilite', 'mkdocs_sumi.markdown.extension'],
-        extension_configs={'codehilite': {'css_class': 'highlight', 'guess_lang': False, 'pygments_lang_class': True}})
+        extension_configs={'codehilite': {'css_class': 'highlight', 'guess_lang': False, 'pygments_lang_class': True},
+                           'mkdocs_sumi.markdown.extension': {'language': _MD_LANGUAGE}})
     if not block and html.startswith('<p>') and html.endswith('</p>') and html.count('<p>') == 1:
         html = html[3:-4]
     return Markup(html)

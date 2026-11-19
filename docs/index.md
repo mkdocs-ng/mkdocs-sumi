@@ -10,19 +10,27 @@ hero:
     - {text: Get started, link: docs/start/install/, icon: rocket, primary: true}
     - {text: See the components, link: docs/write/, icon: blocks}
   install: pip install mkdocs-sumi
-  code:
-    title: mkdocs.yml
-    lang: yaml
-    content: |
-      site_name: My Project
+  demo:
+    title: docs/deploy.md
+    url: my-project.dev/deploy/
+    nav: [Introduction, Install, Configure, Deploy, Reference]
+    current: Deploy
+    markdown: |
+      # Deploy
 
-      theme:
-        name: sumi          # paper, ink and a vermilion seal
+      Publish the site from CI on every push to `main`.
 
-      plugins:
-        - search            # ⌘K search, CJK-aware
-        - llms_txt          # a Markdown copy of every page
-        - sumi              # components, blog, print edition
+      > [!TIP]
+      > Preview it first with `mkdocs serve`.
+
+      1. Build the site
+
+          Run `mkdocs build`.
+
+      2. Upload `site/`
+
+          Any static host works.
+      {.steps}
 sections:
   - type: features
     eyebrow: Why Sumi
