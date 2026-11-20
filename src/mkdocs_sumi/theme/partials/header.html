@@ -1,7 +1,7 @@
 {%- import "partials/macros.html" as m with context -%}
-<header class="sumi-header">
+<header class="sumi-header{% if header_links %} sumi-header--links{% endif %}">
   <div class="sumi-header-inner">
-    {%- if side_items or drawer_items or drawer_tabs %}
+    {%- if side_items or drawer_items or drawer_tabs or drawer_links %}
     <button class="sumi-icon-btn sumi-menu-btn" type="button" aria-label="{{ t('menu') }}" aria-expanded="false">{{ icon('menu') }}</button>
     {%- endif %}
     <a class="sumi-brand" href="{{ nav.homepage.url | url if nav.homepage else base_url ~ '/' }}" aria-label="{{ config.site_name }}">
@@ -15,6 +15,13 @@
       {%- endif %}
       <span class="sumi-brand-name">{{ config.theme.brand or config.site_name }}</span>
     </a>
+    {%- if header_links %}
+    <nav class="sumi-header-links" aria-label="{{ config.site_name }}">
+      {%- for l in header_links %}
+      <a class="sumi-header-link{% if l.active %} is-active{% endif %}" href="{{ l.href }}"{% if l.active %} aria-current="true"{% endif %}{% if l.external %} rel="noopener"{% endif %}>{{ l.text }}</a>
+      {%- endfor %}
+    </nav>
+    {%- endif %}
     {%- if tabs_on %}
     <nav class="sumi-tabs-nav" aria-label="{{ t('navigation') }}">
       {%- for item in nav.items if not (item.is_page and item.is_homepage) %}
@@ -55,7 +62,14 @@
       {%- endif %}
       <button class="sumi-icon-btn sumi-theme-btn" type="button" data-sumi-theme aria-label="{{ t('toggle_theme') }}" title="{{ t('toggle_theme') }}">{{ icon('sun', 'sumi-when-light') }}{{ icon('moon', 'sumi-when-dark') }}</button>
       {%- if config.repo_url %}
+      {%- if sumi.repo_stars %}
+      <a class="sumi-repo sumi-repo--stars" href="{{ config.repo_url }}" aria-label="{{ t('repository') }}: {{ config.repo_name or config.repo_url }}, {{ sumi.repo_stars }} ★" title="{{ config.repo_name or t('repository') }}" rel="noopener">{{ m.repo_icon(config.repo_url) }}<span class="sumi-repo-stars">{{ sumi.repo_stars }}</span></a>
+      {%- else %}
       <a class="sumi-icon-btn sumi-repo" href="{{ config.repo_url }}" aria-label="{{ t('repository') }}" title="{{ config.repo_name or t('repository') }}" rel="noopener">{{ m.repo_icon(config.repo_url) }}</a>
+      {%- endif %}
+      {%- endif %}
+      {%- if header_button %}
+      <a class="sumi-header-button" href="{{ header_button.href }}"{% if header_button.external %} rel="noopener"{% endif %}>{{ header_button.text }}</a>
       {%- endif %}
     </div>
   </div>

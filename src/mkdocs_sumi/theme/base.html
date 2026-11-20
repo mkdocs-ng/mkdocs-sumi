@@ -19,6 +19,10 @@
 {%- if 'sidebar' in hide or 'navigation' in hide or layout in ('wide', 'landing', 'blog') -%}{%- set side_items = [] -%}{%- endif -%}
 {#- On small screens the header tabs are hidden, so the drawer lists them too. -#}
 {%- set drawer_tabs = tabs_on and 'navigation' not in hide -%}
+{#- `theme.header_links` and `theme.header_button`, resolved for this page by the plugin. On small screens the header hides the links, so the drawer lists them. -#}
+{%- set header_links = sumi.header_links or [] -%}
+{%- set header_button = sumi.header_button -%}
+{%- set drawer_links = header_links or header_button -%}
 {%- set toc_list = page.toc.items if page and page.toc else [] -%}
 {%- if toc_list | length == 1 and toc_list[0].level == 1 -%}{%- set toc_list = toc_list[0].children -%}{%- endif -%}
 {%- set show_toc = toc_list | length > 0 and 'toc' not in hide and layout not in ('wide', 'landing', 'blog') -%}

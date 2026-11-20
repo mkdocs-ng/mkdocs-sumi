@@ -1115,3 +1115,94 @@ def test_no_announcement_bar_without_text(tmp_path):
 def test_material_document_observable_is_available(site):
     html = (site / 'guide' / 'index.html').read_text()
     assert 'if (!window.document$) window.document$ = { subscribe:' in html
+
+
+HEADER = BASIC.replace("      announcement: 'New: <a href=\"blog/\">the blog</a>'\n", """      navigation_tabs: false
+      header_links:
+        - {text: Docs, link: guide/, match: [api/]}
+        - {text: Pricing, link: "index.md#pricing"}
+        - {text: Blog, link: blog/}
+        - {text: Forum, link: "https://example.org/forum"}
+      header_button: {text: Get started, link: guide/start.md}
+""")
+
+
+def _header_link(html: str, text: str) -> str:
+    m = re.search(rf'<a class="sumi-header-link[^"]*"[^>]*>{text}</a>', html)
+    assert m, text
+    return m.group(0)
+
+
+def test_header_links_and_button(tmp_path):
+    site = _site(tmp_path, {
+        'index.md': '# Home\n\n## Pricing\n',
+        'guide/index.md': '# Guide\n',
+        'guide/start.md': '# Start\n',
+        'api/index.md': '# API\n',
+        'blog/index.md': '# Blog\n',
+    }, HEADER)
+    start = (site / 'guide' / 'start' / 'index.html').read_text()
+    assert 'class="sumi-header sumi-header--links"' in start
+    assert _header_link(start, 'Docs') == '<a class="sumi-header-link is-active" href="../" aria-current="true">Docs</a>'
+    # A Markdown file with an anchor leads to its page; a link into a page is never the current section.
+    assert _header_link(start, 'Pricing') == '<a class="sumi-header-link" href="../../#pricing">Pricing</a>'
+    assert _header_link(start, 'Forum') == '<a class="sumi-header-link" href="https://example.org/forum" rel="noopener">Forum</a>'
+    assert '<a class="sumi-header-button" href="./">Get started</a>' in start
+    # `match` makes a link current on other paths too.
+    api = (site / 'api' / 'index.html').read_text()
+    assert 'is-active' in _header_link(api, 'Docs')
+    blog = (site / 'blog' / 'index.html').read_text()
+    assert 'is-active' in _header_link(blog, 'Blog') and 'is-active' not in _header_link(blog, 'Docs')
+    home = (site / 'index.html').read_text()
+    assert 'is-active' not in ''.join(_header_link(home, t) for t in ('Docs', 'Pricing', 'Blog'))
+    # Phones get the links and the button in the menu.
+    assert '<ul class="sumi-nav-list sumi-sidebar-tabs sumi-sidebar-links">' in home
+    assert '<a class="sumi-sidebar-button" href="guide/start/">Get started</a>' in home
+    assert 'sumi-menu-btn' in home
+
+
+def test_no_header_links_by_default(tmp_path):
+    site = _site(tmp_path, {'index.md': '# Home\n'}, BASIC)
+    html = (site / 'index.html').read_text()
+    assert 'sumi-header-links' not in html and 'sumi-header-button' not in html and 'sumi-header--links' not in html
+
+
+@pytest.mark.parametrize(('count', 'shown'), [
+    (0, '0'), (101, '101'), (999, '999'), (1000, '1k'), (1234, '1.2k'), (9960, '10k'), (12345, '12k'),
+])
+def test_star_counts_read_as_on_github(count, shown):
+    from mkdocs_sumi.plugin import format_stars
+
+    assert format_stars(count) == shown
+
+
+STARS = BASIC.replace("      announcement: 'New: <a href=\"blog/\">the blog</a>'\n", '      repo_stars: true\n') + \
+    '    repo_url: https://github.com/me/project\n    repo_name: me/project\n'
+
+
+def test_repo_stars(tmp_path, monkeypatch):
+    from mkdocs_sumi import plugin, releases
+
+    calls = []
+    monkeypatch.setattr(plugin, '_stars', {})
+    monkeypatch.setattr(releases, '_get_json', lambda url: calls.append(url) or {'stargazers_count': 1234})
+    site = _site(tmp_path, {'index.md': '# Home\n', 'other.md': '# Other\n'}, STARS)
+    html = (site / 'index.html').read_text()
+    assert '<span class="sumi-repo-stars">1.2k</span>' in html
+    assert 'class="sumi-repo sumi-repo--stars"' in html
+    # Read once per build, not once per page.
+    assert calls == ['https://api.github.com/repos/me/project']
+
+
+def test_repo_stars_unreachable_keeps_the_plain_icon(tmp_path, monkeypatch):
+    from mkdocs_sumi import plugin, releases
+
+    def offline(url):
+        raise OSError('offline')
+
+    monkeypatch.setattr(plugin, '_stars', {})
+    monkeypatch.setattr(releases, '_get_json', offline)
+    cfg = STARS
+    site = _site(tmp_path, {'index.md': '# Home\n'}, cfg)
+    html = (site / 'index.html').read_text()
+    assert 'sumi-repo-stars' not in html and 'class="sumi-icon-btn sumi-repo"' in html

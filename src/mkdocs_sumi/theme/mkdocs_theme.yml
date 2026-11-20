@@ -25,6 +25,12 @@ social_image: null
 brand: null
 # Text or HTML for a dismissible bar above the header.
 announcement: null
+# Links in the header beside the brand: [{text, link, match}]. Phones list them in the menu.
+header_links: []
+# A button at the end of the header, such as "Get started": {text, link}.
+header_button: null
+# Show the star count of a GitHub `repo_url` on the repository icon; read when the site is built.
+repo_stars: false
 # Columns of links above the footer: [{title, links: [{text, link}]}]; a plain string is text.
 footer_links: []
 # Show the "Built with MkDocs NG and Sumi" credit in the footer.
