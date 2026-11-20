@@ -290,6 +290,28 @@ button { font: inherit; color: inherit; }
   content: ""; position: absolute; inset-inline-start: 12px; inset-inline-end: 12px; bottom: -12px; height: 2px; border-radius: 2px; background: var(--sumi-accent);
 }
 .sumi-header-tools { display: flex; align-items: center; gap: 4px; margin-inline-start: auto; }
+/* `theme.header_links`, the star count of `theme.repo_stars` and `theme.header_button`. The button takes
+   the text colour as its fill, so it is dark on the light palette and light on the dark one. */
+.sumi-header-links { display: flex; align-items: center; gap: 2px; min-width: 0; }
+.sumi-header-link {
+  display: inline-flex; align-items: center; height: 36px; padding: 0 11px; border-radius: 8px;
+  color: var(--sumi-fg-2); font-size: 14.5px; font-weight: 500; white-space: nowrap; transition: color .15s, background .15s;
+}
+.sumi-header-link:hover { color: var(--sumi-fg); background: var(--sumi-bg-soft); }
+.sumi-header-link.is-active { color: var(--sumi-fg); }
+.sumi-repo--stars {
+  display: inline-flex; flex: none; align-items: center; gap: 7px; height: 34px; margin-inline-start: 2px; padding: 0 11px;
+  border: 1px solid var(--sumi-line); border-radius: 9px; color: var(--sumi-fg-2); font-size: 13.5px; font-weight: 600;
+  font-variant-numeric: tabular-nums; white-space: nowrap; transition: color .15s, border-color .15s;
+}
+.sumi-repo--stars:hover { border-color: var(--sumi-line-2); color: var(--sumi-fg); }
+.sumi-repo--stars .sumi-icon { width: 16px; height: 16px; }
+.sumi-header-button {
+  display: inline-flex; flex: none; align-items: center; height: 34px; margin-inline-start: 6px; padding: 0 14px; border-radius: 9px;
+  background: var(--sumi-fg); color: var(--sumi-bg); font-size: 13.5px; font-weight: 500; white-space: nowrap; transition: opacity .15s;
+}
+.sumi-header-button:hover { color: var(--sumi-bg); opacity: .86; }
+.sumi-sidebar-links .sumi-sidebar-button { color: var(--sumi-fg); font-weight: 600; }
 .sumi-search-btn {
   display: inline-flex; align-items: center; gap: 8px; width: 240px; height: 36px; margin-inline-end: 6px; padding-block: 0; padding-inline: 11px 8px;
   border: 1px solid var(--sumi-line-2); border-radius: 9px; background: var(--sumi-bg-elev); color: var(--sumi-fg-3);
@@ -1021,8 +1043,20 @@ dialog { color: inherit; }
   .sumi-toc-inline { display: block; }
   .sumi-search-btn { width: 200px; }
 }
+/* With header links there is less room: the search box gives way first. */
+@media (max-width: 1100px) {
+  .sumi-header--links .sumi-search-btn { flex: none; width: 36px; padding: 0; justify-content: center; border: 0; background: none; margin: 0; }
+  .sumi-header--links .sumi-search-btn:hover { background: var(--sumi-bg-soft); box-shadow: none; }
+  .sumi-header--links :is(.sumi-search-label, .sumi-search-kbd) { display: none; }
+  .sumi-header--links .sumi-search-btn .sumi-icon { width: 19px; height: 19px; color: var(--sumi-fg-2); }
+}
 @media (max-width: 920px) {
   :root { --sumi-header-h: 56px; }
+  .sumi-header-links { display: none; }
+  .sumi-repo--stars { width: 36px; height: 36px; margin: 0; padding: 0; justify-content: center; border: 0; border-radius: 8px; }
+  .sumi-repo--stars:hover { background: var(--sumi-bg-soft); }
+  .sumi-repo--stars .sumi-icon { width: 19px; height: 19px; }
+  .sumi-repo-stars { display: none; }
   .sumi-shell, .sumi-shell--no-toc { grid-template-columns: minmax(0, 1fr); padding: 0 18px; }
   .sumi-menu-btn { display: inline-grid; }
   .sumi-tabs-nav { display: none; }
@@ -1055,6 +1089,7 @@ dialog { color: inherit; }
   .sumi-table--wide { width: auto; }
 }
 @media (max-width: 520px) {
+  .sumi-header-button { display: none; }
   .sumi-brand { margin-inline-end: 4px; gap: 8px; }
   .sumi-brand-name { font-size: 15.5px; }
   .sumi-header-inner { padding: 0 12px; gap: 2px; }

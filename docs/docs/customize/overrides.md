@@ -53,7 +53,7 @@ Create `overrides/main.html` and extend `base.html`:
 
 | Partial | Purpose |
 | --- | --- |
-| `partials/header.html` | Logo, tabs, search button, menus |
+| `partials/header.html` | Logo, header links, tabs, search button, menus, header button |
 | `partials/logo.html` | The logo only |
 | `partials/breadcrumbs.html` | The path above the title |
 | `partials/page-actions.html` | Copy as Markdown and the page menu |

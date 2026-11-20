@@ -409,6 +409,9 @@ class SumiPlugin(BasePlugin[SumiConfig]):
             ctx['blog_layout'] = page.meta.get('blog_layout') or self.config.blog.layout
         if page.meta.get('template') == 'releases.html':
             ctx['releases'] = self._releases(page, config)
+        ctx['header_links'] = self._header_links(page, config)
+        ctx['header_button'] = self._header_button(page, config)
+        ctx['repo_stars'] = _repo_stars(config)
         ctx['translations'] = self._translations(page, config, context.get('i18n'))
         ctx['feedback'] = self._feedback(page, config)
         ctx['comments'] = self._comments(page, config)
@@ -416,6 +419,65 @@ class SumiPlugin(BasePlugin[SumiConfig]):
         ctx['strings_json'] = Markup(self._strings())
         context['sumi'] = ctx
         return context
+
+    def _header_link(self, item: Any, page: Page) -> dict[str, Any] | None:
+        """One `theme.header_links` entry (or the `header_button`), resolved for `page`.
+
+        `link` is a URL, a path from the site root such as `guide/`, or a Markdown
+        file such as `guide.md#install`. `path` is the site-root path the link
+        leads to, used to tell whether it is the current section; links to
+        other sites, to an anchor and to other schemes have none.
+        """
+        if not isinstance(item, dict) or not item.get('text') or not item.get('link'):
+            return None
+        link = str(item['link'])
+        parts = urlsplit(link)
+        # Site-wide, so a Markdown file is a path from the docs root, not from the page.
+        if (self.files is not None and not parts.scheme and not parts.netloc and not link.startswith('/')
+                and utils.is_markdown_file(parts.path)):
+            target = self.files.get_file_from_path(posixpath.normpath(unquote(parts.path)))
+            if target is not None and target.is_documentation_page():
+                link = target.url + (f'?{parts.query}' if parts.query else '') + (f'#{parts.fragment}' if parts.fragment else '')
+            else:
+                log.warning(f"sumi: the header link '{link}' leads to no documentation file.")
+            parts = urlsplit(link)
+        if parts.scheme or parts.netloc or link.startswith(('/', '#')):
+            return {'text': item['text'], 'href': link, 'external': bool(parts.scheme in ('http', 'https')),
+                    'path': None, 'match': []}
+        target = '' if parts.path in ('', '.', './') else parts.path
+        href = utils.get_relative_url(target, page.url)
+        if (not target or target.endswith('/')) and not href.endswith('/'):
+            href += '/'
+        href += (f'?{parts.query}' if parts.query else '') + (f'#{parts.fragment}' if parts.fragment else '')
+        match = item.get('match') or []
+        if isinstance(match, str):
+            match = [match]
+        # A link to an anchor on another page leads into that page, not to a section.
+        path = None if parts.fragment else target
+        return {'text': item['text'], 'href': href, 'external': False, 'path': path,
+                'match': [str(m).lstrip('/') for m in match]}
+
+    def _header_links(self, page: Page, config: MkDocsConfig) -> list[dict[str, Any]]:
+        """`theme.header_links` for `page`, the one for the current section marked `active`.
+
+        A link is current when the page's URL starts with the link's path or with
+        one of its `match` prefixes; the longest such prefix wins, and a link to
+        the homepage is current only on the homepage.
+        """
+        items = config.theme.get('header_links') or []
+        links = [link for link in (self._header_link(i, page) for i in items if isinstance(items, list)) if link]
+        best, best_len = None, -1
+        for link in links:
+            for prefix in ([link['path']] if link['path'] is not None else []) + link['match']:
+                hit = page.url == '' if prefix == '' else page.url.startswith(prefix)
+                if hit and len(prefix) > best_len:
+                    best, best_len = link, len(prefix)
+        for link in links:
+            link['active'] = link is best
+        return links
+
+    def _header_button(self, page: Page, config: MkDocsConfig) -> dict[str, Any] | None:
+        return self._header_link(config.theme.get('header_button'), page)
 
     def _feedback(self, page: Page, config: MkDocsConfig) -> dict[str, Any] | None:
         """The "Was this page helpful?" widget: Material's `extra.analytics.feedback`, or `theme.feedback`."""
@@ -675,6 +737,44 @@ def _site_links(context: Any, html: Any) -> Markup:
         return f'{m.group(1)}{base}{url}{m.group(3)}'
 
     return Markup(re.sub(r'(\b(?:href|src)=")([^"]*)(")', sub, str(html or '')))
+
+
+_GITHUB_REPO_RE = re.compile(r'^https?://(?:www\.)?github\.com/([\w.-]+)/([\w.-]+?)(?:\.git)?/?$')
+_stars: dict[str, str | None] = {}
+
+
+def format_stars(count: int) -> str:
+    """A star count as GitHub shows it: 101, 1.2k, 12k."""
+    if count < 1000:
+        return str(count)
+    thousands = round(count / 100) / 10
+    if thousands < 10:
+        return f'{thousands:.1f}'.removesuffix('.0') + 'k'
+    return f'{round(count / 1000)}k'
+
+
+def _repo_stars(config: MkDocsConfig) -> str | None:
+    """The star count of `repo_url` when `theme.repo_stars` is on and it is a GitHub repository.
+
+    It is read once per build process, so `mkdocs serve` asks GitHub once. A
+    build never fails over it: when GitHub can't be reached, the header shows
+    the plain repository icon. `GITHUB_TOKEN` (or `GH_TOKEN`) is used when set.
+    """
+    if not config.theme.get('repo_stars') or not config.repo_url:
+        return None
+    m = _GITHUB_REPO_RE.match(config.repo_url.strip())
+    if not m:
+        return None
+    repo = f'{m.group(1)}/{m.group(2)}'
+    if repo not in _stars:
+        from mkdocs_sumi.releases import _get_json
+
+        try:
+            _stars[repo] = format_stars(int(_get_json(f'https://api.github.com/repos/{repo}')['stargazers_count']))
+        except (OSError, ValueError, TypeError, KeyError) as e:
+            log.info(f"sumi: couldn't read the star count of {repo} from GitHub: {e}")
+            _stars[repo] = None
+    return _stars[repo]
 
 
 def _markdown_path(page: Page) -> str:

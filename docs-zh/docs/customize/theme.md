@@ -28,6 +28,8 @@ theme:
 | `social_image` | string | | 页面分享到 X、Slack、Mastodon 等平台时显示的预览图：`docs/` 中的一张图片（约 1200×630，需要 `site_url`），或者一个完整 URL。页面可以在 front matter 中用 `image:` 指定自己的预览图。 |
 | `brand` | string | `site_name` | 页眉品牌名的 HTML，例如 `"MkDocs<b>ng</b>"`。 |
 | `announcement` | string | | 页眉上方可关闭的公告栏的 HTML。读者关闭旧公告后，新的公告仍会显示。 |
+| `header_links` | list | | 页眉中品牌名旁边的链接，例如文档、价格、博客。见[页眉链接与按钮](#header-links-and-button)。 |
+| `header_button` | mapping | | 页眉末尾的按钮，例如“开始使用”：`text` 和 `link`。见[页眉链接与按钮](#header-links-and-button)。 |
 | `navigation_tabs` | boolean 或 `always` | `true` | 在页眉中把顶层章节显示为标签。设为 `false` 时，整个导航都放在侧边栏中。设为 `always` 时，即使导航没有章节，也把顶层页面和链接显示为标签，适合只有几个页面的站点。 |
 | `toc_depth` | integer | `3` | 页面目录中最深的标题级别。 |
 | `hide` | list | `[]` | 在每个页面上隐藏的部分：`toc`、`sidebar`、`breadcrumbs`、`actions`、`pager`、`footer`、`feedback`、`comments`。 |
@@ -37,6 +39,7 @@ theme:
 | `comments` | mapping | | 文档页和博客文章下方的 Giscus 评论。见[评论](../run/comments.md)。 |
 | `feedback` | boolean 或 mapping | | “这页内容对你有帮助吗？”反馈组件。Material 的 `extra.analytics.feedback` 同样有效。见[访问统计与反馈](../run/analytics.md)。 |
 | `repo_icon` | string | | 覆盖仓库图标，例如 `brand-gitlab`。默认根据 `repo_url` 识别。 |
+| `repo_stars` | boolean | `false` | 在 GitHub `repo_url` 的图标旁显示 star 数。构建站点时从 GitHub API 读取（设置了 `GITHUB_TOKEN` 时会使用它）；连不上 GitHub 时只显示图标。 |
 | `keyboard` | boolean | `true` | 启用单键快捷键。<kbd>⌘</kbd> <kbd>K</kbd> 始终可用。 |
 | `credit` | boolean | `true` | 在页脚显示“由 MkDocs NG 与 Sumi 构建”。 |
 | `footer_links` | list | | 页脚上方的多栏链接，适合产品网站。见[页脚与社交链接](#footer-and-social-links)。 |
@@ -78,6 +81,29 @@ theme:
 | `description` | 用于 `<meta name="description">`、链接预览、卡片和博客首页。 |
 | `subtitle` | 页面标题下方的一行副标题，例如“首次答复免费 · 书面答复”。支持行内 Markdown。 |
 {.fields}
+
+## 页眉链接与按钮 {#header-links-and-button}
+
+产品网站常在页眉的品牌名旁边放几个链接，末尾再放一个按钮。每个链接写成 `text` 加 `link`。`link` 可以是从站点根开始的路径，例如 `guide/`；可以是 Markdown 文件，例如 `index.md#pricing`（同样从 docs 根目录算起）；也可以是完整 URL：
+
+```yaml title="mkdocs.yml"
+repo_url: https://github.com/me/project
+theme:
+  name: sumi
+  navigation_tabs: false
+  header_links:
+    - {text: 文档, link: guide/, match: [reference/, api/]}
+    - {text: 价格, link: "index.md#pricing"}
+    - {text: 博客, link: blog/}
+  header_button: {text: 开始使用, link: guide/start.md}
+  repo_stars: true
+```
+
+当前页面所属的链接会高亮：页面 URL 以该链接的路径开头，或者以它 `match` 里的某个前缀开头。多个都符合时取最长的那个。指向首页的链接只在首页高亮；指向别的页面里某个锚点的链接（例如价格）永远不高亮。
+
+按钮用正文颜色作为底色：浅色配色下是深色，深色配色下是浅色。想换颜色，在[自定义 CSS](#custom-css) 中设置 `.sumi-header-button` 的样式。
+
+窗口变窄时，搜索框先缩成图标。在手机上，链接、star 数和按钮都不在页眉里显示，菜单会在导航上方列出这些链接和按钮。
 
 ## 页脚与社交链接 {#footer-and-social-links}
 

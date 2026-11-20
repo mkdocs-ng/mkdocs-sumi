@@ -53,7 +53,7 @@ overrides/
 
 | 局部模板 | 用途 |
 | --- | --- |
-| `partials/header.html` | 标志、标签、搜索按钮、菜单 |
+| `partials/header.html` | 标志、页眉链接、标签、搜索按钮、菜单、页眉按钮 |
 | `partials/logo.html` | 只有标志 |
 | `partials/breadcrumbs.html` | 标题上方的路径 |
 | `partials/page-actions.html` | 复制为 Markdown 和页面菜单 |

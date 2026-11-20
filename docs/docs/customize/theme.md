@@ -28,6 +28,8 @@ theme:
 | `social_image` | string | | The preview image shown when a page is shared on X, Slack, Mastodon and the like: an image in `docs/` (about 1200×630, needs `site_url`) or a full URL. A page can use its own with `image:` in its front matter. |
 | `brand` | string | `site_name` | HTML for the header brand, e.g. `"MkDocs<b>ng</b>"`. |
 | `announcement` | string | | HTML for a dismissible bar above the header. A new message reappears for readers who dismissed an older one. |
+| `header_links` | list | | Links in the header beside the brand, such as Docs, Pricing and Blog. See [Header links and button](#header-links-and-button). |
+| `header_button` | mapping | | A button at the end of the header, such as "Get started": `text` and `link`. See [Header links and button](#header-links-and-button). |
 | `navigation_tabs` | boolean or `always` | `true` | Show top-level sections as tabs in the header. When `false`, the whole navigation is in the sidebar. `always` shows the top-level pages and links as tabs even when the navigation has no sections, for a site of a few pages. |
 | `toc_depth` | integer | `3` | The deepest heading level in the page table of contents. |
 | `hide` | list | `[]` | Parts to hide on every page: `toc`, `sidebar`, `breadcrumbs`, `actions`, `pager`, `footer`, `feedback`, `comments`. |
@@ -37,6 +39,7 @@ theme:
 | `comments` | mapping | | Giscus comments under docs pages and blog posts. See [Comments](../run/comments.md). |
 | `feedback` | boolean or mapping | | A "Was this page helpful?" widget. Material's `extra.analytics.feedback` works too. See [Analytics and feedback](../run/analytics.md). |
 | `repo_icon` | string | | Override the repository icon, e.g. `brand-gitlab`. Detected from `repo_url` by default. |
+| `repo_stars` | boolean | `false` | Show the star count of a GitHub `repo_url` beside its icon. It is read from the GitHub API when the site is built (with `GITHUB_TOKEN` when set); if GitHub can't be reached, the plain icon is shown. |
 | `keyboard` | boolean | `true` | Enable single-key shortcuts. <kbd>⌘</kbd> <kbd>K</kbd> always works. |
 | `credit` | boolean | `true` | Show "Built with MkDocs NG and Sumi" in the footer. |
 | `footer_links` | list | | Columns of links above the footer, as on a product site. See [Footer and social links](#footer-and-social-links). |
@@ -78,6 +81,29 @@ Front matter on a page can change its layout:
 | `description` | Used for the `<meta name="description">`, link previews, cards and the blog index. |
 | `subtitle` | A line under the page title, such as "First answer free · in writing". Inline Markdown works. |
 {.fields}
+
+## Header links and button
+
+A product site often wants a few links in the header, beside the brand, and a button at the end. Each link is `text` and `link`. The link is a path from the site root such as `guide/`, a Markdown file such as `index.md#pricing` (also from the docs root), or a full URL:
+
+```yaml title="mkdocs.yml"
+repo_url: https://github.com/me/project
+theme:
+  name: sumi
+  navigation_tabs: false
+  header_links:
+    - {text: Docs, link: guide/, match: [reference/, api/]}
+    - {text: Pricing, link: "index.md#pricing"}
+    - {text: Blog, link: blog/}
+  header_button: {text: Get started, link: guide/start.md}
+  repo_stars: true
+```
+
+The link for the page being read is highlighted: the one whose path the page's URL starts with, or one of its `match` prefixes. The longest wins, a link to the homepage counts only on the homepage, and a link to an anchor on another page, such as Pricing, never does.
+
+The button takes the text colour as its fill: dark on the light palette, light on the dark one. To give it another colour, style `.sumi-header-button` in [custom CSS](#custom-css).
+
+When the window narrows, the search box shrinks to its icon first. On phones the links, the star count and the button leave the header, and the menu lists the links and the button above the navigation.
 
 ## Footer and social links
 

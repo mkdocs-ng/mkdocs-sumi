@@ -3,12 +3,23 @@
   `side_items`: the nav shown beside the content on wide screens.
   `drawer_items`: the nav for pages without a sidebar (wide, landing, blog), shown only in the drawer.
   `drawer_tabs`: the top-level tabs, which the drawer lists because the header hides them on small screens.
+  `drawer_links`: `theme.header_links` and `theme.header_button`, listed for the same reason.
 -#}
 {%- import "partials/macros.html" as m with context -%}
-{%- if side_items or drawer_items or drawer_tabs %}
+{%- if side_items or drawer_items or drawer_tabs or drawer_links %}
 {%- set drawer_only = not side_items %}
 <aside class="sumi-sidebar{% if drawer_only %} sumi-sidebar--drawer-only{% if not drawer_items %} sumi-sidebar--tabs-only{% endif %}{% endif %}" id="sumi-sidebar" aria-label="{{ t('navigation') }}">
   <div class="sumi-sidebar-inner">
+    {%- if drawer_links %}
+    <ul class="sumi-nav-list sumi-sidebar-tabs sumi-sidebar-links">
+      {%- for l in header_links %}
+      <li class="sumi-nav-page"><a{% if l.active %} class="is-active" aria-current="true"{% endif %} href="{{ l.href }}"{% if l.external %} rel="noopener"{% endif %}>{{ l.text }}</a></li>
+      {%- endfor %}
+      {%- if header_button %}
+      <li class="sumi-nav-page"><a class="sumi-sidebar-button" href="{{ header_button.href }}"{% if header_button.external %} rel="noopener"{% endif %}>{{ header_button.text }}</a></li>
+      {%- endif %}
+    </ul>
+    {%- endif %}
     {%- if drawer_tabs %}
     <ul class="sumi-nav-list sumi-sidebar-tabs">
       {%- for item in nav.items if not (item.is_page and item.is_homepage) %}
