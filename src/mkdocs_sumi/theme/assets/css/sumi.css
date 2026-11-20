@@ -947,6 +947,10 @@ a.sumi-meta:hover { color: var(--sumi-fg); }
 .sumi-footer-col li { margin: 0 0 8px; }
 .sumi-footer-col a { color: var(--sumi-fg-2); text-decoration: none; }
 .sumi-footer-col a:hover { color: var(--sumi-fg); }
+/* Phones: two link columns side by side, so the footer is not a screen-long list. */
+@media (max-width: 600px) {
+  .sumi-footer-links { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 20px; padding-top: 32px; }
+}
 .sumi-subtitle { margin: -0.3em 0 1.6em; color: var(--sumi-fg-2); font-size: 1.15rem; line-height: 1.55; }
 .sumi-footer-right .sumi-icon-btn { width: 34px; height: 34px; }
 .sumi-footer-right .sumi-icon-btn .sumi-icon { width: 17px; height: 17px; }
